@@ -118,8 +118,10 @@ public class BallControls : MonoBehaviour {
 		transform.position = correctedPosition;
 		onGround = true;
 		currentTile = coll.transform;
-		x = coll.transform.GetComponent<TileController>().x;
-		y = coll.transform.GetComponent<TileController>().y;
+		if (coll.transform.GetComponent<TileController> ()) {
+			x = coll.transform.GetComponent<TileController> ().x;
+			y = coll.transform.GetComponent<TileController> ().y;
+		}
 	}
 	
 	
