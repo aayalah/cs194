@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour {
 	
 	public Player player;
 	public Player[] players;
-	private int numPlayers = 1; 
+	private int numPlayers = 2; 
 	private bool playerTurn= true;
 	private int stage = 0;
 	public Camera camera;
@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour {
 			int z = 0;
 			Vector3 v = new Vector3 (x, y, z);
 			players[i] = (Player)Instantiate (player, v, Quaternion.identity);
-			players[i].Initialize (camera, this);
+			players[i].Initialize (i, camera, this);
 		}
 		playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
 

@@ -17,6 +17,7 @@ public class Player : MonoBehaviour {
 		pieceArray = new Piece[numberOfPieces];
 		
 		if (id == 0) {
+			Debug.Log (id);
 			for (int i = 0; i < numberOfPieces; i++) {
 				int x = 5 * i;
 				int y = 1;
@@ -29,15 +30,18 @@ public class Player : MonoBehaviour {
 				pieceArray[i].y = z;
 			}
 		} else {
-//			for(int i = 0; i < 1; i++) {
-//				int x = 5*i;
-//				int y = 1;
-//				int z = 18;
-//				Vector3 v = new Vector3 (x, y, z);
-//				pieceArray[i] = (Piece) Instantiate(piece, v, Quaternion.identity);
-//				pieceArray[i].Initialize(this, game);
-//				pieceArray [i].id = "player" + id;
-//			}
+			Debug.Log(id);
+			for(int i = 0; i < numberOfPieces; i++) {
+				int x = 5*i;
+				int y = 1;
+				int z = 18;
+				Vector3 v = new Vector3 (x, y, z);
+				pieceArray[i] = (Piece) Instantiate(piece, v, Quaternion.identity);
+				pieceArray[i].Initialize(this, game);
+				pieceArray [i].id = "player" + id;
+				pieceArray[i].x = x;
+				pieceArray[i].y = z;
+			}
 			
 			
 		}
@@ -45,7 +49,8 @@ public class Player : MonoBehaviour {
 		
 	}
 	
-	public void Initialize(Camera camera, GameManager game){
+	public void Initialize(int id, Camera camera, GameManager game){
+		this.id = id;
 		this.camera = camera;
 		this.game = game;
 		
@@ -73,16 +78,9 @@ public class Player : MonoBehaviour {
 	
 	
 	
-	
-	public Player() {
-	}
-	
-	public Player(int identif, Camera cam, GameManager game){
-		
-		id = identif;
-		camera = cam;
+	public Player(){
 		stats.addMoney(initialMoney);
-		this.game = game;
+		//this.game = game;
 	}
 	
 	public int getId() {
