@@ -2,11 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Player {
-	// Stand-in for Alejandro's class. :/
-}
-
 public class Piece : MonoBehaviour {
+	public string id;
+	public GameManager game;
 	public int maxHP = 10;
 	public int currentHP = 10;
 	public int[] attackHistogram;
@@ -28,22 +26,27 @@ public class Piece : MonoBehaviour {
 	private float lastMoveTime;
 	private bool moving = false;
 
+	public void Initialize(Player player, GameManager game) {
+		this.player = player;
+		this.game = game;
+	}
+
 	// Use this for initialization
 	void Start () {
 		lastMoveTime = Time.timeSinceLevelLoad;
 		gameObject.renderer.material.color = Color.green;
 		board = GameObject.Find("Game").GetComponent<GridController> ();
 		GameObject startingCell = board.getCellAt(x, y);
-		moveTo(startingCell);
+		//moveTo(startingCell);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Time.timeSinceLevelLoad - lastMoveTime > 3 && !moving) {
-			moving = true;
-			lastMoveTime = Time.timeSinceLevelLoad;
-			StartCoroutine("makeMove");
-		}
+//		if (Time.timeSinceLevelLoad - lastMoveTime > 3 && !moving) {
+//			moving = true;
+//			lastMoveTime = Time.timeSinceLevelLoad;
+//			StartCoroutine("makeMove");
+//		}
 	}
 
 	/************************
@@ -69,7 +72,11 @@ public class Piece : MonoBehaviour {
 		TileController tileController = tile.GetComponent<TileController>();
 		x = tileController.x;
 		y = tileController.y;
-		transform.position = tile.transform.position + new Vector3(0,1,0);
+		transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y,0);
+	}
+
+	public void moveToCoords(int xCoord, int zCoord) {
+		moveTo (board.getCellAt (xCoord, zCoord));
 	}
 
 	public List<GameObject> getMoveLocations() {
