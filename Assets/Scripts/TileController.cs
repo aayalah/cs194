@@ -4,45 +4,65 @@ using System.Collections;
 public class TileController : MonoBehaviour {
 	public Material on;
 	public Material off;
-	public bool occupied;
-	
+	public bool flashing;
+
 	private float previousFlash;
-	public int x;//EX: 12 corresponds to coordinates (1,2)
+	public int x;
 	public int y;
 	public Color baseColor = Color.white;
-	
-	void Start () {
+
+	void Start() {
 		this.gameObject.renderer.material.color = baseColor;
 		previousFlash = -1.0f;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		if(occupied && Time.timeSinceLevelLoad - previousFlash >= 1.0f){
-			toggleColor(Color.yellow);
-			previousFlash = Time.timeSinceLevelLoad;
+		if (flashing) {
+			setBaseColor (Color.yellow);
+		} else {
+			setBaseColor (Color.white);
 		}
 	}
-	
-	public void setBaseColor(Color c){
+
+	public void setBaseColor(Color c) {
 		baseColor = c;
 		this.gameObject.renderer.material.color = baseColor;
 	}
-	
+
+	/*
 	void OnCollisionEnter (Collision coll) {
-		occupied = true;
+		flashing = true;
 	}
-	void OnCollisionExit(Collision coll){
-		if(occupied == true){
+
+	void OnCollisionExit(Collision coll) {
+		if (flashing) {
 			this.gameObject.renderer.material.color = baseColor;
-		}else{
-			if(coll.collider.name == "Ball1") toggleColor(Color.blue);//this.gameObject.renderer.material.color = Color.blue;
-			if(coll.collider.name == "Ball2") toggleColor(Color.green);//this.gameObject.renderer.material.color = Color.green;
+		} else {
+			if (coll.collider.name == "Ball1") {
+				toggleColor(Color.blue);
+			}
+			if (coll.collider.name == "Ball2") {
+				toggleColor(Color.green);
+			}
 		}
-		occupied = false;
+		flashing = false;
 	}
-	
-	void toggleColor(Color col){
+	*/
+
+	public void setFlashing(bool shouldBeFlashing) {
+		flashing = shouldBeFlashing;
+	}
+
+	public void startFlashing() {
+		setFlashing(true);
+	}
+
+	public void stopFlashing() {
+		setFlashing(false);
+	}
+
+	void toggleColor(Color col) {
 		this.gameObject.renderer.material.color = this.gameObject.renderer.material.color.Equals(baseColor) ? col : baseColor;
 	}
 }

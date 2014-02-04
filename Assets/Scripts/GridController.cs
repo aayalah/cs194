@@ -2,17 +2,17 @@ using UnityEngine;
 using System.Collections;
 
 public class GridController : MonoBehaviour {
-	public Transform cube;
+	public GameObject cube;
 	public int xDimension = 20;
 	public int yDimension = 20;
-	private Transform[,]grid;
+	private GameObject[,]grid;
 	// Use this for initialization
 	void Start () {
-		grid = new Transform[xDimension, yDimension];
+		grid = new GameObject[xDimension, yDimension];
 		for(int i = 0; i< xDimension; i++){
 			for(int j = 0; j< yDimension; j++){
 				Vector3 position = Vector3.right*i + Vector3.forward*j;
-				Transform t = (Transform)Instantiate(cube, position, Quaternion.identity);
+				GameObject t = (GameObject)Instantiate(cube, position, Quaternion.identity);
 				//t.Translate(new Vector3(0.1f*i, 0, 0.1f*j));
 				if(((i+j) % 2) == 0) {
 					t.transform.GetComponent<TileController>().setBaseColor(Color.black);
@@ -32,9 +32,17 @@ public class GridController : MonoBehaviour {
 		for(int i = 0; i < 100; i++){
 			int row = Random.Range(0, xDimension);
 			int col = Random.Range(0, yDimension);
-			Transform t = grid[row, col];
+			GameObject t = grid[row, col];
 			t.transform.localScale = t.transform.localScale+Vector3.up*.5f;
-			t.Translate(Vector3.up*.25f);
+			t.transform.Translate(Vector3.up*.25f);
+		}
+	}
+
+	public GameObject getCellAt(int x, int y) {
+		if (x < 0 || x >= xDimension || y < 0 || y >= yDimension) {
+			return null;
+		} else {
+			return grid[x,y];
 		}
 	}
 	
