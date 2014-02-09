@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour {
 	public Camera camera;
 	public Piece[,] playersPieces;
 	public int numberOfPlayersPieces = 3;
-	
+	private int[] currentNumberOfPlayersPieces;
 	void Awake() {
 		
 	}
@@ -28,20 +28,35 @@ public class GameManager : MonoBehaviour {
 			players[i].Initialize (i, camera, this);
 		}
 		playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
+		currentNumberOfPlayersPieces = new int[numPlayers];
 
 		StartCoroutine (mainLoops ());
 	}
 
 	public IEnumerator mainLoops() {
-		for(int j = 0; j < 2; j++) {
-			for(int i = 0; i < numPlayers; i++) {
-				Debug.Log ("TEST");
-				yield return StartCoroutine(chooseStage(j, i));
+		while (allPlayersHavePieces()) {
+			for (int j = 0; j < 2; j++) {
+				for (int i = 0; i < numPlayers; i++) {
+					yield return StartCoroutine (chooseStage (j, i));
+				}
 			}
+			yield return null;
 		}
-		yield return null;
+
+		///Display Game Over Screen
 	}
-	
+
+	private bool allPlayersHavePieces() {
+
+		for (int i = 0; i < numPlayers; i++) { 
+			if(currentNumberOfPlayersPieces[i] > 0) {
+				return false;
+			}
+
+		}
+		return true;
+	}
+
 	// Update is called once per frame
 	void Update () {
 
