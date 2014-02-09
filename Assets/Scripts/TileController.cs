@@ -8,7 +8,7 @@ public class TileController : MonoBehaviour {
 
 	private float previousFlash;
 	public int x;
-	public int y;
+	public int z;
 	public Color baseColor = Color.white;
 
 	void Start() {
@@ -19,15 +19,17 @@ public class TileController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (flashing) {
-			setBaseColor (Color.yellow);
+			setColor(Color.yellow);
 		} else {
-			setBaseColor (Color.white);
+			setColor(baseColor);
 		}
 	}
 
 	public void setBaseColor(Color c) {
 		baseColor = c;
-		this.gameObject.renderer.material.color = baseColor;
+	}
+	public void setColor(Color c) {
+		gameObject.renderer.material.color = c;
 	}
 
 	/*
@@ -60,9 +62,5 @@ public class TileController : MonoBehaviour {
 
 	public void stopFlashing() {
 		setFlashing(false);
-	}
-
-	void toggleColor(Color col) {
-		this.gameObject.renderer.material.color = this.gameObject.renderer.material.color.Equals(baseColor) ? col : baseColor;
-	}
+	}	
 }
