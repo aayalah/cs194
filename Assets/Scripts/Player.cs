@@ -26,6 +26,7 @@ public class Player : MonoBehaviour {
 				pieceArray [i] = (Piece)Instantiate (piece, v, Quaternion.identity);
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
+				pieceArray[i].tag = "piece";
 				pieceArray[i].x = x;
 				pieceArray[i].z = z;
 			}
@@ -39,6 +40,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i] = (Piece) Instantiate(piece, v, Quaternion.identity);
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
+				pieceArray[i].tag = "piece";
 				pieceArray[i].x = x;
 				pieceArray[i].z = z;
 			}
@@ -91,14 +93,14 @@ public class Player : MonoBehaviour {
 		Debug.Log ("Inside ChoosePieces");
 		Piece chosenPiece = null;
 		while (numPieces != numberOfPieces) {
-			Transform selected;
+			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit;
 				if (Physics.Raycast (ray, out hit, Mathf.Infinity)) { 
-					selected = hit.transform;
-					if((chosenPiece = (Piece)selected.gameObject.GetComponent (typeof(Piece))) == null) {
-						//chosenPiece = (Piece)selected.gameObject.GetComponent (typeof(Piece));
+					selected = hit.transform.gameObject;
+					if(selected.tag.Equals("piece")) {
+						chosenPiece = (Piece)selected.GetComponent (typeof(Piece));
 						string temp = chosenPiece.id;
 						string test = "player" + getId();
 						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
