@@ -16,7 +16,7 @@ public class Piece : MonoBehaviour {
 	public int experience = 0;
 
 	public int x = 0;
-	public int y = 0;
+	public int z = 0;
 	public Player player;
 	public GridController board;
 
@@ -36,8 +36,8 @@ public class Piece : MonoBehaviour {
 		lastMoveTime = Time.timeSinceLevelLoad;
 		gameObject.renderer.material.color = Color.green;
 		board = GameObject.Find("Game").GetComponent<GridController> ();
-		GameObject startingCell = board.getCellAt(x, y);
-		//moveTo(startingCell);
+		GameObject startingCell = board.getCellAt(x, z);
+		moveTo(startingCell);
 	}
 	
 	// Update is called once per frame
@@ -71,8 +71,8 @@ public class Piece : MonoBehaviour {
 	public void moveTo(GameObject tile) {
 		TileController tileController = tile.GetComponent<TileController>();
 		x = tileController.x;
-		y = tileController.y;
-		transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y,0);
+		z = tileController.z;
+		transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y/2, 0);
 	}
 
 	public void moveToCoords(int xCoord, int zCoord) {
@@ -83,12 +83,12 @@ public class Piece : MonoBehaviour {
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		List<GameObject> locations = new List<GameObject> ();
 		for (int i = -movementRange; i <= movementRange; i++) {
-			GameObject tile = board.getCellAt(x, y+i);
+			GameObject tile = board.getCellAt(x, z+i);
 			if (tile) {
 				locations.Add(tile);
 			}
 			if (i != 0) {
-				tile = board.getCellAt(x+i,y);
+				tile = board.getCellAt(x+i,z);
 				if (tile) {
 					locations.Add (tile);
 				}
@@ -107,8 +107,8 @@ public class Piece : MonoBehaviour {
 		// Default attack is, oh let's say anypoint <= attackRange spots away...
 		List<GameObject> locations = new List<GameObject> ();
 		for (int i = x - attackRange; i <= x + attackRange; i++) {
-			for (int j = y - attackRange; j <= y + attackRange; j++) {
-				if (Mathf.Sqrt((x-i)*(x-i) + (y-j)*(y-j)) <= attackRange) {
+			for (int j = z - attackRange; j <= z + attackRange; j++) {
+				if (Mathf.Sqrt((x-i)*(x-i) + (z-j)*(z-j)) <= attackRange) {
 					GameObject tile = board.getCellAt (i, j);
 					if (tile) {
 						locations.Add (tile);
