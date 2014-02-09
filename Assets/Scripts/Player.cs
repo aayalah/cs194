@@ -13,22 +13,22 @@ public class Player : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		
+		UnitManager um = GameObject.Find("UnitManager").GetComponent<UnitManager>();
 		pieceArray = new Piece[numberOfPieces];
 		
 		if (id == 0) {
-			Debug.Log (id);
 			for (int i = 0; i < numberOfPieces; i++) {
 				int x = 5 * i;
 				int y = 1;
 				int z = 0;
 				Vector3 v = new Vector3 (x, y, z);
-				pieceArray [i] = (Piece)Instantiate (piece, v, Quaternion.identity);
+				pieceArray [i] = um.getUnit(id, i);
+				//pieceArray [i] = (Piece)Instantiate (piece, v, Quaternion.identity);
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
-				pieceArray[i].x = x;
-				pieceArray[i].y = z;
-			}
+				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
+				pieceArray[i].y = (int)pieceArray[i].gameObject.transform.position.x;
+				}
 		} else {
 			Debug.Log(id);
 			for(int i = 0; i < numberOfPieces; i++) {
@@ -36,11 +36,11 @@ public class Player : MonoBehaviour {
 				int y = 1;
 				int z = 18;
 				Vector3 v = new Vector3 (x, y, z);
-				pieceArray[i] = (Piece) Instantiate(piece, v, Quaternion.identity);
+				pieceArray[i] = um.getUnit(id, i);
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
-				pieceArray[i].x = x;
-				pieceArray[i].y = z;
+				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
+				pieceArray[i].y = (int)pieceArray[i].gameObject.transform.position.x;
 			}
 			
 			
@@ -88,7 +88,6 @@ public class Player : MonoBehaviour {
 	}
 	
 	public IEnumerator choosePieces() {
-		Debug.Log ("Inside ChoosePieces");
 		Piece chosenPiece = null;
 		while (numPieces != numberOfPieces) {
 			Transform selected;
@@ -116,7 +115,7 @@ public class Player : MonoBehaviour {
 	private bool containsPiece(Piece[,] playersPieces, int p, Piece piece) {
 		
 		for(int i = 0; i < numberOfPieces; i++) {
-			Debug.Log("player" + p + "piece" + i);
+			//Debug.Log("player" + p + "piece" + i);
 			if((playersPieces[p,i] != null) && (playersPieces[p,i].Equals(piece))) {
 
 				return true;

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 public class TeamBuilder : MonoBehaviour {
-	public GameObject manager;
+	public UnitManager manager;
 	public Transform bar;
 	public Material mat;
 	
@@ -28,7 +28,7 @@ public class TeamBuilder : MonoBehaviour {
 	public int numBars = 25;
 	// Use this for initialization
 	void Start () {
-		manager = GameObject.FindWithTag("Finish");//Couldn't make custom tag. Just using Finish for now
+		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
 		colorMix = new Color[numGraphs,numColors];
 		resetColorMix();
 		bars = new Transform[numGraphs,numBars];
@@ -191,13 +191,14 @@ public class TeamBuilder : MonoBehaviour {
 				int [] attack = findArray(Color.red);
 				int [] shield = findArray(Color.green);
 				int [] special = findArray(Color.yellow);
-				manager.GetComponent<UnitManager>().addUnit(unitNum, attack, shield, special);
+				manager.addUnit(unitNum, attack, shield, special);
 				unitsCreated++;
 				removeCombination();
 			}
 		}else{
-			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-50,150,100), "Start", GUI.skin.GetStyle("button"))) {
-				Application.LoadLevel(1);
+			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-50,150,100), "Confirm", GUI.skin.GetStyle("button"))) {
+				manager.teamsBuilt++;
+				Application.LoadLevel(0);
 			}
 		}
 	}

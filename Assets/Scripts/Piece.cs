@@ -33,6 +33,7 @@ public class Piece : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		Debug.Log("Piece Initialized");
 		lastMoveTime = Time.timeSinceLevelLoad;
 		gameObject.renderer.material.color = Color.green;
 		board = GameObject.Find("Game").GetComponent<GridController> ();
