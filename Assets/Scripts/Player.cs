@@ -17,10 +17,8 @@ public class Player : MonoBehaviour {
 		pieceArray = new Piece[numberOfPieces];
 		
 		if (id == 0) {
-<<<<<<< HEAD
-=======
+
 			//Debug.Log (id);
->>>>>>> d537077b2f35e34288fb6ad14dae55b72f85b164
 			for (int i = 0; i < numberOfPieces; i++) {
 				int x = 5 * i;
 				int y = 1;
@@ -30,15 +28,9 @@ public class Player : MonoBehaviour {
 				//pieceArray [i] = (Piece)Instantiate (piece, v, Quaternion.identity);
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
-<<<<<<< HEAD
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
-				pieceArray[i].y = (int)pieceArray[i].gameObject.transform.position.x;
-				}
-=======
-				pieceArray[i].x = x;
-				pieceArray[i].z = z;
+				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
 			}
->>>>>>> d537077b2f35e34288fb6ad14dae55b72f85b164
 		} else {
 			//Debug.Log(id);
 			for(int i = 0; i < numberOfPieces; i++) {
@@ -49,13 +41,8 @@ public class Player : MonoBehaviour {
 				pieceArray[i] = um.getUnit(id, i);
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
-<<<<<<< HEAD
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
-				pieceArray[i].y = (int)pieceArray[i].gameObject.transform.position.x;
-=======
-				pieceArray[i].x = x;
-				pieceArray[i].z = z;
->>>>>>> d537077b2f35e34288fb6ad14dae55b72f85b164
+				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
 			}
 			
 			
@@ -103,10 +90,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	public IEnumerator choosePieces() {
-<<<<<<< HEAD
-=======
 		//Debug.Log ("Inside ChoosePieces");
->>>>>>> d537077b2f35e34288fb6ad14dae55b72f85b164
 		Piece chosenPiece = null;
 		while (numPieces != numberOfPieces) {
 			Transform selected;
