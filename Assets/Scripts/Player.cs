@@ -97,13 +97,15 @@ public class Player : MonoBehaviour {
 				RaycastHit hit;
 				if (Physics.Raycast (ray, out hit, Mathf.Infinity)) { 
 					selected = hit.transform;
-					chosenPiece = (Piece)selected.gameObject.GetComponent (typeof(Piece));
-					string temp = chosenPiece.id;
-					string test = "player" + getId();
-					if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
-						game.playersPieces [getId(), numPieces] = chosenPiece;
-						chosenPiece.renderer.material.SetColor ("_Color", Color.red);
-						numPieces++;
+					if((chosenPiece = (Piece)selected.gameObject.GetComponent (typeof(Piece))) == null) {
+						//chosenPiece = (Piece)selected.gameObject.GetComponent (typeof(Piece));
+						string temp = chosenPiece.id;
+						string test = "player" + getId();
+						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
+							game.playersPieces [getId(), numPieces] = chosenPiece;
+							chosenPiece.renderer.material.SetColor ("_Color", Color.red);
+							numPieces++;
+						}
 					}
 				}
 				
