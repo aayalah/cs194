@@ -12,7 +12,7 @@ public class BallControls : MonoBehaviour {
 	private Transform currentTile;
 	private Vector3 correctedPosition;
 	public int x;
-	public int y;
+	public int z;
 	private float timeSinceJump;
 	private Vector3 newOrientation;
 	private float turnSpeed = 1f;
@@ -120,7 +120,7 @@ public class BallControls : MonoBehaviour {
 		currentTile = coll.transform;
 		if (coll.transform.GetComponent<TileController> ()) {
 			x = coll.transform.GetComponent<TileController> ().x;
-			y = coll.transform.GetComponent<TileController> ().y;
+			z = coll.transform.GetComponent<TileController> ().z;
 		}
 	}
 	

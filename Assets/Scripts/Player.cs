@@ -27,7 +27,7 @@ public class Player : MonoBehaviour {
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
 				pieceArray[i].x = x;
-				pieceArray[i].y = z;
+				pieceArray[i].z = z;
 			}
 		} else {
 			Debug.Log(id);
@@ -40,7 +40,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
 				pieceArray[i].x = x;
-				pieceArray[i].y = z;
+				pieceArray[i].z = z;
 			}
 			
 			
