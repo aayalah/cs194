@@ -28,6 +28,7 @@ public class Player : MonoBehaviour {
 				pieceArray [i].id = "player" + id;
 				pieceArray[i].x = x;
 				pieceArray[i].z = z;
+				pieceArray[i].player = this;
 			}
 		} else {
 			//Debug.Log(id);
@@ -41,6 +42,7 @@ public class Player : MonoBehaviour {
 				pieceArray [i].id = "player" + id;
 				pieceArray[i].x = x;
 				pieceArray[i].z = z;
+				pieceArray[i].player = this;
 			}
 			
 			

@@ -64,7 +64,8 @@ public class GameManager : MonoBehaviour {
 
 				case 1:
 						for (int i = 0; i < numberOfPlayersPieces; i++) {
-								yield return StartCoroutine(playersPieces [p, i].makeMove()); 											
+								yield return StartCoroutine(playersPieces [p, i].makeMove()); 
+								yield return StartCoroutine(playersPieces[p, i].attack ());
 						}
 						break;
 				}

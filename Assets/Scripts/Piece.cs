@@ -14,6 +14,7 @@ public class Piece : MonoBehaviour {
 	public int movementRange = 3;
 	public int attackRange = 1;
 	public int experience = 0;
+	public Color baseColor = Color.green;
 
 	public int x = 0;
 	public int z = 0;
@@ -24,7 +25,6 @@ public class Piece : MonoBehaviour {
 	public bool attacksHighlighted = false;
 
 	private float lastMoveTime;
-	private bool moving = false;
 
 	public void Initialize(Player player, GameManager game) {
 		this.player = player;
@@ -34,19 +34,15 @@ public class Piece : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		lastMoveTime = Time.timeSinceLevelLoad;
-		gameObject.renderer.material.color = Color.green;
 		board = GameObject.Find("Game").GetComponent<GridController> ();
 		GameObject startingCell = board.getCellAt(x, z);
 		moveTo(startingCell);
+		setHighlight(false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-//		if (Time.timeSinceLevelLoad - lastMoveTime > 3 && !moving) {
-//			moving = true;
-//			lastMoveTime = Time.timeSinceLevelLoad;
-//			StartCoroutine("makeMove");
-//		}
+
 	}
 
 	/************************
@@ -108,7 +104,7 @@ public class Piece : MonoBehaviour {
 			for (int j = z - attackRange; j <= z + attackRange; j++) {
 				if (Mathf.Sqrt((x-i)*(x-i) + (z-j)*(z-j)) <= attackRange) {
 					Piece attackablePiece = board.getPieceAt (i, j);
-					if (attackablePiece && attackablePiece.player != this.player) {
+					if (attackablePiece /*&& attackablePiece.player != this.player*/) {
 						pieces.Add (attackablePiece);
 					}
 				}
@@ -120,8 +116,12 @@ public class Piece : MonoBehaviour {
 		attacksHighlighted = onOrOff;
 		foreach (Piece piece in getAttackablePieces()) {
 			GameObject tile = board.getCellAt(piece.x, piece.z);
-			tile.GetComponent<TileController>().setFlashing(onOrOff);
+			piece.setHighlight(onOrOff);
 		}
+	}
+
+	public void setHighlight(bool onOrOff) {
+		gameObject.renderer.material.color = onOrOff ? Color.yellow : baseColor;
 	}
 
 	/******************************
@@ -140,18 +140,8 @@ public class Piece : MonoBehaviour {
 		}
 		return selected;
 	}
-	/*
-	public void makeMove() {
-		List<GameObject> moveLocations = getMoveLocations();
-		setMoveHighlights(true);
-		GameObject tile = getTile(moveLocations);
-		setMoveHighlights(false);
-		moveTo(tile);
-	}
-	*/
 
 	public IEnumerator makeMove() {
-		moving = true;
 		List<GameObject> moveLocations = getMoveLocations();
 		setMoveHighlights(true);
 		GameObject selected = null;
@@ -164,11 +154,30 @@ public class Piece : MonoBehaviour {
 		}
 		setMoveHighlights(false);
 		moveTo(selected);
-		moving = false;
 	}
 
 	public IEnumerator attack() {
-		yield return null;
+		List<Piece> attackablePieces = getAttackablePieces();
+		if (attackablePieces.Count == 0) {
+			// If no attacks, just move on
+			print ("No pieces :(");
+			yield return null;
+		} else {
+			setAttackHighlights(true);
+			GameObject selectedObject = null;
+			Piece selectedPiece = null;
+			while (!attackablePieces.Contains(selectedPiece)) {
+				yield return null;
+				while (!Input.GetMouseButtonDown(0)) {
+					yield return null;
+				}
+				selectedObject = getSelectedObject();
+				if (selectedObject) {
+					selectedPiece = selectedObject.GetComponent<Piece>();
+				}
+			}
+		}
+		setAttackHighlights(false);
 	}
 
 
