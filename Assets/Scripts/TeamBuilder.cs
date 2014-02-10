@@ -20,20 +20,21 @@ public class TeamBuilder : MonoBehaviour {
 	private int currentColor;
 	
 	private int unitNum = 1;
-	private int armySize = 3;
+	private int armySize;
 	private int unitsCreated = 0;
-	private int numGraphs = 3;
+	private int numGraphs = 5;
 	private int numColors = 3;
 	private float prev = 0;
 	public int numBars = 25;
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+		armySize = manager.armySize;
 		colorMix = new Color[numGraphs,numColors];
 		resetColorMix();
 		bars = new Transform[numGraphs,numBars];
 		values = new int[numGraphs,numBars];
-		units = new Transform[3];
+		units = new Transform[armySize];
 		Vector3 position = Vector3.up;
 		SetColors();
 		for(int g = 0; g < numGraphs; g++){

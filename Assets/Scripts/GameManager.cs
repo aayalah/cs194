@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour {
 	private int stage = 0;
 	public Camera camera;
 	public Piece[,] playersPieces;
-	public int numberOfPlayersPieces = 3;
+	public int numberOfPlayersPieces = 5;
 	
 	void Awake() {
 		
@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start() {
+		UnitManager manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+		numberOfPlayersPieces = manager.armySize;
 		Debug.Log("Game initialized");
 		for (int i = 0; i < numPlayers; i++) {
 			int x = 0;
