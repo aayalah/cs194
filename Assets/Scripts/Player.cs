@@ -4,7 +4,7 @@ using System.Collections;
 public class Player : MonoBehaviour {
 	public Piece piece;
 	public Piece[] pieceArray;
-	public int numberOfPieces = 3;
+	private int numberOfPieces = 5;
 	
 	public GameManager game;
 	private int id;
@@ -14,18 +14,16 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		UnitManager um = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+		numberOfPieces = um.armySize;
 		pieceArray = new Piece[numberOfPieces];
 		
 		if (id == 0) {
-
-			//Debug.Log (id);
 			for (int i = 0; i < numberOfPieces; i++) {
 				int x = 5 * i;
 				int y = 1;
 				int z = 0;
 				Vector3 v = new Vector3 (x, y, z);
 				pieceArray [i] = um.getUnit(id, i);
-				//pieceArray [i] = (Piece)Instantiate (piece, v, Quaternion.identity);
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
 <<<<<<< HEAD
@@ -38,7 +36,6 @@ public class Player : MonoBehaviour {
 >>>>>>> 51bd40b0ff76ad6f72d69f067a06a051a456c32d
 			}
 		} else {
-			//Debug.Log(id);
 			for(int i = 0; i < numberOfPieces; i++) {
 				int x = 5*i;
 				int y = 1;

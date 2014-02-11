@@ -33,12 +33,14 @@ public class Piece : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log("Piece Initialized");
 		lastMoveTime = Time.timeSinceLevelLoad;
-		board = GameObject.Find("Game").GetComponent<GridController> ();
-		GameObject startingCell = board.getCellAt(x, z);
-		moveTo(startingCell);
-		setHighlight(false);
+		gameObject.renderer.material.color = Color.green;
+		if(Application.loadedLevel == 2){
+			board = GameObject.Find("Game").GetComponent<GridController> ();
+			GameObject startingCell = board.getCellAt(x, z);
+			moveTo(startingCell);
+			setHighlight(false);
+		}
 	}
 	
 	// Update is called once per frame
