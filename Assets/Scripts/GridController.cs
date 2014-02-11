@@ -67,6 +67,10 @@ public class GridController : MonoBehaviour {
 			pieceGrid[piece.x, piece.z] = null;
 		}
 	}
+
+	public void removePiece(Piece piece) {
+		pieceGrid[piece.x, piece.z] = null;
+	}
 	
 	// Update is called once per frame
 	void Update () {

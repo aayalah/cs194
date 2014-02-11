@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour {
 	public Piece[,] playersPieces;
 	public int numberOfPlayersPieces = 3;
 	private int[] currentNumberOfPlayersPieces;
+	private string gameOverText = "";
+	private bool gameIsOver = false;
 
 	void Awake() {
 		
@@ -32,34 +34,51 @@ public class GameManager : MonoBehaviour {
 		}
 		playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
 		currentNumberOfPlayersPieces = new int[numPlayers];
-
+		for (int i = 0; i < numPlayers; i++) {
+			currentNumberOfPlayersPieces[i] = numberOfPlayersPieces;
+		}
 		StartCoroutine (mainLoops ());
 	}
 
 	public IEnumerator mainLoops() {
 		while (allPlayersHavePieces()) {
-						for (int j = 0; j < 2; j++) {
-								for (int i = 0; i < numPlayers; i++) {
-										changeCameraPosition (i);
-										yield return StartCoroutine (chooseStage (j, i));
-								}
-								yield return null;
+				for (int j = 0; j < 2; j++) {
+						for (int i = 0; i < numPlayers; i++) {
+								changeCameraPosition (i);
+								yield return StartCoroutine (chooseStage (j, i));
 						}
+						yield return null;
 				}
-
-		///Display Game Over Screen
+		}
+		gameOver();
 	}
 
 	private bool allPlayersHavePieces() {
 
-	for (int i = 0; i < numPlayers; i++) { 
-					if (currentNumberOfPlayersPieces [i] > 0) {
-							return false;
-					}
+		for (int i = 0; i < numPlayers; i++) { 
+			if (currentNumberOfPlayersPieces [i] == 0) {
+					return false;
 			}
+		}
 		return true;
 	}
 
+	private void gameOver() {
+		int winner = 1;
+		for (int i = 0; i < numPlayers; i++) {
+			if (currentNumberOfPlayersPieces[i] > 0) {
+				winner = i+1;
+			}
+		}
+		gameOverText = "Game Over: Player " + winner + " Wins! :D :D";
+		gameIsOver = true;
+	}
+
+	void OnGUI() {
+		if (gameIsOver) {
+			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
+		}
+	}
 	// Update is called once per frame
 	void Update () {
 
@@ -80,8 +99,14 @@ public class GameManager : MonoBehaviour {
 						break;
 
 				case 1:
+						currentNumberOfPlayersPieces[p] = numberOfPlayersPieces;
 						for (int i = 0; i < numberOfPlayersPieces; i++) {
-								yield return StartCoroutine(playersPieces [p, i].makeMove()); 											
+							if (playersPieces[p,i].dead) {
+								currentNumberOfPlayersPieces[p]--;
+							} else {
+								yield return StartCoroutine(playersPieces [p, i].makeMove()); 
+								yield return StartCoroutine(playersPieces[p, i].attack ());
+							}
 						}
 						break;
 				}

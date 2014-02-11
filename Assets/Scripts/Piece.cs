@@ -10,11 +10,14 @@ public class Piece : MonoBehaviour {
 	public int[] attackHistogram = {5};
 	public int[] defenseHistogram = {5};
 	public int[] specialHistogram = {5};
+	public int minDamage = 100;
 	public int attackModifier = 0;
 	public int defenseModifier = 0;
 	public int movementRange = 3;
 	public int attackRange = 1;
 	public int experience = 0;
+	public Color baseColor = Color.green;
+	public bool dead = false;
 
 	public int x = 0;
 	public int z = 0;
@@ -25,7 +28,6 @@ public class Piece : MonoBehaviour {
 	public bool attacksHighlighted = false;
 
 	private float lastMoveTime;
-	private bool moving = false;
 
 	public void Initialize(Player player, GameManager game) {
 		this.player = player;
@@ -37,19 +39,16 @@ public class Piece : MonoBehaviour {
 		lastMoveTime = Time.timeSinceLevelLoad;
 		gameObject.renderer.material.color = Color.green;
 		if(Application.loadedLevel == 2){
-		board = GameObject.Find("Game").GetComponent<GridController> ();
-		GameObject startingCell = board.getCellAt(x, z);
-		moveTo(startingCell);
+			board = GameObject.Find("Game").GetComponent<GridController> ();
+			GameObject startingCell = board.getCellAt(x, z);
+			moveTo(startingCell);
+			setColor(baseColor);
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-//		if (Time.timeSinceLevelLoad - lastMoveTime > 3 && !moving) {
-//			moving = true;
-//			lastMoveTime = Time.timeSinceLevelLoad;
-//			StartCoroutine("makeMove");
-//		}
+
 	}
 
 	/************************
@@ -123,8 +122,34 @@ public class Piece : MonoBehaviour {
 		attacksHighlighted = onOrOff;
 		foreach (Piece piece in getAttackablePieces()) {
 			GameObject tile = board.getCellAt(piece.x, piece.z);
-			tile.GetComponent<TileController>().setFlashing(onOrOff);
+			piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
 		}
+	}
+
+	public void setColor(Color color) {
+		gameObject.renderer.material.color = color;
+	}
+
+	public void die() {
+		currentHP = 0;
+		dead = true;
+		gameObject.transform.position = new Vector3(0,-100000,0);
+		board.removePiece(this);
+	}
+
+	public void takeDamage(int damage) {
+		currentHP = Mathf.Max (0, currentHP - damage);
+		if (currentHP <= 0) {
+			die();
+		}
+	}
+
+	public void damageEnemy(Piece other) {
+		int damage = minDamage;
+		if (attackHistogram.Length > 0) {
+			damage = Mathf.Max(damage, attackHistogram[(int)(Random.value * attackHistogram.Length)]);
+		}
+		other.takeDamage(damage);
 	}
 
 	/******************************
@@ -143,35 +168,52 @@ public class Piece : MonoBehaviour {
 		}
 		return selected;
 	}
-	/*
-	public void makeMove() {
-		List<GameObject> moveLocations = getMoveLocations();
-		setMoveHighlights(true);
-		GameObject tile = getTile(moveLocations);
-		setMoveHighlights(false);
-		moveTo(tile);
-	}
-	*/
 
 	public IEnumerator makeMove() {
-		moving = true;
-		List<GameObject> moveLocations = getMoveLocations();
-		setMoveHighlights(true);
-		GameObject selected = null;
-		while (!moveLocations.Contains(selected)) {
+		if (dead) {
 			yield return null;
-			while (!Input.GetMouseButtonDown(0)) {
+		} else { 
+			List<GameObject> moveLocations = getMoveLocations();
+			setMoveHighlights(true);
+			GameObject selected = null;
+			while (!moveLocations.Contains(selected)) {
 				yield return null;
+				while (!Input.GetMouseButtonDown(0)) {
+					yield return null;
+				}
+				selected = getSelectedObject();
 			}
-			selected = getSelectedObject();
+			setMoveHighlights(false);
+			moveTo(selected);
 		}
-		setMoveHighlights(false);
-		moveTo(selected);
-		moving = false;
 	}
 
 	public IEnumerator attack() {
-		yield return null;
+		if (dead) {
+			yield return null;
+		} else {
+			List<Piece> attackablePieces = getAttackablePieces();
+			if (attackablePieces.Count == 0) {
+				// If no attacks, just move on
+				yield return null;
+			} else {
+				setAttackHighlights(true);
+				GameObject selectedObject = null;
+				Piece selectedPiece = null;
+				while (!attackablePieces.Contains(selectedPiece)) {
+					yield return null;
+					while (!Input.GetMouseButtonDown(0)) {
+						yield return null;
+					}
+					selectedObject = getSelectedObject();
+					if (selectedObject) {
+						selectedPiece = selectedObject.GetComponent<Piece>();
+					}
+				}
+				damageEnemy(selectedPiece);
+			}
+			setAttackHighlights(false);
+		}
 	}
 
 

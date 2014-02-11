@@ -26,6 +26,7 @@ public class Player : MonoBehaviour {
 				pieceArray [i] = um.getUnit(id, i);
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
+				pieceArray[i].player = this;
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
@@ -40,6 +41,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i] = um.getUnit(id, i);
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
+				pieceArray[i].player = this;
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
@@ -90,7 +92,6 @@ public class Player : MonoBehaviour {
 	}
 	
 	public IEnumerator choosePieces() {
-		//Debug.Log ("Inside ChoosePieces");
 		Piece chosenPiece = null;
 		while (numPieces != numberOfPieces) {
 			GameObject selected;
@@ -105,7 +106,8 @@ public class Player : MonoBehaviour {
 						string test = "player" + getId();
 						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
 							game.playersPieces [getId(), numPieces] = chosenPiece;
-							chosenPiece.renderer.material.SetColor ("_Color", Color.red);
+							//chosenPiece.renderer.material.SetColor ("_Color", Color.red);
+							chosenPiece.setColor(Color.red);
 							numPieces++;
 						}
 					}
@@ -113,6 +115,10 @@ public class Player : MonoBehaviour {
 				
 			} 
 			yield return null;					
+		}
+		for (int i = 0; i < numberOfPieces; i++) {
+			Piece p = game.playersPieces[getId(), i];
+			p.setColor(p.baseColor);
 		}
 		
 	}
