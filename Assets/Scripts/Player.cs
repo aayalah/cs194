@@ -13,22 +13,29 @@ public class Player : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		
+		UnitManager um = GameObject.Find("UnitManager").GetComponent<UnitManager>();
 		pieceArray = new Piece[numberOfPieces];
 		
 		if (id == 0) {
+
 			//Debug.Log (id);
 			for (int i = 0; i < numberOfPieces; i++) {
 				int x = 5 * i;
 				int y = 1;
 				int z = 0;
 				Vector3 v = new Vector3 (x, y, z);
-				pieceArray [i] = (Piece)Instantiate (piece, v, Quaternion.identity);
+				pieceArray [i] = um.getUnit(id, i);
+				//pieceArray [i] = (Piece)Instantiate (piece, v, Quaternion.identity);
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
+<<<<<<< HEAD
 				pieceArray[i].x = x;
 				pieceArray[i].z = z;
 				pieceArray[i].player = this;
+=======
+				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
+				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
+>>>>>>> 51bd40b0ff76ad6f72d69f067a06a051a456c32d
 			}
 		} else {
 			//Debug.Log(id);
@@ -37,12 +44,17 @@ public class Player : MonoBehaviour {
 				int y = 1;
 				int z = 18;
 				Vector3 v = new Vector3 (x, y, z);
-				pieceArray[i] = (Piece) Instantiate(piece, v, Quaternion.identity);
+				pieceArray[i] = um.getUnit(id, i);
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
+<<<<<<< HEAD
 				pieceArray[i].x = x;
 				pieceArray[i].z = z;
 				pieceArray[i].player = this;
+=======
+				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
+				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
+>>>>>>> 51bd40b0ff76ad6f72d69f067a06a051a456c32d
 			}
 			
 			

@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start() {
-
+		Debug.Log("Game initialized");
 		for (int i = 0; i < numPlayers; i++) {
 			int x = 0;
 			int y = 0;
@@ -35,7 +35,6 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator mainLoops() {
 		for(int j = 0; j < 2; j++) {
 			for(int i = 0; i < numPlayers; i++) {
-				//Debug.Log ("TEST");
 				yield return StartCoroutine(chooseStage(j, i));
 			}
 		}
@@ -58,7 +57,6 @@ public class GameManager : MonoBehaviour {
 		switch (stage) {
 				
 				case 0:
-		
 						yield return StartCoroutine(players[p].choosePieces());
 						break;
 
@@ -69,7 +67,6 @@ public class GameManager : MonoBehaviour {
 						}
 						break;
 				}
-		//Debug.Log ("End ChooseStage");
 		yield return null;
 		
 	}
