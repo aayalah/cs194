@@ -26,14 +26,9 @@ public class Player : MonoBehaviour {
 				pieceArray [i] = um.getUnit(id, i);
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
-<<<<<<< HEAD
-				pieceArray[i].x = x;
-				pieceArray[i].z = z;
 				pieceArray[i].player = this;
-=======
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
->>>>>>> 51bd40b0ff76ad6f72d69f067a06a051a456c32d
 			}
 		} else {
 			for(int i = 0; i < numberOfPieces; i++) {
@@ -44,14 +39,9 @@ public class Player : MonoBehaviour {
 				pieceArray[i] = um.getUnit(id, i);
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
-<<<<<<< HEAD
-				pieceArray[i].x = x;
-				pieceArray[i].z = z;
 				pieceArray[i].player = this;
-=======
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
->>>>>>> 51bd40b0ff76ad6f72d69f067a06a051a456c32d
 			}
 			
 			
