@@ -10,12 +10,14 @@ public class Piece : MonoBehaviour {
 	public int[] attackHistogram = {5};
 	public int[] defenseHistogram = {5};
 	public int[] specialHistogram = {5};
+	public int minDamage = 100;
 	public int attackModifier = 0;
 	public int defenseModifier = 0;
 	public int movementRange = 3;
 	public int attackRange = 1;
 	public int experience = 0;
 	public Color baseColor = Color.green;
+	public bool dead = false;
 
 	public int x = 0;
 	public int z = 0;
@@ -40,7 +42,7 @@ public class Piece : MonoBehaviour {
 			board = GameObject.Find("Game").GetComponent<GridController> ();
 			GameObject startingCell = board.getCellAt(x, z);
 			moveTo(startingCell);
-			setHighlight(false);
+			setColor(baseColor);
 		}
 	}
 	
@@ -108,7 +110,7 @@ public class Piece : MonoBehaviour {
 			for (int j = z - attackRange; j <= z + attackRange; j++) {
 				if (Mathf.Sqrt((x-i)*(x-i) + (z-j)*(z-j)) <= attackRange) {
 					Piece attackablePiece = board.getPieceAt (i, j);
-					if (attackablePiece /*&& attackablePiece.player != this.player*/) {
+					if (attackablePiece && attackablePiece.player != this.player) {
 						pieces.Add (attackablePiece);
 					}
 				}
@@ -120,12 +122,34 @@ public class Piece : MonoBehaviour {
 		attacksHighlighted = onOrOff;
 		foreach (Piece piece in getAttackablePieces()) {
 			GameObject tile = board.getCellAt(piece.x, piece.z);
-			piece.setHighlight(onOrOff);
+			piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
 		}
 	}
 
-	public void setHighlight(bool onOrOff) {
-		gameObject.renderer.material.color = onOrOff ? Color.yellow : baseColor;
+	public void setColor(Color color) {
+		gameObject.renderer.material.color = color;
+	}
+
+	public void die() {
+		currentHP = 0;
+		dead = true;
+		gameObject.transform.position = new Vector3(0,-100000,0);
+		board.removePiece(this);
+	}
+
+	public void takeDamage(int damage) {
+		currentHP = Mathf.Max (0, currentHP - damage);
+		if (currentHP <= 0) {
+			die();
+		}
+	}
+
+	public void damageEnemy(Piece other) {
+		int damage = minDamage;
+		if (attackHistogram.Length > 0) {
+			damage = Mathf.Max(damage, attackHistogram[(int)(Random.value * attackHistogram.Length)]);
+		}
+		other.takeDamage(damage);
 	}
 
 	/******************************
@@ -146,42 +170,50 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator makeMove() {
-		List<GameObject> moveLocations = getMoveLocations();
-		setMoveHighlights(true);
-		GameObject selected = null;
-		while (!moveLocations.Contains(selected)) {
+		if (dead) {
 			yield return null;
-			while (!Input.GetMouseButtonDown(0)) {
-				yield return null;
-			}
-			selected = getSelectedObject();
-		}
-		setMoveHighlights(false);
-		moveTo(selected);
-	}
-
-	public IEnumerator attack() {
-		List<Piece> attackablePieces = getAttackablePieces();
-		if (attackablePieces.Count == 0) {
-			// If no attacks, just move on
-			print ("No pieces :(");
-			yield return null;
-		} else {
-			setAttackHighlights(true);
-			GameObject selectedObject = null;
-			Piece selectedPiece = null;
-			while (!attackablePieces.Contains(selectedPiece)) {
+		} else { 
+			List<GameObject> moveLocations = getMoveLocations();
+			setMoveHighlights(true);
+			GameObject selected = null;
+			while (!moveLocations.Contains(selected)) {
 				yield return null;
 				while (!Input.GetMouseButtonDown(0)) {
 					yield return null;
 				}
-				selectedObject = getSelectedObject();
-				if (selectedObject) {
-					selectedPiece = selectedObject.GetComponent<Piece>();
-				}
+				selected = getSelectedObject();
 			}
+			setMoveHighlights(false);
+			moveTo(selected);
 		}
-		setAttackHighlights(false);
+	}
+
+	public IEnumerator attack() {
+		if (dead) {
+			yield return null;
+		} else {
+			List<Piece> attackablePieces = getAttackablePieces();
+			if (attackablePieces.Count == 0) {
+				// If no attacks, just move on
+				yield return null;
+			} else {
+				setAttackHighlights(true);
+				GameObject selectedObject = null;
+				Piece selectedPiece = null;
+				while (!attackablePieces.Contains(selectedPiece)) {
+					yield return null;
+					while (!Input.GetMouseButtonDown(0)) {
+						yield return null;
+					}
+					selectedObject = getSelectedObject();
+					if (selectedObject) {
+						selectedPiece = selectedObject.GetComponent<Piece>();
+					}
+				}
+				damageEnemy(selectedPiece);
+			}
+			setAttackHighlights(false);
+		}
 	}
 
 
