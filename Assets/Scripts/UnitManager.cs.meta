@@ -1,18 +1,11 @@
 fileFormatVersion: 2
-<<<<<<< HEAD
-guid: 74bfa99d475b14451a372fd2ac1c2303
+  guid: 74bfa99d475b14451a372fd2ac1c2303
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - brute: {fileID: 11400000, guid: 4b7e29ea4158e43db810ec7f5b1110e0, type: 2}
   - grunt: {fileID: 11400000, guid: ef3445bc810e3458ea4514c5f3105384, type: 2}
   - ranger: {fileID: 11400000, guid: ffe84ba55bf734f7dbdead8985336981, type: 2}
-=======
-guid: e745f29eb8bc27249a04c3f41f927af6
-MonoImporter:
-  serializedVersion: 2
-  defaultReferences: []
->>>>>>> eee92b8bb4f192b5078dae1558df557aed65a7b9
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
