@@ -7,20 +7,31 @@ public class UnitManager : MonoBehaviour {
 	public Piece ranger;
 	
 	public int teamsBuilt = 0;
-	public int armySize = 3;
+	public int armySize = 5;
 	public int numPlayers = 2;
 	
-	private int lvl = 0;
 	public int totalUnits;
 	public int [] types;
 	private int[][] attacks;
 	private int[][] shields;
 	private int[][] specials;
+	private static bool created = false;
 	
 	
+	
+	void Awake() {
+    	if (!created) {
+        	// this is the first instance - make it persist
+        	DontDestroyOnLoad(this.gameObject);
+        	created = true;
+    } else {
+        // this must be a duplicate from a scene reload - DESTROY!
+        Destroy(this.gameObject);
+    	} 
+	}
 	// Use this for initialization
 	void Start () {
-		DontDestroyOnLoad(this.gameObject);
+		//DontDestroyOnLoad(this.gameObject);
 		totalUnits = 0;
 		
 		attacks = new int[armySize*numPlayers][];

@@ -18,35 +18,46 @@ public class TeamBuilder : MonoBehaviour {
 	
 	private int currentGraph;
 	private int currentColor;
+	private int[] nextGraph;
+	private int[] nextColor;
+	private int[] prevGraph;
+	private int[] prevColor;
 	
 	private int unitNum = 1;
 	private int armySize;
 	private int unitsCreated = 0;
-	private int numGraphs = 5;
+	private int numGraphs;
 	private int numColors = 3;
-	private float prev = 0;
-	public int numBars = 25;
+	private int statPoints = 250;
+	private int numBars = 25;
+	
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
 		armySize = manager.armySize;
+		numGraphs = armySize+2;
+		//numColors = armySize+2;
 		colorMix = new Color[numGraphs,numColors];
 		resetColorMix();
 		bars = new Transform[numGraphs,numBars];
 		values = new int[numGraphs,numBars];
 		units = new Transform[armySize];
+		initGraphOrder();
+		initColorOrder();
 		Vector3 position = Vector3.up;
 		SetColors();
+		initializeGraphs();
 		for(int g = 0; g < numGraphs; g++){
-			for(int i = 0; i<numBars/*numBars*/; i++){
-				float randomNumber = Random.Range(max(prev-10, 0f), min(prev+20, 50f));
-				float multiplier = Random.Range(0.1f, 1.0f);
-				values[g, i] = Mathf.CeilToInt(randomNumber*multiplier);
+			for(int i = 0; i < statPoints; i++){
+				int barNum = Random.Range(0, numBars-1);
+				values[g, barNum] += 1;
+			}
+			for(int k = 0; k < numBars; k++){
 				Transform t = (Transform)Instantiate(bar, position, Quaternion.identity);
-				t.transform.localScale = new Vector3(.5f, randomNumber*multiplier+1, .5f);
-				t.transform.Translate(0, randomNumber*multiplier/2f, 0);
-				t.gameObject.renderer.material.color = GetColorMix(i);
-				bars[g,i] = t;
+				t.transform.localScale = new Vector3(.5f, values[g, k], .5f);
+				t.transform.Translate(0, values[g, k]/2f, 0);
+				t.gameObject.renderer.material.color = GetColorMix(k);
+				bars[g,k] = t;
 				if(g != currentGraph)
 					t.gameObject.renderer.enabled = false;
 				position = position + Vector3.right*.55f;
@@ -59,6 +70,39 @@ public class TeamBuilder : MonoBehaviour {
 		
 		setUpUnitSelect();
 		
+	}
+	void initializeGraphs(){
+		for(int g = 0; g < numGraphs; g++){
+			for(int i = 0; i < numBars; i++){
+				values[g, i] = 1;
+			}
+		}
+	}
+	
+	void initGraphOrder(){
+		nextGraph = new int[numGraphs];
+		prevGraph = new int[numGraphs];
+		for(int i = 0; i < numGraphs; i++){
+			nextGraph[i] = i+1;
+			prevGraph[i] = i-1;
+			if(i == numGraphs-1)
+				nextGraph[i] = 0;
+			if(i == 0)
+				prevGraph[i] = numGraphs-1;
+		}
+	}
+	
+	void initColorOrder(){
+		nextColor = new int[numGraphs];
+		prevColor = new int[numGraphs];
+		for(int i = 0; i < numGraphs; i++){
+			prevColor[i] = i-1;
+			nextColor[i] = i+1;
+			if(i == 0)
+				prevColor[i] = numGraphs-1;
+			if(i == numGraphs -1)
+				nextColor[i] = 0;
+		}
 	}
 	
 	void setUpUnitSelect(){
@@ -85,12 +129,11 @@ public class TeamBuilder : MonoBehaviour {
 		int prevIndex = 0;
 		for(int c = 0; c < numGraphs; c++){
 			for(int i = 0; i < numColors; i++){
-				int index = 0;
-				int slice = (numBars/(numColors));
-				index = (int)Random.Range((prevIndex+2), (prevIndex+4));
-				colorIndex[c,i] = ((i == numColors-1)) ? numBars : index;
+				int index = (int)Random.Range((prevIndex+1), numBars-numColors*2+i*2);
+				colorIndex[c,i] = ((i == numColors-1)) ? numBars-1 : index;
 				prevIndex = index;
 			}
+			prevIndex = 0;
 		}
 		ScrambleColors();
 	}
@@ -134,24 +177,20 @@ public class TeamBuilder : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(Input.GetKeyUp(KeyCode.RightArrow)){
-			currentGraph = currentGraph+1;
-			if(currentGraph >= numGraphs) currentGraph = 0;
+			currentGraph = nextGraph[currentGraph];
 			if(numGraphs > 0) drawNewGraph();	
 		}
 		if(Input.GetKeyUp(KeyCode.LeftArrow)){
-			currentGraph = currentGraph-1;
-			if(currentGraph < 0) currentGraph = numGraphs-1;
+			currentGraph = prevGraph[currentGraph];
 			if(numGraphs > 0) drawNewGraph();
 		}
 					
 		if(Input.GetKeyUp(KeyCode.UpArrow)){
-			currentColor = currentColor+1;
-			if(currentColor >= numGraphs) currentColor = 0;
+			currentColor = nextColor[currentColor];
 			if(numGraphs > 0) drawNewGraph();	
 		}
 		if(Input.GetKeyUp(KeyCode.DownArrow)){
-			currentColor = currentColor-1;
-			if(currentColor < 0) currentColor = numGraphs-1;
+			currentColor = prevColor[currentColor];
 			if(numGraphs > 0)drawNewGraph();
 		}
 		if(Input.GetKeyUp(KeyCode.Alpha1)){
@@ -227,21 +266,13 @@ public class TeamBuilder : MonoBehaviour {
 	
 	void removeCombination(){
 		numGraphs--;
-		for(int i = currentGraph; i < numGraphs; i++){
-			for(int j = 0; j < numBars; j++){
-				bars[i,j].renderer.enabled = false;
-				bars[i,j] = bars[i+1, j];
-			}
-			for(int k = 0; k < numColors; k++){
-				colorMix[i, k] = colorMix[i+1, k];
-				colorIndex[i, k] = colorIndex[i+1, k];
-			}
-		}
+		nextGraph[prevGraph[currentGraph]] = nextGraph[currentGraph];
+		prevGraph[nextGraph[currentGraph]] = prevGraph[currentGraph];
+		nextColor[prevColor[currentColor]] = nextColor[currentColor];
+		prevColor[nextColor[currentColor]] = prevColor[currentColor];
 		if(numGraphs > 0){
-		currentGraph = currentGraph+1;
-		if(currentGraph >= numGraphs) currentGraph = 0;
-		currentColor = currentColor+1;
-		if(currentColor >= numGraphs) currentColor = 0;
+		currentGraph = nextGraph[currentGraph];
+		currentColor = nextColor[currentColor];
 		drawNewGraph();	
 		}
 	}
@@ -296,8 +327,10 @@ public class TeamBuilder : MonoBehaviour {
 				oldBar = bars[numGraphs-1, i];	
 			}
 			oldBar.gameObject.renderer.enabled = false;
-			Transform newBar = bars[currentGraph, i];
-			newBar.gameObject.renderer.material.color = GetColorMix(i);
+		}
+		for(int j = 0; j < numBars; j++){
+			Transform newBar = bars[currentGraph, j];
+			newBar.gameObject.renderer.material.color = GetColorMix(j);
 			newBar.gameObject.renderer.enabled = true;
 			}	
 	}
