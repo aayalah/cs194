@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
 		pieceArray = new Piece[numberOfPieces];
 		
 		if (id == 0) {
-			Debug.Log (id);
+			//Debug.Log (id);
 			for (int i = 0; i < numberOfPieces; i++) {
 				int x = 5 * i;
 				int y = 1;
@@ -31,7 +31,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i].z = z;
 			}
 		} else {
-			Debug.Log(id);
+			//Debug.Log(id);
 			for(int i = 0; i < numberOfPieces; i++) {
 				int x = 5*i;
 				int y = 1;
@@ -90,7 +90,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	public IEnumerator choosePieces() {
-		Debug.Log ("Inside ChoosePieces");
+		//Debug.Log ("Inside ChoosePieces");
 		Piece chosenPiece = null;
 		while (numPieces != numberOfPieces) {
 			GameObject selected;
@@ -120,7 +120,7 @@ public class Player : MonoBehaviour {
 	private bool containsPiece(Piece[,] playersPieces, int p, Piece piece) {
 		
 		for(int i = 0; i < numberOfPieces; i++) {
-			Debug.Log("player" + p + "piece" + i);
+			//Debug.Log("player" + p + "piece" + i);
 			if((playersPieces[p,i] != null) && (playersPieces[p,i].Equals(piece))) {
 
 				return true;

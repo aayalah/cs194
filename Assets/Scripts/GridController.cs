@@ -6,9 +6,11 @@ public class GridController : MonoBehaviour {
 	public int xDimension = 20;
 	public int zDimension = 20;
 	private GameObject[,]grid;
+	private Piece[,] pieceGrid;
 	// Use this for initialization
 	void Start () {
 		grid = new GameObject[xDimension, zDimension];
+		pieceGrid = new Piece[xDimension, zDimension];
 		for(int i = 0; i< xDimension; i++){
 			for(int j = 0; j< zDimension; j++){
 				Vector3 position = Vector3.right*i + Vector3.forward*j;
@@ -22,6 +24,7 @@ public class GridController : MonoBehaviour {
 				t.transform.GetComponent<TileController>().x = i;
 				t.transform.GetComponent<TileController>().z = j;
 				grid[i, j] = t;
+				pieceGrid[i,j] = null;
 				
 			}
 		}
@@ -43,6 +46,25 @@ public class GridController : MonoBehaviour {
 			return null;
 		} else {
 			return grid[x,z];
+		}
+	}
+
+	public Piece getPieceAt(int x, int z) {
+		if (x < 0 || x >= xDimension || z < 0 || z >= zDimension) {
+			return null;
+		} else {
+			return pieceGrid[x,z];
+		}
+	}
+
+	public bool cellIsFree(int x, int z, Piece pieceToIgnore) {
+		return getCellAt(x, z) && (getPieceAt(x,z) == pieceToIgnore || !getPieceAt(x,z));
+	}
+
+	public void movePiece(Piece piece, int newX, int newZ) {
+		if (newX != piece.x || newZ != piece.z) {
+			pieceGrid[newX, newZ] = piece;
+			pieceGrid[piece.x, piece.z] = null;
 		}
 	}
 	

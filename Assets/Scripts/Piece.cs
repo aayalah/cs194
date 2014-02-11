@@ -7,8 +7,8 @@ public class Piece : MonoBehaviour {
 	public GameManager game;
 	public int maxHP = 10;
 	public int currentHP = 10;
-	public int[] attackHistogram;
-	public int[] defenseHistogram;
+	public int[] attackHistogram = {5};
+	public int[] defenseHistogram = {5};
 	public int attackModifier = 0;
 	public int defenseModifier = 0;
 	public int movementRange = 3;
@@ -70,6 +70,7 @@ public class Piece : MonoBehaviour {
 
 	public void moveTo(GameObject tile) {
 		TileController tileController = tile.GetComponent<TileController>();
+		board.movePiece(this, tileController.x, tileController.z);
 		x = tileController.x;
 		z = tileController.z;
 		transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y/2, 0);
@@ -83,44 +84,42 @@ public class Piece : MonoBehaviour {
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		List<GameObject> locations = new List<GameObject> ();
 		for (int i = -movementRange; i <= movementRange; i++) {
-			GameObject tile = board.getCellAt(x, z+i);
-			if (tile) {
-				locations.Add(tile);
+			if (board.cellIsFree(x, z+i, this)) {
+				locations.Add(board.getCellAt (x, z+i));
 			}
-			if (i != 0) {
-				tile = board.getCellAt(x+i,z);
-				if (tile) {
-					locations.Add (tile);
+			if (i != 0) {	// So we don't add the piece's current square twice
+				if (board.cellIsFree(x+i, z, this)) {
+					locations.Add(board.getCellAt (x+i, z));
 				}
 			}
 		}
 		return locations;
 	}
 	public void setMoveHighlights(bool onOrOff) {
-		print ("Setting move highlights!");
 		movesHighlighted = onOrOff;
 		foreach (GameObject tile in getMoveLocations()) {
 			tile.GetComponent<TileController>().setFlashing(onOrOff);
 		}
 	}
-	public List<GameObject> getAttackLocations() {
+	public List<Piece> getAttackablePieces() {
 		// Default attack is, oh let's say anypoint <= attackRange spots away...
-		List<GameObject> locations = new List<GameObject> ();
+		List<Piece> pieces = new List<Piece> ();
 		for (int i = x - attackRange; i <= x + attackRange; i++) {
 			for (int j = z - attackRange; j <= z + attackRange; j++) {
 				if (Mathf.Sqrt((x-i)*(x-i) + (z-j)*(z-j)) <= attackRange) {
-					GameObject tile = board.getCellAt (i, j);
-					if (tile) {
-						locations.Add (tile);
+					Piece attackablePiece = board.getPieceAt (i, j);
+					if (attackablePiece && attackablePiece.player != this.player) {
+						pieces.Add (attackablePiece);
 					}
 				}
 			}
 		}
-		return locations;
+		return pieces;
 	}
 	public void setAttackHighlights(bool onOrOff) {
 		attacksHighlighted = onOrOff;
-		foreach (GameObject tile in getAttackLocations ()) {
+		foreach (Piece piece in getAttackablePieces()) {
+			GameObject tile = board.getCellAt(piece.x, piece.z);
 			tile.GetComponent<TileController>().setFlashing(onOrOff);
 		}
 	}
@@ -162,11 +161,14 @@ public class Piece : MonoBehaviour {
 				yield return null;
 			}
 			selected = getSelectedObject();
-			print("New object clicked!");
 		}
 		setMoveHighlights(false);
 		moveTo(selected);
 		moving = false;
+	}
+
+	public IEnumerator attack() {
+		yield return null;
 	}
 
 

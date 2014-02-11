@@ -2,7 +2,8 @@ fileFormatVersion: 2
 guid: 6e256cd352f94094e949a2fa0e5e5391
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - camera: {fileID: 2000000, guid: de80afed4c6df43d4a58e24fcbad680e, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
