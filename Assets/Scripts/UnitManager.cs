@@ -55,7 +55,7 @@ public class UnitManager : MonoBehaviour {
 	public Piece getUnit(int id, int i){
 		int p = id*armySize;
 		if(types[i+p] == 1) {
-			Piece bru = (Piece)Instantiate(brute, new Vector3((float)i,1f,18f*id), Quaternion.identity);
+			Piece bru = (Piece)Instantiate(brute, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 			bru.renderer.enabled = true;
 			bru.attackHistogram = attacks[i+p];
 			bru.defenseHistogram = shields[i+p];
@@ -68,7 +68,7 @@ public class UnitManager : MonoBehaviour {
 					
 		}
 		if(types[i+p] == 2){ 
-			Piece gru = (Piece)Instantiate(grunt, new Vector3((float)i,1f,18f*id), Quaternion.identity);
+			Piece gru = (Piece)Instantiate(grunt, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 			gru.renderer.enabled = true;
 			gru.attackHistogram = attacks[i+p];
 			gru.defenseHistogram = shields[i+p];
@@ -80,7 +80,7 @@ public class UnitManager : MonoBehaviour {
 			return gru;
 		}
 		if(types[i+p] == 3) {
-			Piece ran = (Piece)Instantiate(ranger, new Vector3((float)i,1f,18f*id), Quaternion.identity);
+			Piece ran = (Piece)Instantiate(ranger, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 			ran.renderer.enabled = true;
 			ran.attackHistogram = attacks[i+p];
 			ran.defenseHistogram = shields[i+p];
