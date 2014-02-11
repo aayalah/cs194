@@ -9,6 +9,7 @@ public class Piece : MonoBehaviour {
 	public int currentHP = 10;
 	public int[] attackHistogram = {5};
 	public int[] defenseHistogram = {5};
+	public int[] specialHistogram = {5};
 	public int attackModifier = 0;
 	public int defenseModifier = 0;
 	public int movementRange = 3;
