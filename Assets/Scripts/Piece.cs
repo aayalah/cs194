@@ -9,6 +9,7 @@ public class Piece : MonoBehaviour {
 	public int currentHP = 10;
 	public int[] attackHistogram = {5};
 	public int[] defenseHistogram = {5};
+	public int[] specialHistogram = {5};
 	public int attackModifier = 0;
 	public int defenseModifier = 0;
 	public int movementRange = 3;
@@ -35,9 +36,11 @@ public class Piece : MonoBehaviour {
 	void Start () {
 		lastMoveTime = Time.timeSinceLevelLoad;
 		gameObject.renderer.material.color = Color.green;
+		if(Application.loadedLevel == 2){
 		board = GameObject.Find("Game").GetComponent<GridController> ();
 		GameObject startingCell = board.getCellAt(x, z);
 		moveTo(startingCell);
+		}
 	}
 	
 	// Update is called once per frame

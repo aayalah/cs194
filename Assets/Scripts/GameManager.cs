@@ -12,13 +12,16 @@ public class GameManager : MonoBehaviour {
 	public Piece[,] playersPieces;
 	public int numberOfPlayersPieces = 3;
 	private int[] currentNumberOfPlayersPieces;
+
 	void Awake() {
 		
 	}
 	
 	// Use this for initialization
 	void Start() {
-
+		UnitManager manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+		numberOfPlayersPieces = manager.armySize;
+		Debug.Log("Game initialized");
 		for (int i = 0; i < numPlayers; i++) {
 			int x = 0;
 			int y = 0;
@@ -49,12 +52,11 @@ public class GameManager : MonoBehaviour {
 
 	private bool allPlayersHavePieces() {
 
-		for (int i = 0; i < numPlayers; i++) { 
-			if(currentNumberOfPlayersPieces[i] > 0) {
-				return false;
+	for (int i = 0; i < numPlayers; i++) { 
+					if (currentNumberOfPlayersPieces [i] > 0) {
+							return false;
+					}
 			}
-
-		}
 		return true;
 	}
 
@@ -74,7 +76,6 @@ public class GameManager : MonoBehaviour {
 		switch (stage) {
 				
 				case 0:
-		
 						yield return StartCoroutine(players[p].choosePieces());
 						break;
 
@@ -84,7 +85,6 @@ public class GameManager : MonoBehaviour {
 						}
 						break;
 				}
-		//Debug.Log ("End ChooseStage");
 		yield return null;
 		
 	}
