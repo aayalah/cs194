@@ -10,8 +10,9 @@ public class GameManager : MonoBehaviour {
 	private int stage = 0;
 	public Camera camera;
 	public Piece[,] playersPieces;
-	public int numberOfPlayersPieces = 5;
-	
+	public int numberOfPlayersPieces = 3;
+	private int[] currentNumberOfPlayersPieces;
+
 	void Awake() {
 		
 	}
@@ -30,19 +31,35 @@ public class GameManager : MonoBehaviour {
 			players[i].Initialize (i, camera, this);
 		}
 		playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
+		currentNumberOfPlayersPieces = new int[numPlayers];
 
 		StartCoroutine (mainLoops ());
 	}
 
 	public IEnumerator mainLoops() {
-		for(int j = 0; j < 2; j++) {
-			for(int i = 0; i < numPlayers; i++) {
-				yield return StartCoroutine(chooseStage(j, i));
-			}
-		}
-		yield return null;
+		while (allPlayersHavePieces()) {
+						for (int j = 0; j < 2; j++) {
+								for (int i = 0; i < numPlayers; i++) {
+										changeCameraPosition (i);
+										yield return StartCoroutine (chooseStage (j, i));
+								}
+								yield return null;
+						}
+				}
+
+		///Display Game Over Screen
 	}
-	
+
+	private bool allPlayersHavePieces() {
+
+	for (int i = 0; i < numPlayers; i++) { 
+					if (currentNumberOfPlayersPieces [i] > 0) {
+							return false;
+					}
+			}
+		return true;
+	}
+
 	// Update is called once per frame
 	void Update () {
 
@@ -71,6 +88,20 @@ public class GameManager : MonoBehaviour {
 				}
 		yield return null;
 		
+	}
+
+	public void changeCameraPosition(int player) {
+		if (player == 0) {
+			Vector3 pos = new Vector3(7, 10, -5);
+			camera.transform.position = pos;
+			camera.transform.rotation =  Quaternion.Euler(45, 1, 0);
+		} else if (player == 1) {
+			Vector3 pos = new Vector3(14, 9, 25);
+			camera.transform.position = pos;
+			camera.transform.rotation = Quaternion.Euler(40, 174, 355);
+		}
+
+
 	}
 	
 	

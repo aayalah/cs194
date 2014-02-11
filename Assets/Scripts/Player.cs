@@ -27,8 +27,10 @@ public class Player : MonoBehaviour {
 				pieceArray [i].Initialize (this, game);
 				pieceArray [i].id = "player" + id;
 				pieceArray[i].player = this;
+				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
+
 			}
 		} else {
 			for(int i = 0; i < numberOfPieces; i++) {
@@ -40,6 +42,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i].Initialize(this, game);
 				pieceArray [i].id = "player" + id;
 				pieceArray[i].player = this;
+				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
 			}
@@ -92,14 +95,14 @@ public class Player : MonoBehaviour {
 		//Debug.Log ("Inside ChoosePieces");
 		Piece chosenPiece = null;
 		while (numPieces != numberOfPieces) {
-			Transform selected;
+			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
 				RaycastHit hit;
 				if (Physics.Raycast (ray, out hit, Mathf.Infinity)) { 
-					selected = hit.transform;
-					chosenPiece = (Piece)selected.gameObject.GetComponent (typeof(Piece));
-					if (chosenPiece) {
+					selected = hit.transform.gameObject;
+					if(selected.tag.Equals("piece")) {
+						chosenPiece = (Piece)selected.GetComponent (typeof(Piece));
 						string temp = chosenPiece.id;
 						string test = "player" + getId();
 						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
