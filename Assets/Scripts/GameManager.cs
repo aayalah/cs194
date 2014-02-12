@@ -2,7 +2,7 @@
 
 
 public class GameManager : MonoBehaviour {
-	
+
 	public Player player;
 	public Player[] players;
 	private int numPlayers = 2; 
@@ -16,9 +16,9 @@ public class GameManager : MonoBehaviour {
 	private bool gameIsOver = false;
 
 	void Awake() {
-		
+
 	}
-	
+
 	// Use this for initialization
 	void Start() {
 		UnitManager manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
@@ -42,16 +42,45 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator mainLoops() {
 		while (allPlayersHavePieces()) {
-				for (int j = 0; j < 2; j++) {
+
+						/////Stage 1: Piece Selection
 						for (int i = 0; i < numPlayers; i++) {
 								changeCameraPosition (i);
-								yield return StartCoroutine (chooseStage (j, i));
+								yield return StartCoroutine (players [i].choosePieces ());
 						}
-						yield return null;
-				}
-		}
+
+
+						////Stage 2: Piece Movement and Attack
+						for (int j = 0; j < numberOfPlayersPieces; j++) {
+								for (int i = 0; i < numPlayers; i++) {
+									if(playersPieces[i, j] != null){
+										changeCameraPosition (i);
+										if (playersPieces [i, j].dead) {
+												currentNumberOfPlayersPieces [i]--;
+										} else 
+											playersPieces [i, j].setColor(Color.grey);				
+											yield return StartCoroutine (playersPieces [i, j].makeMove ()); 
+											yield return StartCoroutine (playersPieces [i, j].attack ());
+											playersPieces [i, j].setColor(playersPieces [i, j].baseColor);
+										}
+									}	
+								}
+						}
+
+
+
 		gameOver();
 	}
+			//				for (int j = 0; j < 2; j++) {
+//						for (int i = 0; i < numPlayers; i++) {
+//								changeCameraPosition (i);
+//								yield return StartCoroutine (chooseStage (j, i));
+//						}
+//						yield return null;
+//				}
+
+
+
 
 	private bool allPlayersHavePieces() {
 
@@ -83,17 +112,17 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 
 
-		 
 
-		
+
+
 	}
-	
-	
+
+
 	public IEnumerator chooseStage(int stage, int p) {
 		IEnumerator ret;
 		//Debug.Log ("Inside ChooseStage");
 		switch (stage) {
-				
+
 				case 0:
 						yield return StartCoroutine(players[p].choosePieces());
 						break;
@@ -101,19 +130,18 @@ public class GameManager : MonoBehaviour {
 				case 1:
 						currentNumberOfPlayersPieces[p] = numberOfPlayersPieces;
 						for (int i = 0; i < numberOfPlayersPieces; i++) {
-							if(playersPieces[p,i] != null){
-								if (playersPieces[p,i].dead) {
-									currentNumberOfPlayersPieces[p]--;
-								} else {
-									yield return StartCoroutine(playersPieces [p, i].makeMove()); 
-									yield return StartCoroutine(playersPieces[p, i].attack ());
-								}
+							if (playersPieces[p,i].dead) {
+								currentNumberOfPlayersPieces[p]--;
+							} else {
+
+								yield return StartCoroutine(playersPieces [p, i].makeMove()); 
+								yield return StartCoroutine(playersPieces[p, i].attack ());
 							}
 						}
 						break;
 				}
 		yield return null;
-		
+
 	}
 
 	public void changeCameraPosition(int player) {
@@ -129,6 +157,6 @@ public class GameManager : MonoBehaviour {
 
 
 	}
-	
-	
+
+
 }

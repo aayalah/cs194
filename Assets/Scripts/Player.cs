@@ -31,8 +31,8 @@ public class Player : MonoBehaviour {
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
-				pieceArray[i].baseColor = Color.green;
 
+				pieceArray[i].baseColor = Color.blue;
 			}
 		} else {
 			for(int i = 0; i < numberOfPieces; i++) {
@@ -46,8 +46,8 @@ public class Player : MonoBehaviour {
 				pieceArray[i].player = this;
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
-				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
-				pieceArray[i].baseColor = Color.blue;
+				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;;
+				pieceArray[i].baseColor = Color.green;
 			}
 			
 			
@@ -109,7 +109,6 @@ public class Player : MonoBehaviour {
 						string test = "player" + getId();
 						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
 							game.playersPieces [getId(), numPieces] = chosenPiece;
-							//chosenPiece.renderer.material.SetColor ("_Color", Color.red);
 							chosenPiece.setColor(Color.red);
 							numPieces++;
 						}
@@ -146,14 +145,6 @@ public class Player : MonoBehaviour {
 	}
 	
 	public void buyPiece(int pieceId) {
-		
-		//if(stats.removeMoney(findPieceCost(pieceId))){
-		//addPiece(pieceId);		
-		//} else {
-		
-		//}
-		
-		
 		
 	}
 	
