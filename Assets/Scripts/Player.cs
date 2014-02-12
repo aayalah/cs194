@@ -5,6 +5,7 @@ public class Player : MonoBehaviour {
 	public Piece piece;
 	public Piece[] pieceArray;
 	private int numberOfPieces = 5;
+	private int turnsPerRound = 3;
 	
 	public GameManager game;
 	private int id;
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
+				pieceArray[i].baseColor = Color.green;
 
 			}
 		} else {
@@ -45,6 +47,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
+				pieceArray[i].baseColor = Color.blue;
 			}
 			
 			
@@ -93,7 +96,7 @@ public class Player : MonoBehaviour {
 	
 	public IEnumerator choosePieces() {
 		Piece chosenPiece = null;
-		while (numPieces != numberOfPieces) {
+		while (numPieces != turnsPerRound) {
 			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
@@ -116,7 +119,7 @@ public class Player : MonoBehaviour {
 			} 
 			yield return null;					
 		}
-		for (int i = 0; i < numberOfPieces; i++) {
+		for (int i = 0; i < turnsPerRound; i++) {
 			Piece p = game.playersPieces[getId(), i];
 			p.setColor(p.baseColor);
 		}

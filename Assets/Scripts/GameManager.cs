@@ -101,11 +101,13 @@ public class GameManager : MonoBehaviour {
 				case 1:
 						currentNumberOfPlayersPieces[p] = numberOfPlayersPieces;
 						for (int i = 0; i < numberOfPlayersPieces; i++) {
-							if (playersPieces[p,i].dead) {
-								currentNumberOfPlayersPieces[p]--;
-							} else {
-								yield return StartCoroutine(playersPieces [p, i].makeMove()); 
-								yield return StartCoroutine(playersPieces[p, i].attack ());
+							if(playersPieces[p,i] != null){
+								if (playersPieces[p,i].dead) {
+									currentNumberOfPlayersPieces[p]--;
+								} else {
+									yield return StartCoroutine(playersPieces [p, i].makeMove()); 
+									yield return StartCoroutine(playersPieces[p, i].attack ());
+								}
 							}
 						}
 						break;

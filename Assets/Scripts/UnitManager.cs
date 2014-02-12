@@ -7,7 +7,7 @@ public class UnitManager : MonoBehaviour {
 	public Piece ranger;
 	
 	public int teamsBuilt = 0;
-	public int armySize = 5;
+	public int armySize;
 	public int numPlayers = 2;
 	
 	public int totalUnits;
@@ -85,7 +85,7 @@ public class UnitManager : MonoBehaviour {
 			ran.attackHistogram = attacks[i+p];
 			ran.defenseHistogram = shields[i+p];
 			ran.specialHistogram = specials[i+p];
-			ran.maxHP = 100;
+			ran.maxHP = 20;
 			ran.currentHP = ran.maxHP;
 			ran.movementRange = 6;
 			ran.attackRange = 8;

@@ -10,7 +10,7 @@ public class Piece : MonoBehaviour {
 	public int[] attackHistogram = {5};
 	public int[] defenseHistogram = {5};
 	public int[] specialHistogram = {5};
-	public int minDamage = 100;
+	public int minDamage;
 	public int attackModifier = 0;
 	public int defenseModifier = 0;
 	public int movementRange = 3;
@@ -36,8 +36,9 @@ public class Piece : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		minDamage = 1;
 		lastMoveTime = Time.timeSinceLevelLoad;
-		gameObject.renderer.material.color = Color.green;
+		gameObject.renderer.material.color = Color.white;
 		if(Application.loadedLevel == 2){
 			board = GameObject.Find("Game").GetComponent<GridController> ();
 			GameObject startingCell = board.getCellAt(x, z);
@@ -86,6 +87,14 @@ public class Piece : MonoBehaviour {
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		List<GameObject> locations = new List<GameObject> ();
 		for (int i = -movementRange; i <= movementRange; i++) {
+			for(int j = -movementRange; j <= movementRange; j++){
+				if(Mathf.Abs(i)+Mathf.Abs(j) <= movementRange){
+					if (board.cellIsFree(x+i, z+j, this)) {
+						if(!locations.Contains(board.getCellAt(x+i, z+j)))
+							locations.Add(board.getCellAt (x+i, z+j));
+					}
+				}
+			}/*
 			if (board.cellIsFree(x, z+i, this)) {
 				locations.Add(board.getCellAt (x, z+i));
 			}
@@ -93,7 +102,8 @@ public class Piece : MonoBehaviour {
 				if (board.cellIsFree(x+i, z, this)) {
 					locations.Add(board.getCellAt (x+i, z));
 				}
-			}
+			}*/
+
 		}
 		return locations;
 	}
@@ -138,6 +148,14 @@ public class Piece : MonoBehaviour {
 	}
 
 	public void takeDamage(int damage) {
+		int index = Random.Range(0, defenseHistogram.Length);
+		int shield = defenseHistogram[index];
+		Debug.Log("Shield for "+ shield/2);
+		if(shield/2 >= damage){
+			damage = 0;
+			Debug.Log("Blocked all damage");
+		} 
+		Debug.Log("Remaining HP: " + (currentHP - damage));
 		currentHP = Mathf.Max (0, currentHP - damage);
 		if (currentHP <= 0) {
 			die();
@@ -147,8 +165,10 @@ public class Piece : MonoBehaviour {
 	public void damageEnemy(Piece other) {
 		int damage = minDamage;
 		if (attackHistogram.Length > 0) {
-			damage = Mathf.Max(damage, attackHistogram[(int)(Random.value * attackHistogram.Length)]);
+			int index = Random.Range(0, attackHistogram.Length);
+			damage = Mathf.Max(damage, attackHistogram[index]);
 		}
+		Debug.Log("Attack for " + damage + " damage");
 		other.takeDamage(damage);
 	}
 

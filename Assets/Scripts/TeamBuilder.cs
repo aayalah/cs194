@@ -106,14 +106,15 @@ public class TeamBuilder : MonoBehaviour {
 	}
 	
 	void setUpUnitSelect(){
-		brute = (Transform)Instantiate(brute, new Vector3(40f, 5f, 2.5f), Quaternion.identity);
+		brute = (Transform)Instantiate(brute, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
 		brute.transform.localScale = new Vector3(5f, 5f, 5f);
-		grunt = (Transform)Instantiate(grunt, new Vector3(40f, 5f, 2.5f), Quaternion.identity);
+		grunt = (Transform)Instantiate(grunt, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
 		grunt.gameObject.renderer.enabled = false;
 		grunt.transform.localScale = new Vector3(5f, 5f, 5f);
-		ranger = (Transform)Instantiate(ranger, new Vector3(40f, 5f, 2.5f), Quaternion.identity);
+		ranger = (Transform)Instantiate(ranger, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
 		ranger.transform.localScale = new Vector3(5f, 5f, 5f);
 		ranger.gameObject.renderer.enabled = false;
+
 	}
 	
 	void resetColorMix(){
@@ -286,9 +287,11 @@ public class TeamBuilder : MonoBehaviour {
 			}
 		}
 		int[] ret = new int[count];
-		for(int j = 0; j < count; j++){
+		int index = 0;
+		for(int j = 0; j < numBars; j++){
 			if(GetColorMix(j).Equals(skill)){
-				ret[j] = values[currentGraph,j];
+				ret[index] = values[currentGraph,j];
+				index++;
 			}
 		}
 		return ret;
