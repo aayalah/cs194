@@ -42,16 +42,43 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator mainLoops() {
 		while (allPlayersHavePieces()) {
-				for (int j = 0; j < 2; j++) {
+				
+						/////Stage 1: Piece Selection
 						for (int i = 0; i < numPlayers; i++) {
 								changeCameraPosition (i);
-								yield return StartCoroutine (chooseStage (j, i));
+								yield return StartCoroutine (players [i].choosePieces ());
 						}
-						yield return null;
-				}
-		}
+
+
+						////Stage 2: Piece Movement and Attack
+						for (int j = 0; j < numberOfPlayersPieces; j++) {
+								for (int i = 0; i < numPlayers; i++) {
+										changeCameraPosition (i);
+										if (playersPieces [i, j].dead) {
+												currentNumberOfPlayersPieces [i]--;
+										} else 
+											playersPieces [i, j].setColor(Color.grey);				
+											yield return StartCoroutine (playersPieces [i, j].makeMove ()); 
+											yield return StartCoroutine (playersPieces [i, j].attack ());
+											playersPieces [i, j].setColor(playersPieces [i, j].baseColor);
+										}
+								}
+						}
+		
+		
+		
 		gameOver();
 	}
+			//				for (int j = 0; j < 2; j++) {
+//						for (int i = 0; i < numPlayers; i++) {
+//								changeCameraPosition (i);
+//								yield return StartCoroutine (chooseStage (j, i));
+//						}
+//						yield return null;
+//				}
+
+
+
 
 	private bool allPlayersHavePieces() {
 
@@ -104,6 +131,7 @@ public class GameManager : MonoBehaviour {
 							if (playersPieces[p,i].dead) {
 								currentNumberOfPlayersPieces[p]--;
 							} else {
+								
 								yield return StartCoroutine(playersPieces [p, i].makeMove()); 
 								yield return StartCoroutine(playersPieces[p, i].attack ());
 							}
