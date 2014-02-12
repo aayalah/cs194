@@ -30,7 +30,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
-
+				pieceArray[i].baseColor = Color.green;
 			}
 		} else {
 			for(int i = 0; i < numberOfPieces; i++) {
@@ -45,6 +45,7 @@ public class Player : MonoBehaviour {
 				pieceArray[i].tag = "piece";
 				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
 				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
+				pieceArray[i].baseColor = Color.cyan;
 			}
 			
 			
