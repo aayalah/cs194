@@ -71,16 +71,6 @@ public class GameManager : MonoBehaviour {
 
 		gameOver();
 	}
-			//				for (int j = 0; j < 2; j++) {
-//						for (int i = 0; i < numPlayers; i++) {
-//								changeCameraPosition (i);
-//								yield return StartCoroutine (chooseStage (j, i));
-//						}
-//						yield return null;
-//				}
-
-
-
 
 	private bool allPlayersHavePieces() {
 
