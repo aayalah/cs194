@@ -3,8 +3,8 @@ using System.Collections;
 
 public class GridController : MonoBehaviour {
 	public GameObject cube;
-	public int xDimension = 20;
-	public int zDimension = 20;
+	public int xDimension = 10;
+	public int zDimension = 10;
 	private GameObject[,]grid;
 	private Piece[,] pieceGrid;
 	// Use this for initialization
