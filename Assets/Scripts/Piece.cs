@@ -84,7 +84,7 @@ public class Piece : MonoBehaviour {
 		moveTo (board.getCellAt (xCoord, zCoord));
 	}
 
-	public List<GameObject> getMoveLocations() {
+	public virtual List<GameObject> getMoveLocations() {
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		List<GameObject> locations = new List<GameObject> ();
 		for (int i = -movementRange; i <= movementRange; i++) {
@@ -114,7 +114,7 @@ public class Piece : MonoBehaviour {
 			tile.GetComponent<TileController>().setFlashing(onOrOff);
 		}
 	}
-	public List<Piece> getAttackablePieces() {
+	public virtual List<Piece> getAttackablePieces() {
 		// Default attack is, oh let's say anypoint <= attackRange spots away...
 		List<Piece> pieces = new List<Piece> ();
 		for (int i = x - attackRange; i <= x + attackRange; i++) {
