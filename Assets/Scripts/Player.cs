@@ -95,9 +95,9 @@ public class Player : MonoBehaviour {
 						chosenPiece = (Piece)selected.GetComponent (typeof(Piece));
 						string temp = chosenPiece.id;
 						string test = "player" + getId();
-						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
+						if (temp.Equals(test)) {
 							game.playersPieces [getId(), numPieces] = chosenPiece;
-							chosenPiece.setColor(Color.red);
+							chosenPiece.startFlashing();
 							numPieces++;
 						}
 					}
@@ -106,10 +106,10 @@ public class Player : MonoBehaviour {
 			} 
 			yield return null;					
 		}
-		for (int i = 0; i < turnsPerRound; i++) {
-			Piece p = game.playersPieces[getId(), i];
-			p.setColor(p.baseColor);
-		}
+//		for (int i = 0; i < turnsPerRound; i++) {
+//			Piece p = game.playersPieces[getId(), i];
+//			p.setColor(p.baseColor);
+//		}
 		
 	}
 	
