@@ -33,17 +33,27 @@ public class CameraMovement : MonoBehaviour {
 			movement.z++;
 		if (Input.GetKey("s"))
 			movement.z--;
+		
+		
 		if (Input.GetKey("a"))
 			movement.x--;
 		if (Input.GetKey("d"))
 			movement.x++;
+		if (Input.GetKey(KeyCode.UpArrow)){
+			movement.z++;
+			movement.y++;
+		}
+		if (Input.GetKey(KeyCode.DownArrow)){
+			movement.z--;
+			movement.y--;
+		}
+		
 		transform.Translate(movement * speed * Time.deltaTime, Space.Self);
+		
 		if ( Input.GetKey(KeyCode.LeftArrow) )
 			transform.RotateAround(transform.position, Vector3.up, -fDistanceRadians);
 		if ( Input.GetKey(KeyCode.RightArrow) )
 			transform.RotateAround(transform.position, Vector3.up, fDistanceRadians);
-
-
 		
 	}
 
