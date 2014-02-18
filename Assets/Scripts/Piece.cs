@@ -107,9 +107,9 @@ public class Piece : MonoBehaviour {
 		}
 		return locations;
 	}
-	public void setMoveHighlights(bool onOrOff) {
+	public void setMoveHighlights(bool onOrOff, List<GameObject> locations) {
 		movesHighlighted = onOrOff;
-		foreach (GameObject tile in getMoveLocations()) {
+		foreach (GameObject tile in locations) {
 			tile.GetComponent<TileController>().setFlashing(onOrOff);
 		}
 	}
@@ -145,6 +145,7 @@ public class Piece : MonoBehaviour {
 		dead = true;
 		gameObject.transform.position = new Vector3(0,-100000,0);
 		board.removePiece(this);
+		game.reduceNumPieces (player.getId ());
 	}
 
 	public void takeDamage(int damage) {
@@ -194,7 +195,7 @@ public class Piece : MonoBehaviour {
 			yield return null;
 		} else { 
 			List<GameObject> moveLocations = getMoveLocations();
-			setMoveHighlights(true);
+			setMoveHighlights(true, moveLocations);
 			GameObject selected = null;
 			while (!moveLocations.Contains(selected)) {
 				yield return null;
@@ -203,7 +204,7 @@ public class Piece : MonoBehaviour {
 				}
 				selected = getSelectedObject();
 			}
-			setMoveHighlights(false);
+			setMoveHighlights(false, moveLocations);
 			moveTo(selected);
 		}
 	}
@@ -237,6 +238,51 @@ public class Piece : MonoBehaviour {
 	}
 
 
+	public IEnumerator initialPlacement(int id) {
+
+		if (board == null) {
+			board = GameObject.Find("Game").GetComponent<GridController> ();
+		}
+
+
+
+		Debug.Log ("initialPlacement Start");
+		List<GameObject> moveLocations = getInitialLocations(id);
+		setMoveHighlights(true, moveLocations);
+		GameObject selected = null;
+		while (!moveLocations.Contains(selected)) {
+			yield return null;
+			while (!Input.GetMouseButtonDown(0)) {
+				yield return null;
+			}
+			selected = getSelectedObject();
+		}
+		setMoveHighlights(false, moveLocations);
+		moveTo(selected);
+		Debug.Log ("initialPlacement Start");
+	}
+
+
+	public List<GameObject> getInitialLocations(int player) {
+		Debug.Log ("initialLocations Start");
+		// Default movement is, let's say... everything forward, backward, left, and right.
+		int row;
+		if (player == 0) {
+			row = 0;
+		} else {
+			row = board.zDimension - 1;
+		}
+
+		List<GameObject> locations = new List<GameObject> ();
+		for (int i = 0; i <= board.xDimension; i++) {
+				if (board.cellIsFree(i, row, this)) {
+					if(!locations.Contains(board.getCellAt(i, row)))
+						locations.Add(board.getCellAt (i,row));
+				}
+
+		}
+		return locations;
+	}
 
 
 }

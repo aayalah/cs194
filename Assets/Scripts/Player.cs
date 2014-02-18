@@ -11,56 +11,44 @@ public class Player : MonoBehaviour {
 	private int id;
 	public Camera camera;
 	public int numPieces = 0;
-	
+	public UnitManager um;
+
 	// Use this for initialization
 	void Start () {
-		UnitManager um = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+	
+	}
+
+
+	public IEnumerator setUpPieces() {
+
 		numberOfPieces = um.armySize;
 		pieceArray = new Piece[numberOfPieces];
-		
-		if (id == 0) {
-			for (int i = 0; i < numberOfPieces; i++) {
-				int x = 5 * i;
-				int y = 1;
-				int z = 0;
-				Vector3 v = new Vector3 (x, y, z);
-				pieceArray [i] = um.getUnit(id, i);
-				pieceArray [i].Initialize (this, game);
-				pieceArray [i].id = "player" + id;
-				pieceArray[i].player = this;
-				pieceArray[i].tag = "piece";
-				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
-				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;
 
+		for(int i = 0; i < numberOfPieces; i++) {
+			pieceArray[i] = um.getUnit(id, i);
+			pieceArray[i].Initialize(this, game);
+			pieceArray[i].id = "player" + id;
+			pieceArray[i].player = this;
+			pieceArray[i].tag = "piece";
+			if(id == 0) {
+				pieceArray[i].baseColor = Color.green;
+			} else {
 				pieceArray[i].baseColor = Color.blue;
 			}
-		} else {
-			for(int i = 0; i < numberOfPieces; i++) {
-				int x = 5*i;
-				int y = 1;
-				int z = 18;
-				Vector3 v = new Vector3 (x, y, z);
-				pieceArray[i] = um.getUnit(id, i);
-				pieceArray[i].Initialize(this, game);
-				pieceArray [i].id = "player" + id;
-				pieceArray[i].player = this;
-				pieceArray[i].tag = "piece";
-				pieceArray[i].x = (int)pieceArray[i].gameObject.transform.position.x;
-				pieceArray[i].z = (int)pieceArray[i].gameObject.transform.position.z;;
-				pieceArray[i].baseColor = Color.green;
-			}
-			
-			
+			yield return StartCoroutine(pieceArray[i].initialPlacement(id));
+
 		}
-		
-		
+
+		yield return null;
+
 	}
-	
-	public void Initialize(int id, Camera camera, GameManager game){
+
+
+	public void Initialize(int id, Camera camera, GameManager game, UnitManager man){
 		this.id = id;
 		this.camera = camera;
 		this.game = game;
-		
+		um = man;
 	}
 	
 	
@@ -147,6 +135,15 @@ public class Player : MonoBehaviour {
 	public void buyPiece(int pieceId) {
 		
 	}
+
+	public void reset() {
+		for (int i = 0; i < numPieces; i++) {
+			game.playersPieces[id, i] = null;
+		}
+		numPieces = 0;
+
+
+		}
 	
 	
 	// Update is called once per frame
