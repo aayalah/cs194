@@ -48,6 +48,7 @@ public class Piece : MonoBehaviour {
 			board = GameObject.Find("Game").GetComponent<GridController> ();
 			GameObject startingCell = board.getCellAt(x, z);
 			moveTo(startingCell);
+			transform.position = new Vector3(0,-100000,0);
 			setColor(baseColor);
 		}
 	}
@@ -268,16 +269,19 @@ public class Piece : MonoBehaviour {
 		Debug.Log ("initialPlacement Start");
 		List<GameObject> moveLocations = getInitialLocations(id);
 		setMoveHighlights(true, moveLocations);
-		GameObject selected = null;
-		while (!moveLocations.Contains(selected)) {
+		GameObject hoveredOver = null;
+		while (!moveLocations.Contains(hoveredOver)) {
 			yield return null;
 			while (!Input.GetMouseButtonDown(0)) {
+				GameObject temp = getSelectedObject();
+				if (moveLocations.Contains(temp)) {
+					hoveredOver = temp;
+					moveTo(hoveredOver);
+				}
 				yield return null;
 			}
-			selected = getSelectedObject();
 		}
 		setMoveHighlights(false, moveLocations);
-		moveTo(selected);
 		Debug.Log ("initialPlacement Start");
 	}
 

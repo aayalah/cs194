@@ -63,13 +63,16 @@ public class GameManager : MonoBehaviour {
 
 			Debug.Log ("start");
 						////Stage 2: Piece Movement and Attack
+						for (int i = 0; i < numPlayers; i++) {
+							currentNumberOfPlayersPieces[i] = numberOfPlayersPieces;
+						}
 						for (int j = 0; j < numberOfPlayersPieces; j++) {
 								for (int i = 0; i < numPlayers; i++) {
 									if(playersPieces[i, j] != null){
 										changeCameraPosition (i);
 										if (playersPieces [i, j].dead) {
 												currentNumberOfPlayersPieces [i]--;
-										} else 
+										} else {
 											playersPieces [i, j].setColor(Color.grey);				
 											yield return StartCoroutine (playersPieces [i, j].makeMove ()); 
 											yield return StartCoroutine (playersPieces [i, j].attack ());
@@ -77,8 +80,7 @@ public class GameManager : MonoBehaviour {
 										}
 									}	
 								}
-
-
+						}
 						///Reset
 						for (int i = 0; i < numPlayers; i++) {
 							players[i].reset ();
