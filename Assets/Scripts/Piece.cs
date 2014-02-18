@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Piece : MonoBehaviour {
+	private Rect windowRect = new Rect(20, 20, 250, 130);
 	public string id;
 	public GameManager game;
 	public int maxHP = 10;
@@ -18,15 +19,19 @@ public class Piece : MonoBehaviour {
 	public int experience = 0;
 	public Color baseColor = Color.green;
 	public bool dead = false;
-
+	private bool flashing = false;
+	private int flashingTimer = 5;
+	private int flash;
 	public int x = 0;
 	public int z = 0;
 	public Player player;
 	public GridController board;
-
+	private bool showGUI = false;
 	public bool movesHighlighted = false;
 	public bool attacksHighlighted = false;
-
+	private int guiTimer = 10;
+	private int guiT;
+	private int specialTimer = 3;
 	private float lastMoveTime;
 
 	public void Initialize(Player player, GameManager game) {
@@ -50,6 +55,20 @@ public class Piece : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		if(flashing && flash == 0) {
+			setColor(baseColor);
+			stopFlashing();
+		}else if (flashing) {
+			setColor(Color.red);
+			flash--;
+		} 
+
+		if (showGUI && guiT == 0) {
+			showGUI = false;
+		} else if (showGUI) {
+			guiT--;
+		}
 
 	}
 
@@ -286,6 +305,51 @@ public class Piece : MonoBehaviour {
 
 		}
 		return locations;
+	}
+
+	public void setFlashing(bool shouldBeFlashing) {
+		flashing = shouldBeFlashing;
+
+	}
+	
+	public void startFlashing() {
+		setFlashing(true);
+		flash = flashingTimer;
+	}
+	
+	public void stopFlashing() {
+		setFlashing(false);
+
+	}
+
+	void OnMouseOver() {
+		showGUI = true;
+		guiT = guiTimer;
+	}
+
+
+	void OnGUI() {
+		if (showGUI) {
+						windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
+				}
+	}
+
+	void DoMyWindow(int windowID) {
+		if (GUI.Button (new Rect (windowRect.width - 60, 5, 50, 30), "Close")) {
+						showGUI = false;
+		}
+
+		GUI.Label (new Rect (10, 30, 300, 40), "Type: " + getName());
+		GUI.Label (new Rect (10, 50, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
+		GUI.Label (new Rect (10, 70, 300, 40), "Attack Range: " + attackRange);
+		GUI.Label (new Rect (10, 90, 300, 40), "Movement Range: " + movementRange);
+
+	}
+
+	string getName() {
+
+		int index = this.name.IndexOf ("(");
+		return this.name.Substring(0, index);
 	}
 
 
