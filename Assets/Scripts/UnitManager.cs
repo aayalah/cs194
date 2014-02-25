@@ -80,7 +80,7 @@ public class UnitManager : MonoBehaviour {
 			return gru;
 		}
 		if(types[i+p] == 3) {
-			Piece ran = (Piece)Instantiate(ranger, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+			Piece ran = (RangerPiece)Instantiate(ranger, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 			ran.renderer.enabled = true;
 			ran.attackHistogram = attacks[i+p];
 			ran.defenseHistogram = shields[i+p];

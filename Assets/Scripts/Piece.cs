@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Piece : MonoBehaviour {
+	private Rect windowRect = new Rect(20, 20, 250, 130);
 	public string id;
 	public GameManager game;
 	public int maxHP = 10;
@@ -18,15 +19,19 @@ public class Piece : MonoBehaviour {
 	public int experience = 0;
 	public Color baseColor = Color.green;
 	public bool dead = false;
-
+	private bool flashing = false;
+	private int flashingTimer = 5;
+	private int flash;
 	public int x = 0;
 	public int z = 0;
 	public Player player;
 	public GridController board;
-
+	private bool showGUI = false;
 	public bool movesHighlighted = false;
 	public bool attacksHighlighted = false;
-
+	private int guiTimer = 10;
+	private int guiT;
+	private int specialTimer = 3;
 	private float lastMoveTime;
 
 	public void Initialize(Player player, GameManager game) {
@@ -43,12 +48,27 @@ public class Piece : MonoBehaviour {
 			board = GameObject.Find("Game").GetComponent<GridController> ();
 			GameObject startingCell = board.getCellAt(x, z);
 			moveTo(startingCell);
+			transform.position = new Vector3(0,-100000,0);
 			setColor(baseColor);
 		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		if(flashing && flash == 0) {
+			setColor(baseColor);
+			stopFlashing();
+		}else if (flashing) {
+			setColor(Color.red);
+			flash--;
+		} 
+
+		if (showGUI && guiT == 0) {
+			showGUI = false;
+		} else if (showGUI) {
+			guiT--;
+		}
 
 	}
 
@@ -83,7 +103,7 @@ public class Piece : MonoBehaviour {
 		moveTo (board.getCellAt (xCoord, zCoord));
 	}
 
-	public List<GameObject> getMoveLocations() {
+	public virtual List<GameObject> getMoveLocations() {
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		List<GameObject> locations = new List<GameObject> ();
 		for (int i = -movementRange; i <= movementRange; i++) {
@@ -107,13 +127,13 @@ public class Piece : MonoBehaviour {
 		}
 		return locations;
 	}
-	public void setMoveHighlights(bool onOrOff) {
+	public void setMoveHighlights(bool onOrOff, List<GameObject> locations) {
 		movesHighlighted = onOrOff;
-		foreach (GameObject tile in getMoveLocations()) {
+		foreach (GameObject tile in locations) {
 			tile.GetComponent<TileController>().setFlashing(onOrOff);
 		}
 	}
-	public List<Piece> getAttackablePieces() {
+	public virtual List<Piece> getAttackablePieces() {
 		// Default attack is, oh let's say anypoint <= attackRange spots away...
 		List<Piece> pieces = new List<Piece> ();
 		for (int i = x - attackRange; i <= x + attackRange; i++) {
@@ -145,6 +165,7 @@ public class Piece : MonoBehaviour {
 		dead = true;
 		gameObject.transform.position = new Vector3(0,-100000,0);
 		board.removePiece(this);
+		game.reduceNumPieces (player.getId ());
 	}
 
 	public void takeDamage(int damage) {
@@ -194,7 +215,7 @@ public class Piece : MonoBehaviour {
 			yield return null;
 		} else { 
 			List<GameObject> moveLocations = getMoveLocations();
-			setMoveHighlights(true);
+			setMoveHighlights(true, moveLocations);
 			GameObject selected = null;
 			while (!moveLocations.Contains(selected)) {
 				yield return null;
@@ -203,7 +224,7 @@ public class Piece : MonoBehaviour {
 				}
 				selected = getSelectedObject();
 			}
-			setMoveHighlights(false);
+			setMoveHighlights(false, moveLocations);
 			moveTo(selected);
 		}
 	}
@@ -237,6 +258,99 @@ public class Piece : MonoBehaviour {
 	}
 
 
+	public IEnumerator initialPlacement(int id) {
+
+		if (board == null) {
+			board = GameObject.Find("Game").GetComponent<GridController> ();
+		}
+
+
+
+		Debug.Log ("initialPlacement Start");
+		List<GameObject> moveLocations = getInitialLocations(id);
+		setMoveHighlights(true, moveLocations);
+		GameObject hoveredOver = null;
+		while (!moveLocations.Contains(hoveredOver)) {
+			yield return null;
+			while (!Input.GetMouseButtonDown(0)) {
+				GameObject temp = getSelectedObject();
+				if (moveLocations.Contains(temp)) {
+					hoveredOver = temp;
+					moveTo(hoveredOver);
+				}
+				yield return null;
+			}
+		}
+		setMoveHighlights(false, moveLocations);
+		Debug.Log ("initialPlacement Start");
+	}
+
+
+	public List<GameObject> getInitialLocations(int player) {
+		Debug.Log ("initialLocations Start");
+		// Default movement is, let's say... everything forward, backward, left, and right.
+		int row;
+		if (player == 0) {
+			row = 0;
+		} else {
+			row = board.zDimension - 1;
+		}
+
+		List<GameObject> locations = new List<GameObject> ();
+		for (int i = 0; i <= board.xDimension; i++) {
+				if (board.cellIsFree(i, row, this)) {
+					if(!locations.Contains(board.getCellAt(i, row)))
+						locations.Add(board.getCellAt (i,row));
+				}
+
+		}
+		return locations;
+	}
+
+	public void setFlashing(bool shouldBeFlashing) {
+		flashing = shouldBeFlashing;
+
+	}
+	
+	public void startFlashing() {
+		setFlashing(true);
+		flash = flashingTimer;
+	}
+	
+	public void stopFlashing() {
+		setFlashing(false);
+
+	}
+
+	void OnMouseOver() {
+		showGUI = true;
+		guiT = guiTimer;
+	}
+
+
+	void OnGUI() {
+		if (showGUI) {
+						windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
+				}
+	}
+
+	void DoMyWindow(int windowID) {
+		if (GUI.Button (new Rect (windowRect.width - 60, 5, 50, 30), "Close")) {
+						showGUI = false;
+		}
+
+		GUI.Label (new Rect (10, 30, 300, 40), "Type: " + getName());
+		GUI.Label (new Rect (10, 50, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
+		GUI.Label (new Rect (10, 70, 300, 40), "Attack Range: " + attackRange);
+		GUI.Label (new Rect (10, 90, 300, 40), "Movement Range: " + movementRange);
+
+	}
+
+	string getName() {
+
+		int index = this.name.IndexOf ("(");
+		return this.name.Substring(0, index);
+	}
 
 
 }
