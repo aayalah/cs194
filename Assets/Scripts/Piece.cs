@@ -82,7 +82,7 @@ public class Piece : MonoBehaviour {
 	}
 	// Do a raycast to wherever mouse is pointing (?) and return the object 
 	// that was hit.
-	private GameObject getSelectedObject() {
+	public GameObject getSelectedObject() {
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 		if (Physics.Raycast(ray, out hit, Mathf.Infinity)) {
@@ -192,7 +192,8 @@ public class Piece : MonoBehaviour {
 		}
 		return pieces;
 	}
-	public void setAttackHighlights(bool onOrOff) {
+	
+	public virtual void setAttackHighlights(bool onOrOff) {
 		attacksHighlighted = onOrOff;
 		foreach (Piece piece in getAttackablePieces()) {
 			GameObject tile = board.getCellAt(piece.x, piece.z);
@@ -273,7 +274,7 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator attack() {
+	public virtual IEnumerator attack() {
 		if (dead) {
 			yield return null;
 		} else {

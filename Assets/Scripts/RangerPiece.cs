@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class RangerPiece : Piece {
 
+  public Color LIGHT_BLUE = new Color(134, 240, 233);
+
   // Move on diagonals...
   public override List<GameObject> getMoveLocations() {
     List<GameObject> locations = new List<GameObject> ();
@@ -38,5 +40,61 @@ public class RangerPiece : Piece {
       }
     }
     return pieces;
+  }
+
+  public List<GameObject> getAttackableTiles() {
+    List<GameObject> attackableTiles = new List<GameObject>();
+    for (int i = -attackRange; i <= attackRange; i++) {
+      GameObject tile = board.getCellAt(x+i, z);
+      if (tile) {
+        attackableTiles.Add(tile);
+      }
+      if (i != 0) {
+        tile = board.getCellAt(x+i, z);
+        if (tile) {
+          attackableTiles.Add(tile);
+        }
+      }
+    }   
+  }
+
+  public override void setAttackHighlights(bool onOrOff) {
+    attacksHighlighted = onOrOff;
+    foreach (Piece piece in getAttackablePieces()) {
+      GameObject tile = board.getCellAt(piece.x, piece.z);
+      piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
+    }
+    foreach (GameObject tile in getAttackableTiles()) {
+      tile.GetComponent<TileController>().setColor(onOrOff ? LIGHT_BLUE : tile.baseColor);
+    }
+  }
+
+  public override IEnumerator attack() {
+    if (dead) {
+      yield return null;
+    } else {
+      List<Piece> attackablePieces = getAttackablePieces();
+      if (attackablePieces.Count == 0) {
+        // If no attacks, just move on
+        yield return null;
+      } else {
+        setAttackHighlights(true);
+        GameObject selectedObject = null;
+        Piece selectedPiece = null;
+        while (!attackablePieces.Contains(selectedPiece)) {
+          yield return null;
+          while (!Input.GetMouseButtonDown(0)) {
+            yield return null;
+          }
+          selectedObject = getSelectedObject();
+          if (selectedObject) {
+            selectedPiece = selectedObject.GetComponent<Piece>();
+          }
+        }
+
+        damageEnemy(selectedPiece);
+      }
+      setAttackHighlights(false);
+    }
   }
 }
