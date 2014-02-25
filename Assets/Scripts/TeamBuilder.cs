@@ -107,7 +107,7 @@ public class TeamBuilder : MonoBehaviour {
 	
 	void setUpUnitSelect(){
 		brute = (Transform)Instantiate(brute, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		brute.transform.localScale = new Vector3(5f, 5f, 5f);
+		//brute.transform.localScale = new Vector3(5f, 5f, 5f);
 		grunt = (Transform)Instantiate(grunt, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
 		grunt.gameObject.renderer.enabled = false;
 		grunt.transform.localScale = new Vector3(5f, 5f, 5f);
