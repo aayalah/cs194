@@ -6,9 +6,17 @@ public class TeamBuilder : MonoBehaviour {
 	public Transform bar;
 	public Material mat;
 	
-	public Transform brute;
-	public Transform grunt;
-	public Transform ranger;
+	public Transform redBumblebee;
+	public Transform redWorker;
+	public Transform redHornet;
+	public Transform blueBumblebee;
+	public Transform blueWorker;
+	public Transform blueHornet;
+	
+	private Transform currentWorker;
+	private Transform currentHornet;
+	private Transform currentBumble;
+	
 	private Transform[] units;
 	
 	private int[,] values;
@@ -106,14 +114,25 @@ public class TeamBuilder : MonoBehaviour {
 	}
 	
 	void setUpUnitSelect(){
-		brute = (Transform)Instantiate(brute, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		brute.transform.localScale = new Vector3(5f, 5f, 5f);
-		grunt = (Transform)Instantiate(grunt, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		grunt.gameObject.renderer.enabled = false;
-		grunt.transform.localScale = new Vector3(5f, 5f, 5f);
-		ranger = (Transform)Instantiate(ranger, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		ranger.transform.localScale = new Vector3(5f, 5f, 5f);
-		ranger.gameObject.renderer.enabled = false;
+		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		redB.transform.localScale = new Vector3(5f, 5f, 5f);
+		Transform redW = (Transform)Instantiate(redWorker, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		redW.transform.localScale = new Vector3(5f, 5f, 5f);
+		redW.GetComponentInChildren<Renderer>().enabled = false;
+		Transform redH = (Transform)Instantiate(redHornet, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		redH.transform.localScale = new Vector3(5f, 5f, 5f);
+		redH.GetComponentInChildren<Renderer>().enabled = false;
+		
+		/*
+		Transform blueB = (Transform)Instantiate(blueBumblebee, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		Transform blueW = (Transform)Instantiate(blueWorker, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		blueW.GetComponentInChildren<Renderer>().enabled = false;
+		Transform blueH = (Transform)Instantiate(blueHornet, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		blueH.GetComponentInChildren<Renderer>().enabled = false;*/
+		
+		currentWorker = redW;
+		currentHornet = redH;
+		currentBumble = redB;
 
 	}
 	
@@ -196,25 +215,26 @@ public class TeamBuilder : MonoBehaviour {
 		}
 		if(Input.GetKeyUp(KeyCode.Alpha1)){
 			unitNum = 1;
-			brute.renderer.enabled = true;
-			grunt.renderer.enabled = false;
-			ranger.renderer.enabled = false;
+			currentBumble.GetComponentInChildren<Renderer>().enabled = true;
+			currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+			currentHornet.GetComponentInChildren<Renderer>().enabled = false;
 		}
 		if(Input.GetKeyUp(KeyCode.Alpha2)){
 			unitNum = 2;
-			brute.renderer.enabled = false;
-			grunt.renderer.enabled = true;
-			ranger.renderer.enabled = false;
+			currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+			currentWorker.GetComponentInChildren<Renderer>().enabled = true;
+			currentHornet.GetComponentInChildren<Renderer>().enabled = false;
 		}
 		if(Input.GetKeyUp(KeyCode.Alpha3)){
 			unitNum = 3;
-			brute.renderer.enabled = false;
-			grunt.renderer.enabled = false;
-			ranger.renderer.enabled = true;
+			currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+			currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+			currentHornet.GetComponentInChildren<Renderer>().enabled = true;
 		}
 	}
 				
 	void OnGUI(){
+		GUI.contentColor = Color.black;
 		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 100), "Current Graph #"+(currentGraph+1));
 		GUI.Label(new Rect(Screen.width/10, Screen.height-115, 200, 100), "Current Color Distribution #"+(currentColor+1));
 		
@@ -245,20 +265,20 @@ public class TeamBuilder : MonoBehaviour {
 	}
 	
 	void UnitLabels(){
-		if(brute.renderer.enabled){
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Brute");
+		if(currentBumble.GetComponentInChildren<Renderer>().enabled){
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Bumblebee");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 100");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 1");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 4");
 		}
-		if(grunt.renderer.enabled){
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Grunt");
+		if(currentWorker.GetComponentInChildren<Renderer>().enabled){
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Worker");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 50");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 3");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 5");
 		}
-		if(ranger.renderer.enabled){
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Ranger");
+		if(currentHornet.GetComponentInChildren<Renderer>().enabled){
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Hornet");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 20");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 6");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 8");

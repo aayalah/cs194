@@ -2,9 +2,12 @@ using UnityEngine;
 using System.Collections;
 
 public class UnitManager : MonoBehaviour {
-	public Piece brute;
-	public Piece grunt;
-	public Piece ranger;
+	public Piece redBumblebee;
+	public Piece redWorker;
+	public Piece redHornet;
+	public Piece blueBumblebee;
+	public Piece blueWorker;
+	public Piece blueHornet;
 	
 	public int teamsBuilt = 0;
 	public int armySize;
@@ -55,41 +58,59 @@ public class UnitManager : MonoBehaviour {
 	public Piece getUnit(int id, int i){
 		int p = id*armySize;
 		if(types[i+p] == 1) {
-			Piece bru = (Piece)Instantiate(brute, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
-			bru.renderer.enabled = true;
-			bru.attackHistogram = attacks[i+p];
-			bru.defenseHistogram = shields[i+p];
-			bru.specialHistogram = specials[i+p];
-			bru.maxHP = 100;
-			bru.currentHP = bru.maxHP;
-			bru.movementRange = 4;
-			bru.attackRange = 1;
-			return bru;
+			Piece bumble;
+			if(id == 0){
+				bumble = (Piece)Instantiate(redBumblebee, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+				bumble.transform.Rotate(new Vector3(0, 180, 0));
+			}else{
+				bumble = (Piece)Instantiate(blueBumblebee, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+			}
+			bumble.gameObject.GetComponentInChildren<Renderer>().enabled = true;
+			bumble.attackHistogram = attacks[i+p];
+			bumble.defenseHistogram = shields[i+p];
+			bumble.specialHistogram = specials[i+p];
+			bumble.maxHP = 100;
+			bumble.currentHP = bumble.maxHP;
+			bumble.movementRange = 4;
+			bumble.attackRange = 1;
+			return bumble;
 					
 		}
 		if(types[i+p] == 2){ 
-			Piece gru = (Piece)Instantiate(grunt, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
-			gru.renderer.enabled = true;
-			gru.attackHistogram = attacks[i+p];
-			gru.defenseHistogram = shields[i+p];
-			gru.specialHistogram = specials[i+p];
-			gru.maxHP = 50;
-			gru.currentHP = gru.maxHP;
-			gru.movementRange = 5;
-			gru.attackRange = 3;
-			return gru;
+			Piece worker;
+			if(id == 0){
+				worker = (Piece)Instantiate(redWorker, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+				worker.transform.Rotate(new Vector3(0, 180, 0));
+			}else{
+				worker = (Piece)Instantiate(blueWorker, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+			}
+			worker.gameObject.GetComponentInChildren<Renderer>().enabled = true;
+			worker.attackHistogram = attacks[i+p];
+			worker.defenseHistogram = shields[i+p];
+			worker.specialHistogram = specials[i+p];
+			worker.maxHP = 50;
+			worker.currentHP = worker.maxHP;
+			worker.movementRange = 5;
+			worker.attackRange = 3;
+			return worker;
 		}
 		if(types[i+p] == 3) {
-			Piece ran = (RangerPiece)Instantiate(ranger, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
-			ran.renderer.enabled = true;
-			ran.attackHistogram = attacks[i+p];
-			ran.defenseHistogram = shields[i+p];
-			ran.specialHistogram = specials[i+p];
-			ran.maxHP = 20;
-			ran.currentHP = ran.maxHP;
-			ran.movementRange = 6;
-			ran.attackRange = 8;
-			return ran;
+			Piece hornet;
+			if(id == 0){
+				hornet = (Piece)Instantiate(redHornet, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+				hornet.transform.Rotate(new Vector3(0, 180, 0));
+			}else{
+				hornet = (Piece)Instantiate(blueHornet, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+			}
+			hornet.gameObject.GetComponentInChildren<Renderer>().enabled = true;
+			hornet.attackHistogram = attacks[i+p];
+			hornet.defenseHistogram = shields[i+p];
+			hornet.specialHistogram = specials[i+p];
+			hornet.maxHP = 20;
+			hornet.currentHP = hornet.maxHP;
+			hornet.movementRange = 6;
+			hornet.attackRange = 8;
+			return hornet;
 		}
 		return null;
 	}
