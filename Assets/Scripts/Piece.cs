@@ -33,6 +33,7 @@ public class Piece : MonoBehaviour {
 	private int guiT;
 	private int specialTimer = 3;
 	private float lastMoveTime;
+	public int LERP_STEPS_PER_TILE = 8;
 
 	public void Initialize(Player player, GameManager game) {
 		this.player = player;
@@ -91,16 +92,59 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
-	public void moveTo(GameObject tile) {
+	public IEnumerator lerpPosition(Vector3 oldPos, Vector3 newPos) {
+		int steps = (int) (Vector3.Distance(oldPos, newPos) * LERP_STEPS_PER_TILE);
+		for (int i = 1; i <= steps; i++) {
+			transform.position = Vector3.Lerp(oldPos, newPos, (float) i / steps);
+			yield return null;
+		}
+	}
+
+	public IEnumerator movePhysically(int oldX, int oldZ, int newX, int newZ) {
+		float halfPieceHeight = transform.localScale.y / 2;
+		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
+		GameObject currentCell = board.getCellAt(oldX, oldZ);
+		GameObject endCell = board.getCellAt(newX, newZ);
+		float currentHeight = currentCell.transform.position.y + currentCell.transform.localScale.y / 2;
+		float endHeight = endCell.transform.position.y + endCell.transform.localScale.y / 2;
+
+		Vector3 start = transform.position;
+		Vector3 aboveStart = new Vector3(start.x, maxHeight + halfPieceHeight, start.z);
+		Vector3 end = new Vector3(endCell.transform.position.x, endHeight + halfPieceHeight, endCell.transform.position.z);
+		Vector3 aboveEnd = new Vector3(end.x, maxHeight + halfPieceHeight, end.z);
+
+		// First shift up...
+		yield return StartCoroutine(lerpPosition(start, aboveStart));
+		// Then over...
+		yield return StartCoroutine(lerpPosition(aboveStart, aboveEnd));
+		// Then down.
+		yield return StartCoroutine(lerpPosition(aboveEnd, end));
+	}
+
+	public void moveTo(GameObject tile, bool changePosition = true) {
 		TileController tileController = tile.GetComponent<TileController>();
 		board.movePiece(this, tileController.x, tileController.z);
 		x = tileController.x;
 		z = tileController.z;
-		transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y/2, 0);
+		if (changePosition) {
+			transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y/2, 0);
+		}
+	}
+
+	public IEnumerator lerpTo(GameObject tile) {
+		int oldX = x;
+		int oldZ = z;
+		TileController tileController = tile.GetComponent<TileController>();
+		moveTo(tile, false);
+		yield return StartCoroutine(movePhysically(oldX, oldZ, tileController.x, tileController.z));
 	}
 
 	public void moveToCoords(int xCoord, int zCoord) {
 		moveTo (board.getCellAt (xCoord, zCoord));
+	}
+
+	public IEnumerator lerpToCoords(int xCoord, int zCoord) {
+		yield return StartCoroutine(lerpTo(board.getCellAt (xCoord, zCoord)));
 	}
 
 	public virtual List<GameObject> getMoveLocations() {
@@ -225,7 +269,7 @@ public class Piece : MonoBehaviour {
 				selected = getSelectedObject();
 			}
 			setMoveHighlights(false, moveLocations);
-			moveTo(selected);
+			yield return StartCoroutine(lerpTo(selected));
 		}
 	}
 

@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour {
 
 
 		for (int i = 0; i < numPlayers; i++) {
-			changeCameraPosition (i);
+			yield return StartCoroutine(changeCameraPosition (i));
 			yield return StartCoroutine(players[i].setUpPieces());
 	   	}
 
@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour {
 
 						/////Stage 1: Piece Selection
 						for (int i = 0; i < numPlayers; i++) {
-								changeCameraPosition (i);
+								yield return StartCoroutine(changeCameraPosition (i));
 								yield return StartCoroutine (players [i].choosePieces ());
 						}
 
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour {
 						for (int j = 0; j < numberOfPlayersPieces; j++) {
 								for (int i = 0; i < numPlayers; i++) {
 									if(playersPieces[i, j] != null){
-										changeCameraPosition (i);
+										yield return StartCoroutine(changeCameraPosition (i));
 										if (playersPieces [i, j].dead) {
 												currentNumberOfPlayersPieces [i]--;
 										} else {
@@ -128,18 +128,25 @@ public class GameManager : MonoBehaviour {
 
 	}
 
-	public void changeCameraPosition(int player) {
+	public IEnumerator changeCameraPosition(int player) {
+		Vector3 oldPos = camera.transform.position;
+		Quaternion oldRot = camera.transform.rotation;
+		Vector3 newPos = new Vector3(0,0,0);
+		Quaternion newRot = Quaternion.Euler(0,0,0);
 		if (player == 0) {
-			Vector3 pos = new Vector3(7, 10, -5);
-			camera.transform.position = pos;
-			camera.transform.rotation =  Quaternion.Euler(45, 1, 0);
+			newPos = new Vector3(10, 10, -5);
+			newRot = Quaternion.Euler(45, 0, 0);
 		} else if (player == 1) {
-			Vector3 pos = new Vector3(14, 9, 25);
-			camera.transform.position = pos;
-			camera.transform.rotation = Quaternion.Euler(40, 174, 355);
+			newPos = new Vector3(10, 10, 25);
+			newRot = Quaternion.Euler(45, 180, 0);
 		}
 
-
+		int numSteps = 40;
+		for (int i = 1; i <= numSteps; i++) {
+			camera.transform.position = Vector3.Lerp(oldPos, newPos, ((float) i / numSteps));
+			camera.transform.rotation = Quaternion.Slerp(oldRot, newRot, ((float) i / numSteps));
+			yield return null;
+		}
 	}
 
 	public void reduceNumPieces(int p) {

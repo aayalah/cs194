@@ -41,6 +41,66 @@ public class GridController : MonoBehaviour {
 		}
 	}
 
+	public float maxHeightOnPath(int startX, int startZ, int endX, int endZ) {
+		int minX = Mathf.Min(startX, endX);
+		int maxX = Mathf.Max(startX, endX);
+		int minZ = Mathf.Min(startZ, endZ);
+		int maxZ = Mathf.Max(startZ, endZ);
+		if (minX < 0 || maxX >= xDimension || minZ < 0 || maxZ >= zDimension) {
+			return 0;
+		} else {
+			float maxHeight = 0;
+			GameObject localCell;
+			float localHeight;
+			if (startX == endX) {
+				// vertical
+				for (int j = minZ; j <= maxZ; j++) {
+					localCell = grid[startX, j];
+					localHeight = localCell.transform.position.y + localCell.transform.localScale.y / 2;
+					if (localHeight > maxHeight) {
+						maxHeight = localHeight;
+					}
+				}
+			} else if (startZ == endZ) {
+				// horizontal
+				for (int i = minX; i <= maxX; i++) {
+					localCell = grid[i, startZ];
+					localHeight = localCell.transform.position.y + localCell.transform.localScale.y / 2;
+					if (localHeight > maxHeight) {
+						maxHeight = localHeight;
+					}
+				}
+			} else if (maxX - minX == maxZ - minZ) {
+				// diagonal
+				for (int i = minX; i <= maxX; i++) {
+					for (int j = -1; j <= 1; j++) {
+						if (i + j >= 0 && i + j < zDimension) {
+							localCell = grid[i, i + j];
+							localHeight = localCell.transform.position.y + localCell.transform.localScale.y / 2;
+							if (localHeight > maxHeight) {
+								maxHeight = localHeight;
+							}
+						}
+					}
+				}
+			} else {
+				// assume whole rectangle because why the heck not
+				for (int i = minX; i <= maxX; i++) {
+					for (int j = minZ; j <= maxZ; j++) {
+						localCell = grid[i, j];
+						localHeight = localCell.transform.position.y + localCell.transform.localScale.y / 2;
+						if (localHeight > maxHeight) {
+							maxHeight = localHeight;
+						}						
+					}
+				}
+			}
+
+			return maxHeight;
+		}
+	}
+
+
 	public GameObject getCellAt(int x, int z) {
 		if (x < 0 || x >= xDimension || z < 0 || z >= zDimension) {
 			return null;
