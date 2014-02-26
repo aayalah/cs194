@@ -50,12 +50,13 @@ public class RangerPiece : Piece {
         attackableTiles.Add(tile);
       }
       if (i != 0) {
-        tile = board.getCellAt(x+i, z);
+        tile = board.getCellAt(x, z+i);
         if (tile) {
           attackableTiles.Add(tile);
         }
       }
-    }   
+    }
+    return attackableTiles;  
   }
 
   public override void setAttackHighlights(bool onOrOff) {
@@ -65,7 +66,8 @@ public class RangerPiece : Piece {
       piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
     }
     foreach (GameObject tile in getAttackableTiles()) {
-      tile.GetComponent<TileController>().setColor(onOrOff ? LIGHT_BLUE : tile.baseColor);
+      TileController tc = tile.GetComponent<TileController>();
+      tc.setColor(onOrOff ? Color.cyan : tc.baseColor);
     }
   }
 
