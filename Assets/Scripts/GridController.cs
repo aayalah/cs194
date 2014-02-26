@@ -2,7 +2,11 @@ using UnityEngine;
 using System.Collections;
 
 public class GridController : MonoBehaviour {
-	public GameObject cube;
+	public Material grass;
+	public Material flowers;
+	
+	public GameObject cube1;
+	public GameObject cube2;
 	public int xDimension = 10;
 	public int zDimension = 10;
 	private GameObject[,]grid;
@@ -24,12 +28,16 @@ public class GridController : MonoBehaviour {
 		for(int i = 0; i< xDimension; i++){
 			for(int j = 0; j< zDimension; j++){
 				Vector3 position = Vector3.right*i + Vector3.forward*j;
-				GameObject t = (GameObject)Instantiate(cube, position, Quaternion.identity);
+				GameObject t; 
 				//t.Translate(new Vector3(0.1f*i, 0, 0.1f*j));
 				if(((i+j) % 2) == 0) {
-					t.transform.GetComponent<TileController>().setBaseColor(Color.black);
+					t = (GameObject)Instantiate(cube1, position, Quaternion.identity);
+					//t.transform.renderer.material = grass;
+					//t.transform.GetComponent<TileController>().setBaseColor(Color.black);
 				}else {
-					t.transform.GetComponent<TileController>().setBaseColor(Color.white);
+					t = (GameObject)Instantiate(cube2, position, Quaternion.identity);
+					//t.transform.renderer.material = flowers;
+					//t.transform.GetComponent<TileController>().setBaseColor(Color.white);
 				}
 				t.transform.GetComponent<TileController>().x = i;
 				t.transform.GetComponent<TileController>().z = j;
@@ -38,7 +46,7 @@ public class GridController : MonoBehaviour {
 				
 			}
 		}
-		BuildTerrain();
+		//BuildTerrain();
 	}
 	
 	void BuildTerrain(){

@@ -8,7 +8,6 @@ public class MainMenu : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
-		//options = GameObject.Find("GameOptions").GetComponent<GameOptions>();
 	}
 	
 	// Update is called once per frame

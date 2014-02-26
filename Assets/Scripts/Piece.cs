@@ -43,13 +43,13 @@ public class Piece : MonoBehaviour {
 	void Start () {
 		minDamage = 1;
 		lastMoveTime = Time.timeSinceLevelLoad;
-		gameObject.renderer.material.color = Color.white;
+		//gameObject.renderer.material.color = Color.white;
 		if(Application.loadedLevel == 2){
 			board = GameObject.Find("Game").GetComponent<GridController> ();
 			GameObject startingCell = board.getCellAt(x, z);
 			moveTo(startingCell);
 			transform.position = new Vector3(0,-100000,0);
-			setColor(baseColor);
+			//setColor(baseColor);
 		}
 	}
 	
@@ -57,10 +57,10 @@ public class Piece : MonoBehaviour {
 	void Update () {
 
 		if(flashing && flash == 0) {
-			setColor(baseColor);
+			//setColor(baseColor);
 			stopFlashing();
 		}else if (flashing) {
-			setColor(Color.red);
+			//setColor(Color.red);
 			flash--;
 		} 
 
@@ -103,7 +103,7 @@ public class Piece : MonoBehaviour {
 		moveTo (board.getCellAt (xCoord, zCoord));
 	}
 
-	public List<GameObject> getMoveLocations() {
+	public virtual List<GameObject> getMoveLocations() {
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		List<GameObject> locations = new List<GameObject> ();
 		for (int i = -movementRange; i <= movementRange; i++) {
@@ -130,10 +130,10 @@ public class Piece : MonoBehaviour {
 	public void setMoveHighlights(bool onOrOff, List<GameObject> locations) {
 		movesHighlighted = onOrOff;
 		foreach (GameObject tile in locations) {
-			tile.GetComponent<TileController>().setFlashing(onOrOff);
+//			tile.GetComponent<TileController>().setFlashing(onOrOff);
 		}
 	}
-	public List<Piece> getAttackablePieces() {
+	public virtual List<Piece> getAttackablePieces() {
 		// Default attack is, oh let's say anypoint <= attackRange spots away...
 		List<Piece> pieces = new List<Piece> ();
 		for (int i = x - attackRange; i <= x + attackRange; i++) {
@@ -152,7 +152,7 @@ public class Piece : MonoBehaviour {
 		attacksHighlighted = onOrOff;
 		foreach (Piece piece in getAttackablePieces()) {
 			GameObject tile = board.getCellAt(piece.x, piece.z);
-			piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
+			//piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
 		}
 	}
 
