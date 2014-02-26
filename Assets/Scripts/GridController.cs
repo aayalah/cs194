@@ -11,8 +11,18 @@ public class GridController : MonoBehaviour {
 	public int zDimension = 10;
 	private GameObject[,]grid;
 	private Piece[,] pieceGrid;
+
+	private UnitManager man;
 	// Use this for initialization
 	void Start () {
+		man = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+		if (man.w > 0) {
+						xDimension = man.w;
+		}
+		if (man.h > 0) {
+						zDimension = man.h;
+		}
+
 		grid = new GameObject[xDimension, zDimension];
 		pieceGrid = new Piece[xDimension, zDimension];
 		for(int i = 0; i< xDimension; i++){
