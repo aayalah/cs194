@@ -16,8 +16,10 @@ public class UnitManager : MonoBehaviour {
 	private int[][] shields;
 	private int[][] specials;
 	private static bool created = false;
-	
-	
+
+	public int w;
+	public int h;
+	private bool hasSetUp = false;
 	
 	void Awake() {
     	if (!created) {
@@ -27,21 +29,34 @@ public class UnitManager : MonoBehaviour {
     } else {
         // this must be a duplicate from a scene reload - DESTROY!
         Destroy(this.gameObject);
-    	} 
+    	} 		
+
 	}
+
 	// Use this for initialization
 	void Start () {
 		//DontDestroyOnLoad(this.gameObject);
 		totalUnits = 0;
-		
-		attacks = new int[armySize*numPlayers][];
-		shields = new int[armySize*numPlayers][];
-		specials = new int[armySize*numPlayers][];
-		types = new int[armySize*numPlayers];
+//		attacks = new int[armySize*numPlayers][];
+//		shields = new int[armySize*numPlayers][];
+//		specials = new int[armySize*numPlayers][];
+//		types = new int[armySize*numPlayers];
 	}
 	
 	// Update is called once per frame
 	void Update () {
+	}
+
+	public void setUp() {
+		attacks = new int[armySize*numPlayers][];
+		shields = new int[armySize*numPlayers][];
+		specials = new int[armySize*numPlayers][];
+		types = new int[armySize*numPlayers];	
+		hasSetUp = true;
+	}
+
+	public bool isReady() {
+		return hasSetUp;
 	}
 	
 	public void addUnit(int type, int[] att, int[] sh, int[] spec){

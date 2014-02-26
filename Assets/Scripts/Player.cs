@@ -84,7 +84,7 @@ public class Player : MonoBehaviour {
 	
 	public IEnumerator choosePieces() {
 		Piece chosenPiece = null;
-		while (numPieces != turnsPerRound) {
+		while (numPieces != numberOfPieces) {
 			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
@@ -137,9 +137,9 @@ public class Player : MonoBehaviour {
 	}
 
 	public void reset() {
-		for (int i = 0; i < numPieces; i++) {
-			game.playersPieces[id, i] = null;
-		}
+//		for (int i = 0; i < numPieces; i++) {
+//			game.playersPieces[id, i] = null;
+//		}
 		numPieces = 0;
 
 

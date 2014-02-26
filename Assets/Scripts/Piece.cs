@@ -331,14 +331,11 @@ public class Piece : MonoBehaviour {
 	void OnGUI() {
 		if (showGUI) {
 						windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
-				}
+		}
 	}
 
 	void DoMyWindow(int windowID) {
-		if (GUI.Button (new Rect (windowRect.width - 60, 5, 50, 30), "Close")) {
-						showGUI = false;
-		}
-
+		GUI.skin.label.alignment = TextAnchor.MiddleLeft;;
 		GUI.Label (new Rect (10, 30, 300, 40), "Type: " + getName());
 		GUI.Label (new Rect (10, 50, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
 		GUI.Label (new Rect (10, 70, 300, 40), "Attack Range: " + attackRange);
