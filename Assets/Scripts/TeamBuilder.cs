@@ -114,13 +114,13 @@ public class TeamBuilder : MonoBehaviour {
 	}
 	
 	void setUpUnitSelect(){
-		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		redB.transform.localScale = new Vector3(5f, 5f, 5f);
+		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(35f, 4f, 2.5f), Quaternion.identity);
+		redB.transform.localScale = new Vector3(6f, 6f, 6f);
 		Transform redW = (Transform)Instantiate(redWorker, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
 		redW.transform.localScale = new Vector3(5f, 5f, 5f);
 		redW.GetComponentInChildren<Renderer>().enabled = false;
 		Transform redH = (Transform)Instantiate(redHornet, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		redH.transform.localScale = new Vector3(5f, 5f, 5f);
+		redH.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
 		redH.GetComponentInChildren<Renderer>().enabled = false;
 		
 		/*

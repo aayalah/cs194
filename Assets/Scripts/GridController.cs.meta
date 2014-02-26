@@ -3,7 +3,9 @@ guid: c57ef5d099654418b87a5da74d5fa89b
 MonoImporter:
   serializedVersion: 2
   defaultReferences:
-  - cube: {fileID: 400000, guid: 5632ee9cb05c249678e41e20cc76ef64, type: 2}
+  - grass: {fileID: 2100000, guid: 49c3c02661a83fd42b33859cfbf9a17d, type: 2}
+  - flowers: {fileID: 2100000, guid: 9dccf2dcc78efe741b7931e3bb85beaf, type: 2}
+  - cube: {fileID: 100000, guid: 253665e65a26d4a2f987a2dc3bed207d, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
