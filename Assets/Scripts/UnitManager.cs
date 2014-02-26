@@ -65,6 +65,7 @@ public class UnitManager : MonoBehaviour {
 			}else{
 				bumble = (Piece)Instantiate(blueBumblebee, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 			}
+			bumble.transform.localScale = new Vector3(1f, 1f, 1f);
 			bumble.gameObject.GetComponentInChildren<Renderer>().enabled = true;
 			bumble.attackHistogram = attacks[i+p];
 			bumble.defenseHistogram = shields[i+p];
@@ -84,6 +85,7 @@ public class UnitManager : MonoBehaviour {
 			}else{
 				worker = (Piece)Instantiate(blueWorker, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 			}
+			worker.transform.localScale = new Vector3(.9f, .9f, .9f);
 			worker.gameObject.GetComponentInChildren<Renderer>().enabled = true;
 			worker.attackHistogram = attacks[i+p];
 			worker.defenseHistogram = shields[i+p];
@@ -102,6 +104,7 @@ public class UnitManager : MonoBehaviour {
 			}else{
 				hornet = (Piece)Instantiate(blueHornet, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 			}
+			hornet.transform.localScale = new Vector3(.8f, .8f, .8f);
 			hornet.gameObject.GetComponentInChildren<Renderer>().enabled = true;
 			hornet.attackHistogram = attacks[i+p];
 			hornet.defenseHistogram = shields[i+p];

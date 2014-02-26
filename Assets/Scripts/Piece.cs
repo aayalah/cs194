@@ -203,7 +203,7 @@ public class Piece : MonoBehaviour {
 	}
 
 	public void setColor(Color color) {
-		gameObject.renderer.material.color = color;
+		//gameObject.renderer.material.color = color;
 	}
 
 	public void die() {

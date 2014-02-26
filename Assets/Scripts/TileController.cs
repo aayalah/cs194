@@ -18,13 +18,11 @@ public class TileController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		/*
-		if (flashing) {
+		/*if (flashing) {
 			setColor(Color.yellow);
 		} else {
 			setColor(baseColor);
-		}
-		*/
+		}*/
 	}
 
 	public void setBaseColor(Color c) {
@@ -52,7 +50,6 @@ public class TileController : MonoBehaviour {
 		}
 		flashing = false;
 	}
-	*/
 
 	public void setFlashing(bool shouldBeFlashing) {
 		flashing = shouldBeFlashing;
@@ -65,4 +62,5 @@ public class TileController : MonoBehaviour {
 	public void stopFlashing() {
 		setFlashing(false);
 	}	
+	*/
 }
