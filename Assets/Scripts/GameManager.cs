@@ -51,8 +51,6 @@ public class GameManager : MonoBehaviour {
 
 		while (allPlayersHavePieces()) {
 
-
-
 						
 
 						/////Stage 1: Piece Selection

@@ -97,8 +97,9 @@ public class Player : MonoBehaviour {
 						string test = "player" + getId();
 						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
 							game.playersPieces [getId(), numPieces] = chosenPiece;
-							chosenPiece.setColor(Color.red);
+							//chosenPiece.setColor(Color.red);
 							numPieces++;
+							Debug.Log(numPieces + "/" + turnsPerRound);
 						}
 					}
 				}
@@ -106,10 +107,10 @@ public class Player : MonoBehaviour {
 			} 
 			yield return null;					
 		}
-		for (int i = 0; i < turnsPerRound; i++) {
+		/*for (int i = 0; i < turnsPerRound; i++) {
 			Piece p = game.playersPieces[getId(), i];
 			p.setColor(p.baseColor);
-		}
+		}*/
 		
 	}
 	

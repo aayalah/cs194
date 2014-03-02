@@ -130,7 +130,7 @@ public class Piece : MonoBehaviour {
 	public void setMoveHighlights(bool onOrOff, List<GameObject> locations) {
 		movesHighlighted = onOrOff;
 		foreach (GameObject tile in locations) {
-//			tile.GetComponent<TileController>().setFlashing(onOrOff);
+			tile.GetComponent<TileController>().setFlashing(onOrOff);
 		}
 	}
 	public virtual List<Piece> getAttackablePieces() {
@@ -157,7 +157,7 @@ public class Piece : MonoBehaviour {
 	}
 
 	public void setColor(Color color) {
-		gameObject.renderer.material.color = color;
+		//gameObject.renderer.material.color = color;
 	}
 
 	public void die() {
