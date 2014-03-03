@@ -43,10 +43,5 @@ public class TileController : MonoBehaviour {
 
 	public void stopFlashing() {
 		setFlashing(false);
-<<<<<<< HEAD
 	}
-=======
-	}	
-	*/
->>>>>>> fea86fb355a819043bb4bb79c23fd4f3fdd1d0bb
 }

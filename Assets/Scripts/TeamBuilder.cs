@@ -114,14 +114,16 @@ public class TeamBuilder : MonoBehaviour {
 	}
 	
 	void setUpUnitSelect(){
-		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(35f, 4f, 2.5f), Quaternion.identity);
+		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(37f, 1f, 2.5f), Quaternion.identity);
 		redB.transform.localScale = new Vector3(6f, 6f, 6f);
-		Transform redW = (Transform)Instantiate(redWorker, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		Transform redW = (Transform)Instantiate(redWorker, new Vector3(35f, 1f, 2.5f), Quaternion.identity);
 		redW.transform.localScale = new Vector3(5f, 5f, 5f);
 		redW.GetComponentInChildren<Renderer>().enabled = false;
-		Transform redH = (Transform)Instantiate(redHornet, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		//redW.GetComponentInChildren<ParticleEmitter>().emit = false;
+		Transform redH = (Transform)Instantiate(redHornet, new Vector3(35f, 1f, 2.5f), Quaternion.identity);
 		redH.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
 		redH.GetComponentInChildren<Renderer>().enabled = false;
+		//redH.GetComponentInChildren<ParticleEmitter>().emit = false;
 		
 		/*
 		Transform blueB = (Transform)Instantiate(blueBumblebee, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
@@ -235,8 +237,8 @@ public class TeamBuilder : MonoBehaviour {
 				
 	void OnGUI(){
 		GUI.contentColor = Color.black;
-		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 100), "Current Graph #"+(currentGraph+1));
-		GUI.Label(new Rect(Screen.width/10, Screen.height-115, 200, 100), "Current Color Distribution #"+(currentColor+1));
+		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 50), "Current Graph #"+(currentGraph+1));
+		GUI.Label(new Rect(Screen.width/10-10, Screen.height-115, 300, 50), "Current Color Distribution #"+(currentColor+1));
 		
 		GUI.Label(new Rect(Screen.width/10, Screen.height-100, 200, 100), "Avg. Attack: "+averageSkill(Color.red));
 		GUI.Label(new Rect(Screen.width/10+150, Screen.height-100, 200, 100), "Max Attack: "+maxSkill(Color.red));

@@ -2,7 +2,16 @@ fileFormatVersion: 2
 guid: 4d9504ff6c22f034c9ee547975193592
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - manager: {instanceID: 0}
+  - bar: {fileID: 400000, guid: caab2903ae3094ef9896c1249a7a1ab5, type: 2}
+  - mat: {instanceID: 0}
+  - redBumblebee: {fileID: 400002, guid: 0bec68d15159d421bbe7b634bdaf6876, type: 2}
+  - redWorker: {fileID: 400000, guid: b3072fb16150244c18279559867c11db, type: 2}
+  - redHornet: {fileID: 400002, guid: d611f90f98e2b42d2a1ebaf66bd409ee, type: 2}
+  - blueBumblebee: {fileID: 400000, guid: 91a01e87f69524f0681818422ee878e6, type: 2}
+  - blueWorker: {fileID: 400000, guid: 3bc82c65ace3a4ed18d0f2c3997384c6, type: 2}
+  - blueHornet: {fileID: 400000, guid: 14b05664520564934b514ebbb9f127bb, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

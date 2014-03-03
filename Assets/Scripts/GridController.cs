@@ -46,7 +46,7 @@ public class GridController : MonoBehaviour {
 				
 			}
 		}
-		//BuildTerrain();
+		BuildTerrain();
 	}
 	
 	void BuildTerrain(){

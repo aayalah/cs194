@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour {
 
 	private static string piecePlacementText = "Click on one of the yellow squares to place each of your pieces.";
 	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
-	private static string pieceMovementText = "Click on a yellow square to move your grey piece to."; 
+	private static string pieceMovementText = "Click on a colored square to move your piece."; 
 
 	private Rect windowRect = new Rect(20, 70, 375, 120);
 	public Player player;
