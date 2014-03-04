@@ -68,6 +68,7 @@ public class UnitManager : MonoBehaviour {
 		shields[totalUnits] = sh;
 		specials[totalUnits] = spec;
 		totalUnits++;
+		//if(totalUnits % armySize == 0) teamsBuilt++;
 	}
 	
 	public Piece getUnit(int id, int i){

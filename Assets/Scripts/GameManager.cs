@@ -3,9 +3,11 @@
 
 public class GameManager : MonoBehaviour {
 
-	private static string piecePlacementText = "Click on one of the yellow squares to place each of your pieces.";
+	public GUISkin skin;
+	private static string piecePlacementText = "Click on one of the colored squares to place each of your pieces.";
 	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
 	private static string pieceMovementText = "Click on a colored square to move your piece."; 
+	private static string pieceAttackText = "Click on an enemy within range to attack or press SPACE to charge special";
 
 	private Rect windowRect = new Rect(20, 70, 375, 120);
 	public Player player;
@@ -142,7 +144,7 @@ public class GameManager : MonoBehaviour {
 
 	private void setTurnText(int p) {
 		showTurnLabel = false;
-		turnText = "Player: " + p + "'s Turn";
+		turnText = "Player: " + (p+1) + "'s Turn";
 		showTurnLabel = true;
 	}
 
@@ -170,22 +172,24 @@ public class GameManager : MonoBehaviour {
 
 	void OnGUI() {
 
+		GUI.skin = skin;
 		if (gameIsOver) {
 			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
 		}
 
 		if (showTurnLabel) {
+			GUI.Box(new Rect(Screen.width/2-500,0, 1000, 75), "", GUI.skin.GetStyle("box"));
 			GUI.contentColor = Color.yellow;
 			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 			GUI.skin.label.fontSize = 20;
-			GUI.Label(new Rect(Screen.width/2 - 200, 1, 500, 50), turnText,GUI.skin.label);
+			GUI.Label(new Rect(Screen.width/2 - 250, 1, 500, 50), turnText, GUI.skin.label);
 		}
 
 		if (showInstructionLabel) {
 			GUI.contentColor = Color.red;
 			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 			GUI.skin.label.fontSize = 18;
-			GUI.Label(new Rect(Screen.width/2 - 400, 25, 900, 50), instructionText,GUI.skin.label);
+			GUI.Label(new Rect(Screen.width/2 - 450, 25, 900, 50), instructionText, GUI.skin.label);
 		}
 
 		if (showFixedOrderGui) {

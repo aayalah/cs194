@@ -9,6 +9,7 @@ public class GameOptions : MonoBehaviour {
 	private string numberOfPieces = "";
 	private bool showMessage = false;
 
+	public GUISkin skin;
 	public int w = 20;
 	public int h = 20;
 	public int np = 3;
@@ -37,6 +38,7 @@ public class GameOptions : MonoBehaviour {
 
 	void OnGUI() {
 		if (display) {
+			GUI.skin = skin;
 						GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 						GUI.skin.label.fontSize = 60;
 						GUI.Label (new Rect (Screen.width / 2 - 150, 30, 400, 100), "Game Options", GUI.skin.label);

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Piece : MonoBehaviour {
-	private Rect windowRect = new Rect(20, 20, 250, 130);
+	private Rect windowRect = new Rect(20, 100, 250, 300);
 	public string id;
 	public int teamNo;
 	public GameManager game;
@@ -447,18 +447,48 @@ public class Piece : MonoBehaviour {
 
 
 	void OnGUI() {
+		//windowRect = new Rect(Input.mousePosition.x - Input.mousePosition.x%10, Input.mousePosition.y - Input.mousePosition.y%10, 250, 300);
 		if (showGUI) {
-						windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
+			windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
 		}
 	}
 
 	void DoMyWindow(int windowID) {
 		GUI.skin.label.alignment = TextAnchor.MiddleLeft;;
-		GUI.Label (new Rect (10, 30, 300, 40), "Type: " + getName());
-		GUI.Label (new Rect (10, 50, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
-		GUI.Label (new Rect (10, 70, 300, 40), "Attack Range: " + attackRange);
-		GUI.Label (new Rect (10, 90, 300, 40), "Movement Range: " + movementRange);
+		GUI.Label (new Rect (10, 20, 300, 40), "Type: " + getName());
+		GUI.Label (new Rect (10, 40, 300, 40), "Attack Range: " + attackRange);
+		GUI.Label (new Rect (10, 60, 300, 40), "Movement Range: " + movementRange);
+		GUI.Label (new Rect (10, 80, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
+		GUI.Label (new Rect (10, 100, 300, 40), "Special Points: " + 0 + "/" + 50);
 
+
+		GUI.Label (new Rect (10, 140, 300, 40), "Max Attack: " + maxSkill(attackHistogram));
+		GUI.Label (new Rect (10, 160, 300, 40), "Average Attack: " + averageSkill(attackHistogram));
+		GUI.Label (new Rect (10, 180, 300, 40), "Max Shield: " + maxSkill(defenseHistogram));
+		GUI.Label (new Rect (10, 200, 300, 40), "Average Shield: " + averageSkill(defenseHistogram));
+		GUI.Label (new Rect (10, 220, 300, 40), "Max Special: " + maxSkill(specialHistogram));
+		GUI.Label (new Rect (10, 240, 300, 40), "Average Special: " + averageSkill(specialHistogram));
+
+
+	}
+
+	float averageSkill(int[] skill){
+		int counter = 0;
+		int sum = 0;
+		for(int i = 0; i < skill.Length; i++){
+			sum += skill[i];
+		}
+		return Mathf.Round(((float)sum/(float)skill.Length)*100f)/100f;
+	}
+	
+	float maxSkill(int[] skill){
+		int max = 0;
+		for(int i = 0; i < skill.Length; i++){
+			if(skill[i] > max){
+				max = skill[i];
+			}
+		}
+		return max;
 	}
 
 	string getName() {

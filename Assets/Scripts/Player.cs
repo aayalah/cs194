@@ -85,7 +85,7 @@ public class Player : MonoBehaviour {
 	public IEnumerator choosePieces() {
 		numPieces = 0;
 		Piece chosenPiece = null;
-		while (numPieces != numberOfPieces) {
+		while (numPieces != turnsPerRound) {
 			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
