@@ -2,7 +2,11 @@ fileFormatVersion: 2
 guid: c06b42d97f2ada244a7635715500438c
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - orderMarker: {fileID: 2800000, guid: 4b27652807a28481aaed8ef0c750a39b, type: 3}
+  - game: {instanceID: 0}
+  - player: {instanceID: 0}
+  - board: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

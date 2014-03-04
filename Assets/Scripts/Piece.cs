@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class Piece : MonoBehaviour {
 	private Rect windowRect = new Rect(20, 100, 250, 300);
+	public Texture orderMarker;
 	public string id;
 	public int teamNo;
 	public GameManager game;
@@ -39,6 +40,7 @@ public class Piece : MonoBehaviour {
 	private float direction = 0;
 	private bool showcaseRotate = false;
 	private Vector3 startingRotation;
+	public int numMarkers = 0;
 
 	public void Initialize(Player player, GameManager game) {
 		this.player = player;
@@ -92,7 +94,7 @@ public class Piece : MonoBehaviour {
 
 	void idle(){
 		if(direction == 1){
-			if(transform.position.y > startingY + .2){
+			if(transform.position.y > startingY + .5){
 				direction = -1;
 			}
 			else{
@@ -100,7 +102,7 @@ public class Piece : MonoBehaviour {
 			}
 		}
 		else{
-			if(transform.position.y < startingY){
+			if(transform.position.y < startingY+.25){
 				direction = 1;
 			}
 			else{
@@ -171,7 +173,7 @@ public class Piece : MonoBehaviour {
 		GameObject currentCell = board.getCellAt(oldX, oldZ);
 		GameObject endCell = board.getCellAt(newX, newZ);
 		float currentHeight = currentCell.transform.position.y + currentCell.transform.localScale.y / 2;
-		float endHeight = endCell.transform.position.y + endCell.transform.localScale.y / 2;
+		float endHeight = endCell.transform.position.y + endCell.transform.localScale.y;// / 2;
 
 		Vector3 start = transform.position;
 		Vector3 aboveStart = new Vector3(start.x, maxHeight + halfPieceHeight, start.z);
@@ -198,7 +200,7 @@ public class Piece : MonoBehaviour {
 		x = tileController.x;
 		z = tileController.z;
 		if (changePosition) {
-			transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y/2, 0);
+			transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y, 0);
 		}
 	}
 
@@ -461,14 +463,17 @@ public class Piece : MonoBehaviour {
 		GUI.Label (new Rect (10, 80, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
 		GUI.Label (new Rect (10, 100, 300, 40), "Special Points: " + 0 + "/" + 50);
 
+		GUI.Label (new Rect (10, 120, 300, 40), "Max Attack: " + maxSkill(attackHistogram));
+		GUI.Label (new Rect (10, 140, 300, 40), "Average Attack: " + averageSkill(attackHistogram));
+		GUI.Label (new Rect (10, 160, 300, 40), "Max Shield: " + maxSkill(defenseHistogram));
+		GUI.Label (new Rect (10, 180, 300, 40), "Average Shield: " + averageSkill(defenseHistogram));
+		GUI.Label (new Rect (10, 200, 300, 40), "Max Special: " + maxSkill(specialHistogram));
+		GUI.Label (new Rect (10, 220, 300, 40), "Average Special: " + averageSkill(specialHistogram));
+		GUI.Label (new Rect (10, 250, 100, 40), "Turns: ");
 
-		GUI.Label (new Rect (10, 140, 300, 40), "Max Attack: " + maxSkill(attackHistogram));
-		GUI.Label (new Rect (10, 160, 300, 40), "Average Attack: " + averageSkill(attackHistogram));
-		GUI.Label (new Rect (10, 180, 300, 40), "Max Shield: " + maxSkill(defenseHistogram));
-		GUI.Label (new Rect (10, 200, 300, 40), "Average Shield: " + averageSkill(defenseHistogram));
-		GUI.Label (new Rect (10, 220, 300, 40), "Max Special: " + maxSkill(specialHistogram));
-		GUI.Label (new Rect (10, 240, 300, 40), "Average Special: " + averageSkill(specialHistogram));
-
+		for(int i = 0; i < numMarkers; i++){
+			GUI.DrawTexture(new Rect(75+(50*i), 250, 40, 40), orderMarker);
+		}
 
 	}
 

@@ -10,9 +10,13 @@ public class GameOptions : MonoBehaviour {
 	private bool showMessage = false;
 
 	public GUISkin skin;
-	public int w = 20;
-	public int h = 20;
-	public int np = 3;
+	public int defaultW = 20;
+	public int defaultH = 20;
+	public int defaultArmySize = 5;
+
+	public int w;
+	public int h;
+	public int np;
 
 	private bool display = false;
 	private UnitManager man;
@@ -56,19 +60,12 @@ public class GameOptions : MonoBehaviour {
 								Int32.TryParse (width, out w);
 								Int32.TryParse (height, out h);
 								Int32.TryParse (numberOfPieces, out np);
-								if (w <= 0 || h <= 0 || np <= 0) {
-										Debug.Log (w);
-										showMessage = true;
-
-								} else {
-										display = false;
-										man.armySize = np;
-										man.w = w;
-										man.h = h;
-										man.setUp();
-										
-										Application.LoadLevel (0);
-								}
+								display = false;
+								man.armySize = (np > 0) ? np: defaultArmySize;
+								man.w =  (w > 0) ? w : defaultW;
+								man.h = (h > 0) ? h : defaultH;
+								man.setUp();
+								Application.LoadLevel (0);
 
 						}
 

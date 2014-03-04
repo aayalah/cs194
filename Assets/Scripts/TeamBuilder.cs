@@ -245,6 +245,7 @@ public class TeamBuilder : MonoBehaviour {
 	}
 				
 	void OnGUI(){
+		if(unitsCreated < armySize){
 		GUI.contentColor = Color.black;
 		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 50), "Current Graph #"+(currentGraph+1));
 		GUI.Label(new Rect(Screen.width/10-10, Screen.height-115, 300, 50), "Current Color Distribution #"+(currentColor+1));
@@ -258,23 +259,31 @@ public class TeamBuilder : MonoBehaviour {
 		
 		UnitLabels();
 
-		GUI.skin = skin;
-		
-		if(unitsCreated < armySize){
-			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-50,150,100), "Create Unit", GUI.skin.GetStyle("button"))) {
+			GUI.skin = skin;
+			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-200,150,100), "Create Unit", GUI.skin.GetStyle("button"))) {
 				int [] attack = findArray(Color.red);
 				int [] shield = findArray(Color.green);
 				int [] special = findArray(Color.yellow);
 				manager.addUnit(unitNum, attack, shield, special);
 				unitsCreated++;
 				removeCombination();
+				if(unitsCreated == armySize){
+					currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+					currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+					currentHornet.GetComponentInChildren<Renderer>().enabled = false;
+					eraseGraph();
+				}
 			}
 
-			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2+50,150,100), "Randomize", GUI.skin.GetStyle("button"))) {
+			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-100,150,100), "Randomize", GUI.skin.GetStyle("button"))) {
 				RandomizeRemainingUnits();
+				currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+				currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+				currentHornet.GetComponentInChildren<Renderer>().enabled = false;
 			}
 		}else{
-			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-50,150,100), "Confirm", GUI.skin.GetStyle("button"))) {
+			GUI.skin = skin;
+			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-200,150,100), "Confirm", GUI.skin.GetStyle("button"))) {
 				manager.teamsBuilt++;
 				Application.LoadLevel(0);
 			}
@@ -296,6 +305,7 @@ public class TeamBuilder : MonoBehaviour {
 			manager.addUnit(unitNum, attack, shield, special);
 			unitsCreated++;
 			removeCombination();
+			eraseGraph();
 		}
 	}
 
@@ -374,6 +384,13 @@ public class TeamBuilder : MonoBehaviour {
 			}
 		}
 		return max;
+	}
+
+	void eraseGraph(){
+		for(int i = 0; i < numBars; i++){
+			Transform bar = bars[currentGraph, i];
+			bar.gameObject.renderer.enabled = false;
+		}
 	}
 			
 	void drawNewGraph(){

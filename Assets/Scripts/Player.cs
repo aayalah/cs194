@@ -98,6 +98,7 @@ public class Player : MonoBehaviour {
 						string test = "player" + getId();
 						if (temp.Equals(test) /*&& (!containsPiece(game.playersPieces, getId(),chosenPiece))*/) {
 							game.playersPieces [getId(), numPieces] = chosenPiece;
+							chosenPiece.numMarkers++;
 							numPieces++;
 							Debug.Log(numPieces + "/" + turnsPerRound);
 						}

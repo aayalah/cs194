@@ -105,6 +105,7 @@ public class GameManager : MonoBehaviour {
 											yield return StartCoroutine (playersPieces [i, j].makeMove ()); 
 											yield return StartCoroutine (playersPieces [i, j].attack ());
 											playersPieces [i, j].setColor(playersPieces [i, j].baseColor);
+											playersPieces [i, j].numMarkers--;
 										}
 									}	
 								}
