@@ -8,11 +8,10 @@ public class GameOptions : MonoBehaviour {
 	private string height = "";
 	private string numberOfPieces = "";
 	private bool showMessage = false;
-
+	private bool gameMode = false;
 	public int w = 20;
 	public int h = 20;
 	public int np = 3;
-
 	private bool display = false;
 	private UnitManager man;
 
@@ -50,7 +49,10 @@ public class GameOptions : MonoBehaviour {
 						height = GUI.TextField (new Rect (Screen.width / 2, 190, 50, 20), height);
 						GUI.Label (new Rect (Screen.width / 2 - 250, 210, 300, 40), "Number Of Pieces: ", GUI.skin.label);
 						numberOfPieces = GUI.TextField (new Rect (Screen.width / 2, 220, 50, 20), numberOfPieces);
-						if (GUI.Button (new Rect (Screen.width / 2, 250, 50, 20), "Enter")) {
+						GUI.skin.toggle.alignment = TextAnchor.UpperCenter;
+						GUI.skin.toggle.fontSize = 20;
+						gameMode = GUI.Toggle(new Rect(Screen.width / 2 - 250, 250, 200, 40), gameMode, "King of the Hill", GUI.skin.toggle);
+						if (GUI.Button (new Rect (Screen.width / 2, 300, 50, 20), "Enter")) {
 								Int32.TryParse (width, out w);
 								Int32.TryParse (height, out h);
 								Int32.TryParse (numberOfPieces, out np);
@@ -64,7 +66,7 @@ public class GameOptions : MonoBehaviour {
 										man.w = w;
 										man.h = h;
 										man.setUp();
-										
+										man.kingMode = gameMode;
 										Application.LoadLevel (0);
 								}
 
@@ -73,9 +75,12 @@ public class GameOptions : MonoBehaviour {
 
 						if (showMessage) {
 								GUI.contentColor = Color.yellow;
-								GUI.Label (new Rect (Screen.width / 2 - 250, 280, 300, 40), "Enter an integer above 0.");
+								GUI.Label (new Rect (Screen.width / 2 - 250, 360, 300, 40), "Enter an integer above 0.");
 			
 						}
+						
+						
+
 				}
 
 	}

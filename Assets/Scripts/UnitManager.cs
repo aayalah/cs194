@@ -12,7 +12,7 @@ public class UnitManager : MonoBehaviour {
 	public int teamsBuilt = 0;
 	public int armySize;
 	public int numPlayers = 2;
-	
+	public bool kingMode;
 	public int totalUnits;
 	public int [] types;
 	private int[][] attacks;

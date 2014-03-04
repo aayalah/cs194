@@ -1,41 +1,53 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
 	public Piece piece;
-	public Piece[] pieceArray;
-	private int numberOfPieces = 5;
-	private int turnsPerRound = 3;
-	
-	public GameManager game;
-	private int id;
+	private List<Piece> pieceArray;
+	private List<Piece> selectedPieceArray;
 	public Camera camera;
 	public int numPieces = 0;
-	public UnitManager um;
+	public UnitManager um;	
+	public GameManager game;
+	public ClockKing clock;
+	private int numberOfPieces;
+	private int numSelectedPieces;
+	private int id;
+
 
 	// Use this for initialization
 	void Start () {
 	
 	}
 
+	public List<Piece> getSelectedPieces() {
+
+		return selectedPieceArray;
+
+	}
+
 
 	public IEnumerator setUpPieces() {
 
 		numberOfPieces = um.armySize;
-		pieceArray = new Piece[numberOfPieces];
+		numSelectedPieces = um.armySize;
+		pieceArray = new List<Piece>();
+		selectedPieceArray = new List<Piece>();
 
 		for(int i = 0; i < numberOfPieces; i++) {
-			pieceArray[i] = um.getUnit(id, i);
-			pieceArray[i].Initialize(this, game);
-			pieceArray[i].id = "player" + id;
-			pieceArray[i].player = this;
-			pieceArray[i].tag = "piece";
+			Piece piece = um.getUnit(id, i);
+			piece.Initialize(this, game);
+			piece.id = "player" + id;
+			piece.player = this;
+			piece.tag = "piece";
 			if(id == 0) {
-				pieceArray[i].baseColor = Color.green;
+				piece.baseColor = Color.green;
 			} else {
-				pieceArray[i].baseColor = Color.blue;
+				piece.baseColor = Color.blue;
 			}
-			yield return StartCoroutine(pieceArray[i].initialPlacement(id));
+			pieceArray.Add (piece);
+			yield return StartCoroutine(piece.initialPlacement(id));
 
 		}
 
@@ -49,33 +61,22 @@ public class Player : MonoBehaviour {
 		this.camera = camera;
 		this.game = game;
 		um = man;
-	}
-	
-	
-	public class Info {
-		
-		private int money;
-		
-		public void addMoney(int mon) {
-			money = mon;
-		}
+
+		Vector3 v = new Vector3 (0, 0, 0);
+		clock = (ClockKing)Instantiate (clock, v, Quaternion.identity);
+		clock.Initialize(id);
 		
 	}
-	
-	
+
 	
 	//Keeps track of pieces
-	
-	public int initialMoney = 100;
-	public Info stats = new Info();
 	
 	// Keeps track of stats
 	
 	
 	
 	public Player(){
-		stats.addMoney(initialMoney);
-		//this.game = game;
+
 	}
 	
 	public int getId() {
@@ -84,7 +85,7 @@ public class Player : MonoBehaviour {
 	
 	public IEnumerator choosePieces() {
 		Piece chosenPiece = null;
-		while (numPieces != numberOfPieces) {
+		while (numPieces != numSelectedPieces) {
 			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
@@ -95,60 +96,86 @@ public class Player : MonoBehaviour {
 						chosenPiece = (Piece)selected.GetComponent (typeof(Piece));
 						string temp = chosenPiece.id;
 						string test = "player" + getId();
-						if (temp.Equals(test) && (!containsPiece(game.playersPieces, getId(),chosenPiece))) {
-							game.playersPieces [getId(), numPieces] = chosenPiece;
+						if (temp.Equals(test) && (!selectedPieceArray.Contains(chosenPiece))) {
+							selectedPieceArray.Add (chosenPiece);
 							chosenPiece.setColor(Color.red);
 							numPieces++;
 						}
 					}
 				}
-				
+
 			} 
 			yield return null;					
 		}
-		for (int i = 0; i < turnsPerRound; i++) {
-			Piece p = game.playersPieces[getId(), i];
+		foreach(Piece p in selectedPieceArray) {
 			p.setColor(p.baseColor);
 		}
 		
 	}
 	
-	private bool containsPiece(Piece[,] playersPieces, int p, Piece piece) {
-		
-		for(int i = 0; i < numberOfPieces; i++) {
-			//Debug.Log("player" + p + "piece" + i);
-			if((playersPieces[p,i] != null) && (playersPieces[p,i].Equals(piece))) {
+//	private bool containsPiece(Piece[] playersPieces,Piece piece) {
+//		
+//		for(int i = 0; i < numberOfPieces; i++) {
+//			if((playersPieces[i] != null) && (playersPieces[i].Equals(piece))) {
+//
+//				return true;
+//			}
+//			
+//		}
+//		return false;
+//	}
 
-				return true;
-			}
-			
-		}
-		return false;
-	}
-	
-	
-	public void addMoney(int money) {
-		stats.addMoney(money);
-		
-	}
-	
-	public void buyPiece(int pieceId) {
-		
-	}
 
 	public void reset() {
-//		for (int i = 0; i < numPieces; i++) {
-//			game.playersPieces[id, i] = null;
-//		}
 		numPieces = 0;
+		selectedPieceArray.Clear();
+
+	}
 
 
-		}
+	public bool hasPieces() {
+
+		return pieceArray.Capacity > 0;
+
+	}
+
+	public void removePiece(Piece piece) {
+
+		pieceArray.Remove (piece);
+		selectedPieceArray.Remove (piece);
+
+	}
+
+	public int numberPiecesLeft() {
+
+		return pieceArray.Capacity;
+	}
+
+
+	public void startClock() {
+
+		clock.unpause();
+
+	}
+
+	public void stopClock() {
+		clock.pause();
+	}
+
+	public float getTime(){
+
+		return clock.getTimePassed ();
 	
-	
+	}
+
 	// Update is called once per frame
 	void Update () {
-		
+
+		if (um.kingMode) {
+			if(clock.reachedGoal()){
+				game.gameOver(2);
+			}
+		}
 		
 		
 	}
