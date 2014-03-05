@@ -205,6 +205,12 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator lerpTo(GameObject tile) {
+		if(tile.tag.Equals("king")){
+			player.startClock();
+		}
+		
+
+
 		int oldX = x;
 		int oldZ = z;
 		TileController tileController = tile.GetComponent<TileController>();
@@ -284,8 +290,12 @@ public class Piece : MonoBehaviour {
 		currentHP = 0;
 		dead = true;
 		gameObject.transform.position = new Vector3(0,-100000,0);
+		GameObject tile = board.getCellAt (this.x, this.z);
+		if (tile.tag.Equals ("king")) {
+			player.stopClock();
+		}
 		board.removePiece(this);
-		game.reduceNumPieces (player.getId ());
+		player.removePiece(this);
 	}
 
 	public void takeDamage(int damage) {
@@ -501,6 +511,8 @@ public class Piece : MonoBehaviour {
 		int index = this.name.IndexOf ("(");
 		return this.name.Substring(0, index);
 	}
+
+
 
 
 }

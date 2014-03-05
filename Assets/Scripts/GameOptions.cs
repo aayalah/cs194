@@ -9,6 +9,8 @@ public class GameOptions : MonoBehaviour {
 	private string numberOfPieces = "5";
 	private bool showMessage = false;
 
+	private bool gameMode = false;
+
 	public GUISkin skin;
 	public int defaultW = 20;
 	public int defaultH = 20;
@@ -17,7 +19,6 @@ public class GameOptions : MonoBehaviour {
 	public int w;
 	public int h;
 	public int np;
-
 	private bool display = false;
 	private UnitManager man;
 
@@ -56,25 +57,38 @@ public class GameOptions : MonoBehaviour {
 						height = GUI.TextField (new Rect (Screen.width / 2, 190, 50, 20), height);
 						GUI.Label (new Rect (Screen.width / 2 - 250, 210, 300, 40), "Number Of Pieces: ", GUI.skin.label);
 						numberOfPieces = GUI.TextField (new Rect (Screen.width / 2, 220, 50, 20), numberOfPieces);
-						if (GUI.Button (new Rect (Screen.width / 2, 250, 50, 20), "Enter")) {
+						GUI.skin.toggle.alignment = TextAnchor.UpperCenter;
+						GUI.skin.toggle.fontSize = 20;
+						gameMode = GUI.Toggle(new Rect(Screen.width / 2 - 250, 250, 200, 40), gameMode, "King of the Hill", GUI.skin.toggle);
+						if (GUI.Button (new Rect (Screen.width / 2, 300, 50, 20), "Enter")) {
 								Int32.TryParse (width, out w);
 								Int32.TryParse (height, out h);
 								Int32.TryParse (numberOfPieces, out np);
-								display = false;
-								man.armySize = (np > 0) ? np: defaultArmySize;
-								man.w =  (w > 0) ? w : defaultW;
-								man.h = (h > 0) ? h : defaultH;
-								man.setUp();
-								Application.LoadLevel (0);
+								if (w <= 0 || h <= 0 || np <= 0) {
+										Debug.Log (w);
+										showMessage = true;
+
+								} else {
+										display = false;
+										man.armySize = np;
+										man.w = w;
+										man.h = h;
+										man.setUp();
+										man.kingMode = gameMode;
+										Application.LoadLevel (0);
+								}
 
 						}
 
 
 						if (showMessage) {
 								GUI.contentColor = Color.yellow;
-								GUI.Label (new Rect (Screen.width / 2 - 250, 280, 300, 40), "Enter an integer above 0.");
+								GUI.Label (new Rect (Screen.width / 2 - 250, 360, 300, 40), "Enter an integer above 0.");
 			
 						}
+						
+						
+
 				}
 
 	}

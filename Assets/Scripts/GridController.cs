@@ -46,6 +46,12 @@ public class GridController : MonoBehaviour {
 				
 			}
 		}
+
+		if (man.kingMode) {
+
+			chooseRandomTile(xDimension,zDimension);
+
+		}
 		BuildTerrain();
 	}
 	
@@ -148,10 +154,36 @@ public class GridController : MonoBehaviour {
 
 	public void removePiece(Piece piece) {
 		pieceGrid[piece.x, piece.z] = null;
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
+
+
+	private void chooseRandomTile(int width, int height) {
+		Random rnd = new Random();	 
+	
+		int x = Random.Range(1, width-1);
+		int y = Random.Range(1, height-1);
+
+		if (width <= 2) {
+			x = Random.Range (0,width);	
+		} 
+
+		if (height <= 2) {
+			y = Random.Range (0,height);
+		}
+
+		TileController t = grid [x, y].transform.GetComponent<TileController> ();
+		t.tag = "king";
+		t.transform.renderer.material = flowers;
+
+
+
+	}
+
+
 }

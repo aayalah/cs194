@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections;
 
 public class MainMenu : MonoBehaviour {
-	
+
+
 	private UnitManager manager;
 	private GameOptions options;
 	public GUISkin skin;
