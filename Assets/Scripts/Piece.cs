@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Piece : MonoBehaviour {
-	private Rect windowRect = new Rect(20, 20, 250, 130);
+	private Rect windowRect = new Rect(20, 100, 250, 300);
+	public Texture orderMarker;
 	public string id;
+	public int teamNo;
 	public GameManager game;
 	public int maxHP = 10;
 	public int currentHP = 10;
@@ -17,7 +19,7 @@ public class Piece : MonoBehaviour {
 	public int movementRange = 3;
 	public int attackRange = 1;
 	public int experience = 0;
-	public Color baseColor = Color.green;
+	public Color baseColor = Color.white;
 	public bool dead = false;
 	private bool flashing = false;
 	private int flashingTimer = 5;
@@ -33,7 +35,12 @@ public class Piece : MonoBehaviour {
 	private int guiT;
 	private int specialTimer = 3;
 	private float lastMoveTime;
-	public int LERP_STEPS_PER_TILE = 8;
+	public int LERP_STEPS_PER_TILE = 12;
+	private float startingY;
+	private float direction = 0;
+	private bool showcaseRotate = false;
+	private Vector3 startingRotation;
+	public int numMarkers = 0;
 
 	public void Initialize(Player player, GameManager game) {
 		this.player = player;
@@ -42,16 +49,25 @@ public class Piece : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		while(direction == 0){
+			direction = Random.Range(-1, 1);
+		}
 		minDamage = 1;
 		lastMoveTime = Time.timeSinceLevelLoad;
+		startingY = transform.position.y;
 		//gameObject.renderer.material.color = Color.white;
+		if(Application.loadedLevel == 1){
+			showcaseRotate = true;
+		}
 		if(Application.loadedLevel == 2){
 			board = GameObject.Find("Game").GetComponent<GridController> ();
 			GameObject startingCell = board.getCellAt(x, z);
 			moveTo(startingCell);
 			transform.position = new Vector3(0,-100000,0);
+			showcaseRotate = false;
 			//setColor(baseColor);
 		}
+		startingRotation = transform.localEulerAngles;
 	}
 	
 	// Update is called once per frame
@@ -70,7 +86,31 @@ public class Piece : MonoBehaviour {
 		} else if (showGUI) {
 			guiT--;
 		}
+		//if(notMoving){
+			idle();
+		//}
 
+	}
+
+	void idle(){
+		if(direction == 1){
+			if(transform.position.y > startingY + .5){
+				direction = -1;
+			}
+			else{
+				transform.position = transform.position + new Vector3(0, .0025f*direction, 0);
+			}
+		}
+		else{
+			if(transform.position.y < startingY+.25){
+				direction = 1;
+			}
+			else{
+				transform.position = transform.position + new Vector3(0, .0025f*direction, 0);
+			}
+		}
+		if(showcaseRotate)
+			transform.Rotate(new Vector3(0f, 1f, 0f));
 	}
 
 	/************************
@@ -92,6 +132,21 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	public GameObject getSelectedObject(string tag){
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit[] hits;
+		hits = Physics.RaycastAll(ray, 100f);
+		int i = 0;
+		while(i < hits.Length){
+			Debug.Log(hits[i].transform.gameObject.tag);
+			if(hits[i].transform.gameObject.tag.Equals(tag)){
+				return hits[i].transform.gameObject;
+			}
+			i++;
+		}
+		return null;
+	}
+
 	public IEnumerator lerpPosition(Vector3 oldPos, Vector3 newPos) {
 		int steps = (int) (Vector3.Distance(oldPos, newPos) * LERP_STEPS_PER_TILE);
 		for (int i = 1; i <= steps; i++) {
@@ -100,13 +155,25 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator leanForward(Vector3 direction){
+		direction.Normalize();
+		transform.localEulerAngles = direction*30f;
+		if(teamNo == 0) transform.Rotate(new Vector3(0, 180, 0));
+		yield return null;
+	}
+
+	public IEnumerator leanBack(Vector3 direction){
+		transform.localEulerAngles = startingRotation;
+		yield return null;
+	}
+
 	public IEnumerator movePhysically(int oldX, int oldZ, int newX, int newZ) {
 		float halfPieceHeight = transform.localScale.y / 2;
 		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
 		GameObject currentCell = board.getCellAt(oldX, oldZ);
 		GameObject endCell = board.getCellAt(newX, newZ);
 		float currentHeight = currentCell.transform.position.y + currentCell.transform.localScale.y / 2;
-		float endHeight = endCell.transform.position.y + endCell.transform.localScale.y / 2;
+		float endHeight = endCell.transform.position.y + endCell.transform.localScale.y;// / 2;
 
 		Vector3 start = transform.position;
 		Vector3 aboveStart = new Vector3(start.x, maxHeight + halfPieceHeight, start.z);
@@ -115,8 +182,14 @@ public class Piece : MonoBehaviour {
 
 		// First shift up...
 		yield return StartCoroutine(lerpPosition(start, aboveStart));
+
+		//yield return StartCoroutine(leanForward(aboveEnd-aboveStart));
+
 		// Then over...
 		yield return StartCoroutine(lerpPosition(aboveStart, aboveEnd));
+
+		//yield return StartCoroutine(leanBack(aboveEnd-aboveStart));
+
 		// Then down.
 		yield return StartCoroutine(lerpPosition(aboveEnd, end));
 	}
@@ -127,7 +200,7 @@ public class Piece : MonoBehaviour {
 		x = tileController.x;
 		z = tileController.z;
 		if (changePosition) {
-			transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y/2, 0);
+			transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y, 0);
 		}
 	}
 
@@ -180,8 +253,9 @@ public class Piece : MonoBehaviour {
 	public void setMoveHighlights(bool onOrOff, List<GameObject> locations) {
 		movesHighlighted = onOrOff;
 		foreach (GameObject tile in locations) {
+			tile.GetComponent<TileController>().setFlashing(onOrOff);
 			TileController tc = tile.GetComponent<TileController>();
-			tc.setColor(onOrOff ? Color.yellow : tc.baseColor);
+			tc.setColor(onOrOff ? baseColor : tc.baseColor);
 		}
 	}
 	public virtual List<Piece> getAttackablePieces() {
@@ -278,7 +352,7 @@ public class Piece : MonoBehaviour {
 				while (!Input.GetMouseButtonDown(0)) {
 					yield return null;
 				}
-				selected = getSelectedObject();
+				selected = getSelectedObject("Tile");
 			}
 			setMoveHighlights(false, moveLocations);
 			yield return StartCoroutine(lerpTo(selected));
@@ -385,18 +459,51 @@ public class Piece : MonoBehaviour {
 
 
 	void OnGUI() {
+		//windowRect = new Rect(Input.mousePosition.x - Input.mousePosition.x%10, Input.mousePosition.y - Input.mousePosition.y%10, 250, 300);
 		if (showGUI) {
-						windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
+			windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
 		}
 	}
 
 	void DoMyWindow(int windowID) {
 		GUI.skin.label.alignment = TextAnchor.MiddleLeft;;
-		GUI.Label (new Rect (10, 30, 300, 40), "Type: " + getName());
-		GUI.Label (new Rect (10, 50, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
-		GUI.Label (new Rect (10, 70, 300, 40), "Attack Range: " + attackRange);
-		GUI.Label (new Rect (10, 90, 300, 40), "Movement Range: " + movementRange);
+		GUI.Label (new Rect (10, 20, 300, 40), "Type: " + getName());
+		GUI.Label (new Rect (10, 40, 300, 40), "Attack Range: " + attackRange);
+		GUI.Label (new Rect (10, 60, 300, 40), "Movement Range: " + movementRange);
+		GUI.Label (new Rect (10, 80, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
+		GUI.Label (new Rect (10, 100, 300, 40), "Special Points: " + 0 + "/" + 50);
 
+		GUI.Label (new Rect (10, 120, 300, 40), "Max Attack: " + maxSkill(attackHistogram));
+		GUI.Label (new Rect (10, 140, 300, 40), "Average Attack: " + averageSkill(attackHistogram));
+		GUI.Label (new Rect (10, 160, 300, 40), "Max Shield: " + maxSkill(defenseHistogram));
+		GUI.Label (new Rect (10, 180, 300, 40), "Average Shield: " + averageSkill(defenseHistogram));
+		GUI.Label (new Rect (10, 200, 300, 40), "Max Special: " + maxSkill(specialHistogram));
+		GUI.Label (new Rect (10, 220, 300, 40), "Average Special: " + averageSkill(specialHistogram));
+		GUI.Label (new Rect (10, 250, 100, 40), "Turns: ");
+
+		for(int i = 0; i < numMarkers; i++){
+			GUI.DrawTexture(new Rect(75+(50*i), 250, 40, 40), orderMarker);
+		}
+
+	}
+
+	float averageSkill(int[] skill){
+		int counter = 0;
+		int sum = 0;
+		for(int i = 0; i < skill.Length; i++){
+			sum += skill[i];
+		}
+		return Mathf.Round(((float)sum/(float)skill.Length)*100f)/100f;
+	}
+	
+	float maxSkill(int[] skill){
+		int max = 0;
+		for(int i = 0; i < skill.Length; i++){
+			if(skill[i] > max){
+				max = skill[i];
+			}
+		}
+		return max;
 	}
 
 	string getName() {

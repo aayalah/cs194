@@ -41,13 +41,14 @@ public class Player : MonoBehaviour {
 			piece.id = "player" + id;
 			piece.player = this;
 			piece.tag = "piece";
-			if(id == 0) {
-				piece.baseColor = Color.green;
-			} else {
-				piece.baseColor = Color.blue;
-			}
 			pieceArray.Add (piece);
-			yield return StartCoroutine(piece.initialPlacement(id));
+			if(id == 0) {
+				pieceArray[i].baseColor = Color.green;
+			} else {
+				pieceArray[i].baseColor = Color.blue;
+			}
+
+			yield return StartCoroutine(pieceArray[i].initialPlacement(id));
 
 		}
 
@@ -84,6 +85,7 @@ public class Player : MonoBehaviour {
 	}
 	
 	public IEnumerator choosePieces() {
+		numPieces = 0;
 		Piece chosenPiece = null;
 		while (numPieces != numSelectedPieces) {
 			GameObject selected;
@@ -96,9 +98,10 @@ public class Player : MonoBehaviour {
 						chosenPiece = (Piece)selected.GetComponent (typeof(Piece));
 						string temp = chosenPiece.id;
 						string test = "player" + getId();
-						if (temp.Equals(test) && (!selectedPieceArray.Contains(chosenPiece))) {
+						if (temp.Equals(test)) {
 							selectedPieceArray.Add (chosenPiece);
 							chosenPiece.setColor(Color.red);
+							chosenPiece.numMarkers++;
 							numPieces++;
 						}
 					}
@@ -110,7 +113,6 @@ public class Player : MonoBehaviour {
 		foreach(Piece p in selectedPieceArray) {
 			p.setColor(p.baseColor);
 		}
-		
 	}
 	
 //	private bool containsPiece(Piece[] playersPieces,Piece piece) {

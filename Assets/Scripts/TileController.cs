@@ -12,17 +12,18 @@ public class TileController : MonoBehaviour {
 	public Color baseColor = Color.white;
 
 	void Start() {
+		off = this.gameObject.renderer.material;
 		this.gameObject.renderer.material.color = baseColor;
 		previousFlash = -1.0f;
 	}
 
 	// Update is called once per frame
 	void Update () {
-		/*if (flashing) {
-			setColor(Color.yellow);
+		if (flashing) {
+			this.renderer.material = on;
 		} else {
-			setColor(baseColor);
-		}*/
+			this.renderer.material = off;
+		}
 	}
 
 	public void setBaseColor(Color c) {
@@ -30,25 +31,6 @@ public class TileController : MonoBehaviour {
 	}
 	public void setColor(Color c) {
 		gameObject.renderer.material.color = c;
-	}
-
-	/*
-	void OnCollisionEnter (Collision coll) {
-		flashing = true;
-	}
-
-	void OnCollisionExit(Collision coll) {
-		if (flashing) {
-			this.gameObject.renderer.material.color = baseColor;
-		} else {
-			if (coll.collider.name == "Ball1") {
-				toggleColor(Color.blue);
-			}
-			if (coll.collider.name == "Ball2") {
-				toggleColor(Color.green);
-			}
-		}
-		flashing = false;
 	}
 
 	public void setFlashing(bool shouldBeFlashing) {
@@ -61,6 +43,5 @@ public class TileController : MonoBehaviour {
 
 	public void stopFlashing() {
 		setFlashing(false);
-	}	
-	*/
+	}
 }

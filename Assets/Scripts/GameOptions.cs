@@ -4,14 +4,21 @@ using System;
 public class GameOptions : MonoBehaviour {
 
 	private static bool created = false;
-	private string width = "";
-	private string height = "";
-	private string numberOfPieces = "";
+	private string width = "20";
+	private string height = "20";
+	private string numberOfPieces = "5";
 	private bool showMessage = false;
+
 	private bool gameMode = false;
-	public int w = 20;
-	public int h = 20;
-	public int np = 3;
+
+	public GUISkin skin;
+	public int defaultW = 20;
+	public int defaultH = 20;
+	public int defaultArmySize = 5;
+
+	public int w;
+	public int h;
+	public int np;
 	private bool display = false;
 	private UnitManager man;
 
@@ -36,6 +43,7 @@ public class GameOptions : MonoBehaviour {
 
 	void OnGUI() {
 		if (display) {
+			GUI.skin = skin;
 						GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 						GUI.skin.label.fontSize = 60;
 						GUI.Label (new Rect (Screen.width / 2 - 150, 30, 400, 100), "Game Options", GUI.skin.label);

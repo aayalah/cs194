@@ -68,6 +68,7 @@ public class UnitManager : MonoBehaviour {
 		shields[totalUnits] = sh;
 		specials[totalUnits] = spec;
 		totalUnits++;
+		//if(totalUnits % armySize == 0) teamsBuilt++;
 	}
 	
 	public Piece getUnit(int id, int i){
@@ -77,8 +78,10 @@ public class UnitManager : MonoBehaviour {
 			if(id == 0){
 				bumble = (Piece)Instantiate(redBumblebee, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 				bumble.transform.Rotate(new Vector3(0, 180, 0));
+				bumble.teamNo = 0;
 			}else{
 				bumble = (Piece)Instantiate(blueBumblebee, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+				bumble.teamNo = 1;
 			}
 			bumble.transform.localScale = new Vector3(1f, 1f, 1f);
 			bumble.gameObject.GetComponentInChildren<Renderer>().enabled = true;
@@ -97,8 +100,10 @@ public class UnitManager : MonoBehaviour {
 			if(id == 0){
 				worker = (Piece)Instantiate(redWorker, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 				worker.transform.Rotate(new Vector3(0, 180, 0));
+				worker.teamNo = 0;
 			}else{
 				worker = (Piece)Instantiate(blueWorker, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+				worker.teamNo = 1;
 			}
 			worker.transform.localScale = new Vector3(.9f, .9f, .9f);
 			worker.gameObject.GetComponentInChildren<Renderer>().enabled = true;
@@ -116,8 +121,10 @@ public class UnitManager : MonoBehaviour {
 			if(id == 0){
 				hornet = (Piece)Instantiate(redHornet, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
 				hornet.transform.Rotate(new Vector3(0, 180, 0));
+				hornet.teamNo = 0;
 			}else{
 				hornet = (Piece)Instantiate(blueHornet, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
+				hornet.teamNo = 1;
 			}
 			hornet.transform.localScale = new Vector3(.8f, .8f, .8f);
 			hornet.gameObject.GetComponentInChildren<Renderer>().enabled = true;

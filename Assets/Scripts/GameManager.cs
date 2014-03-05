@@ -9,6 +9,11 @@ public class GameManager : MonoBehaviour {
 	//Static Variables
 
 	//Non-Static Variables
+	public GUISkin skin;
+	private static string piecePlacementText = "Click on one of the colored squares to place each of your pieces.";
+	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
+	private static string pieceMovementText = "Click on a colored square to move your piece."; 
+	private static string pieceAttackText = "Click on an enemy within range to attack or press SPACE to charge special";
 
 	public Player player;
 	public Camera camera;
@@ -25,9 +30,6 @@ public class GameManager : MonoBehaviour {
 
 	///Static Variables
 	//Help Messages
-	private static string piecePlacementText = "Click on one of the yellow squares to place each of your pieces.";
-	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them.\n You can click on a piece more than once.";
-	private static string pieceMovementText = "Click on a yellow square to move your grey piece to."; 
 
 	//boolean variables
 	private bool gameIsOver = false;
@@ -114,7 +116,6 @@ public class GameManager : MonoBehaviour {
 	   }
 
 		while (allPlayersHavePieces()) {
-	
 
 			/////Stage 1: Piece Selection
 			stage = 1;
@@ -145,11 +146,10 @@ public class GameManager : MonoBehaviour {
 
 						yield return StartCoroutine (playersPieces[j].attack ());
 						playersPieces[j].setColor(playersPieces[j].baseColor);
+						playersPieces [j].numMarkers--;
 					}
 				}	
 			}
-
-
 
 			///Reset
 			for (int i = 0; i < numPlayers; i++) {
@@ -197,10 +197,96 @@ public class GameManager : MonoBehaviour {
 						}
 					}
 				}
-
-
 		gameOverText = "Game Over: Player " + winner + " Wins! :D :D";
 		gameIsOver = true;
+	}
+
+	private void setTurnText(int p) {
+		showTurnLabel = false;
+		turnText = "Player: " + (p+1) + "'s Turn";
+		showTurnLabel = true;
+	}
+
+	private void setInstructionText(int i) {
+
+		switch(i) {
+
+			case 0:
+				instructionText = piecePlacementText;
+				showInstructionLabel = true;
+				break;
+			case 1:
+			instructionText = pieceOrderSelectionText;
+				showInstructionLabel = true;
+				break;
+			case 2:
+				instructionText = pieceMovementText;
+				showInstructionLabel = true;
+				break;
+		}
+	
+
+
+	}
+
+	void OnGUI() {
+
+		GUI.skin = skin;
+		if (gameIsOver) {
+			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
+		}
+
+		if (showTurnLabel) {
+			GUI.Box(new Rect(Screen.width/2-500,0, 1000, 75), "", GUI.skin.GetStyle("box"));
+			GUI.contentColor = Color.yellow;
+			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+			GUI.skin.label.fontSize = 20;
+			GUI.Label(new Rect(Screen.width/2 - 250, 1, 500, 50), turnText, GUI.skin.label);
+		}
+
+		if (showInstructionLabel) {
+			GUI.contentColor = Color.red;
+			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+			GUI.skin.label.fontSize = 18;
+			GUI.Label(new Rect(Screen.width/2 - 450, 25, 900, 50), instructionText, GUI.skin.label);
+		}
+
+		if (showFixedOrderGui) {
+
+			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
+		}
+
+		if (GUI.Button (new Rect (745,22, 40, 22), "Help")) {
+			
+			showHelpWindow = true;
+			
+		}
+		
+		
+		if (showHelpWindow) {
+			
+			windowRect = GUI.Window (1, windowRect, helpWindow, "Help Window");
+		}
+
+	}
+
+	void pieceOrderWindow(int windowID) {
+		GUI.contentColor = Color.yellow;
+		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+		GUI.backgroundColor = Color.black;
+		GUI.Label (new Rect (10, 30, 350, 40), "Do you want to save the current order?", GUI.skin.label);
+		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
+		if (GUI.Button (new Rect (60, 80, 40, 30), "Yes")) {
+			orderFixed[currentPlayersTurn] = true;
+			showFixedOrderGui = false;
+		}
+
+		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
+
+		if(GUI.Button (new Rect (275, 80, 40, 30), "No")) {
+			orderFixed[currentPlayersTurn] = false;
+			showFixedOrderGui = false;
+		}
 	}
 
 	public IEnumerator changeCameraPosition(int player) {
@@ -231,7 +317,7 @@ public class GameManager : MonoBehaviour {
 //	}
 //
 
-	void OnGUI() {
+//	void OnGUI() {
 		
 //		if (gameIsOver) {
 //			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
@@ -256,20 +342,10 @@ public class GameManager : MonoBehaviour {
 //			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
 //		}
 //		
-		if (GUI.Button (new Rect (745,22, 40, 22), "Help")) {
-			
-			showHelpWindow = true;
-			
-		}
 
-
-		if (showHelpWindow) {
-			
-			windowRect = GUI.Window (1, windowRect, helpWindow, "Help Window");
-		}
 
 		
-	}
+//	}
 
 
 	void helpWindow(int windowID) {

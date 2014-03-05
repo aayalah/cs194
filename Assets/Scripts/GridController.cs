@@ -46,19 +46,17 @@ public class GridController : MonoBehaviour {
 				
 			}
 		}
-		//BuildTerrain();
 
 		if (man.kingMode) {
 
 			chooseRandomTile(xDimension,zDimension);
 
 		}
-
-
+		BuildTerrain();
 	}
 	
 	void BuildTerrain(){
-		for(int i = 0; i < 100; i++){
+		for(int i = 0; i < xDimension*zDimension/2; i++){
 			int row = Random.Range(0, xDimension);
 			int col = Random.Range(0, zDimension);
 			GameObject t = grid[row, col];

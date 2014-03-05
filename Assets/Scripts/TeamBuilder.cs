@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 public class TeamBuilder : MonoBehaviour {
+	public GUISkin skin;
 	public UnitManager manager;
 	public Transform bar;
 	public Material mat;
@@ -114,25 +115,35 @@ public class TeamBuilder : MonoBehaviour {
 	}
 	
 	void setUpUnitSelect(){
-		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(35f, 4f, 2.5f), Quaternion.identity);
+		if(manager.teamsBuilt == 0){
+		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(36f, 1f, 5f), Quaternion.identity);
 		redB.transform.localScale = new Vector3(6f, 6f, 6f);
-		Transform redW = (Transform)Instantiate(redWorker, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		Transform redW = (Transform)Instantiate(redWorker, new Vector3(35f, 1f, 2.5f), Quaternion.identity);
 		redW.transform.localScale = new Vector3(5f, 5f, 5f);
 		redW.GetComponentInChildren<Renderer>().enabled = false;
-		Transform redH = (Transform)Instantiate(redHornet, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
+		Transform redH = (Transform)Instantiate(redHornet, new Vector3(35f, 1f, 2.5f), Quaternion.identity);
 		redH.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
 		redH.GetComponentInChildren<Renderer>().enabled = false;
-		
-		/*
-		Transform blueB = (Transform)Instantiate(blueBumblebee, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		Transform blueW = (Transform)Instantiate(blueWorker, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		blueW.GetComponentInChildren<Renderer>().enabled = false;
-		Transform blueH = (Transform)Instantiate(blueHornet, new Vector3(35f, 5f, 2.5f), Quaternion.identity);
-		blueH.GetComponentInChildren<Renderer>().enabled = false;*/
-		
+
 		currentWorker = redW;
 		currentHornet = redH;
 		currentBumble = redB;
+
+		}else if(manager.teamsBuilt == 1){
+			Transform blueB = (Transform)Instantiate(blueBumblebee, new Vector3(36f, 1f, 5f), Quaternion.identity);
+			blueB.transform.localScale = new Vector3(6f, 6f, 6f);
+			Transform blueW = (Transform)Instantiate(blueWorker, new Vector3(35f, 1f, 2.5f), Quaternion.identity);
+			blueW.transform.localScale = new Vector3(5f, 5f, 5f);
+			blueW.GetComponentInChildren<Renderer>().enabled = false;
+			Transform blueH = (Transform)Instantiate(blueHornet, new Vector3(35f, 1f, 2.5f), Quaternion.identity);
+			blueH.transform.localScale = new Vector3(3.5f, 3.5f, 3.5f);
+			blueH.GetComponentInChildren<Renderer>().enabled = false;
+		
+			currentWorker = blueW;
+			currentHornet = blueH;
+			currentBumble = blueB;
+		}
+
 
 	}
 	
@@ -234,36 +245,70 @@ public class TeamBuilder : MonoBehaviour {
 	}
 				
 	void OnGUI(){
+		if(unitsCreated < armySize){
 		GUI.contentColor = Color.black;
-		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 100), "Current Graph #"+(currentGraph+1));
-		GUI.Label(new Rect(Screen.width/10, Screen.height-115, 200, 100), "Current Color Distribution #"+(currentColor+1));
+		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 50), "Current Graph #"+(currentGraph+1));
+		GUI.Label(new Rect(Screen.width/10-10, Screen.height-115, 300, 50), "Current Color Distribution #"+(currentColor+1));
 		
 		GUI.Label(new Rect(Screen.width/10, Screen.height-100, 200, 100), "Avg. Attack: "+averageSkill(Color.red));
-		GUI.Label(new Rect(Screen.width/10+150, Screen.height-100, 200, 100), "Max Attack: "+maxSkill(Color.red));
+		GUI.Label(new Rect(Screen.width/10+200, Screen.height-100, 200, 100), "Max Attack: "+maxSkill(Color.red));
 		GUI.Label(new Rect(Screen.width/10, Screen.height-85, 200, 100), "Avg. Shield: "+averageSkill(Color.green));
-		GUI.Label(new Rect(Screen.width/10+150, Screen.height-85, 200, 100), "Max Shield: "+maxSkill(Color.green));
+		GUI.Label(new Rect(Screen.width/10+200, Screen.height-85, 200, 100), "Max Shield: "+maxSkill(Color.green));
 		GUI.Label(new Rect(Screen.width/10, Screen.height-70, 200, 100), "Avg. Special: "+averageSkill(Color.yellow));
-		GUI.Label(new Rect(Screen.width/10+150, Screen.height-70, 200, 100), "Max Special: "+maxSkill(Color.yellow));
+		GUI.Label(new Rect(Screen.width/10+200, Screen.height-70, 200, 100), "Max Special: "+maxSkill(Color.yellow));
 		
 		UnitLabels();
-		
-		if(unitsCreated < armySize){
-			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-50,150,100), "Create Unit", GUI.skin.GetStyle("button"))) {
+
+			GUI.skin = skin;
+			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-200,150,100), "Create Unit", GUI.skin.GetStyle("button"))) {
 				int [] attack = findArray(Color.red);
 				int [] shield = findArray(Color.green);
 				int [] special = findArray(Color.yellow);
 				manager.addUnit(unitNum, attack, shield, special);
 				unitsCreated++;
 				removeCombination();
+				if(unitsCreated == armySize){
+					currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+					currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+					currentHornet.GetComponentInChildren<Renderer>().enabled = false;
+					eraseGraph();
+				}
+			}
+
+			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-100,150,100), "Randomize", GUI.skin.GetStyle("button"))) {
+				RandomizeRemainingUnits();
+				currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+				currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+				currentHornet.GetComponentInChildren<Renderer>().enabled = false;
 			}
 		}else{
-			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-50,150,100), "Confirm", GUI.skin.GetStyle("button"))) {
+			GUI.skin = skin;
+			if (GUI.Button (new Rect (Screen.width/2-75,Screen.height/2-200,150,100), "Confirm", GUI.skin.GetStyle("button"))) {
 				manager.teamsBuilt++;
 				Application.LoadLevel(0);
 			}
+
 		}
 	}
-	
+
+	void RandomizeRemainingUnits(){
+		for(int i = unitsCreated; i < armySize; i++){
+			int rand = Random.Range(1, 4);
+			for(int j = 0; j < rand; j++){
+				currentGraph = nextGraph[currentGraph];
+				currentColor = prevColor[currentColor];
+				unitNum = rand;
+			}
+			int [] attack = findArray(Color.red);
+			int [] shield = findArray(Color.green);
+			int [] special = findArray(Color.yellow);
+			manager.addUnit(unitNum, attack, shield, special);
+			unitsCreated++;
+			removeCombination();
+			eraseGraph();
+		}
+	}
+
 	void UnitLabels(){
 		if(currentBumble.GetComponentInChildren<Renderer>().enabled){
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Bumblebee");
@@ -340,6 +385,13 @@ public class TeamBuilder : MonoBehaviour {
 		}
 		return max;
 	}
+
+	void eraseGraph(){
+		for(int i = 0; i < numBars; i++){
+			Transform bar = bars[currentGraph, i];
+			bar.gameObject.renderer.enabled = false;
+		}
+	}
 			
 	void drawNewGraph(){
 		for(int i = 0; i < numBars; i++){
@@ -358,6 +410,7 @@ public class TeamBuilder : MonoBehaviour {
 			}	
 	}
 	
+
 	float max(float a, float b){
 		 return a > b ? a : b;
 	}
