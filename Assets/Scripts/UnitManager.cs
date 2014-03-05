@@ -15,6 +15,7 @@ public class UnitManager : MonoBehaviour {
 	public bool kingMode;
 	public int totalUnits;
 	public int [] types;
+	public int turnsPerRound = 3;
 	private int[][] attacks;
 	private int[][] shields;
 	private int[][] specials;
