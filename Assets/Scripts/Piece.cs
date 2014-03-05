@@ -258,22 +258,26 @@ public class Piece : MonoBehaviour {
 			tc.setColor(onOrOff ? baseColor : tc.baseColor);
 		}
 	}
+
+	public virtual List<GameObject> getAttackableTiles() {
+		return getMoveLocations();
+	}
+
 	public virtual List<Piece> getAttackablePieces() {
-		// Default attack is, oh let's say anypoint <= attackRange spots away...
-		List<Piece> pieces = new List<Piece> ();
-		for (int i = x - attackRange; i <= x + attackRange; i++) {
-			for (int j = z - attackRange; j <= z + attackRange; j++) {
-				if (Mathf.Sqrt((x-i)*(x-i) + (z-j)*(z-j)) <= attackRange) {
-					Piece attackablePiece = board.getPieceAt (i, j);
-					if (attackablePiece && attackablePiece.player != this.player) {
-						pieces.Add (attackablePiece);
-					}
-				}
+		List<Piece> pieces = new List<Piece>();
+		List<GameObject> tiles = getAttackableTiles();
+		foreach (GameObject tile in tiles) {
+			TileController controller = tile.GetComponent<TileController>();
+			Piece other = board.getPieceAt(controller.x, controller.z);
+			if (other && other.player != this.player) {
+				pieces.Add(other);
 			}
 		}
+
 		return pieces;
 	}
 	
+	/*
 	public virtual void setAttackHighlights(bool onOrOff) {
 		attacksHighlighted = onOrOff;
 		foreach (Piece piece in getAttackablePieces()) {
@@ -281,6 +285,18 @@ public class Piece : MonoBehaviour {
 			//piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
 		}
 	}
+	*/
+  public virtual void setAttackHighlights(bool onOrOff) {
+    attacksHighlighted = onOrOff;
+    foreach (Piece piece in getAttackablePieces()) {
+      GameObject tile = board.getCellAt(piece.x, piece.z);
+      piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
+    }
+    foreach (GameObject tile in getAttackableTiles()) {
+      TileController tc = tile.GetComponent<TileController>();
+      tc.setColor(onOrOff ? Color.cyan : tc.baseColor);
+    }
+  }
 
 	public void setColor(Color color) {
 		//gameObject.renderer.material.color = color;

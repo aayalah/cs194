@@ -5,70 +5,115 @@ using System.Collections.Generic;
 public class RangerPiece : Piece {
 
   public Color LIGHT_BLUE = new Color(134, 240, 233);
+  public Bullet bulletPrefab;
+  public float bulletSpeed = 3;
 
   // Move on diagonals...
   public override List<GameObject> getMoveLocations() {
     List<GameObject> locations = new List<GameObject> ();
-    for (int i = -movementRange; i <= movementRange; i++) {
-      if (board.cellIsFree(x+i, z+i, this)) {
-        if(!locations.Contains(board.getCellAt(x+i, z+i))) {
-          locations.Add(board.getCellAt (x+i, z+i));
-        }
-      }
-      if (board.cellIsFree(x+i, z-i, this)) {
-        if(!locations.Contains(board.getCellAt(x+i, z-i))) {
-          locations.Add(board.getCellAt (x+i, z-i));
-        }
-      }
-    }
-    return locations;
-  }
-
-  // ... attack on rows/columns.
-  public override List<Piece> getAttackablePieces() {
-    List<Piece> pieces = new List<Piece> ();
-    for (int i = -attackRange; i <= attackRange; i++) {
-      Piece attackablePiece = board.getPieceAt(x+i, z);
-      if (attackablePiece && attackablePiece.player != this.player) {
-        pieces.Add (attackablePiece);
-      }
-      if (i != 0) {
-        attackablePiece = board.getPieceAt(x, z+i);
-        if (attackablePiece && attackablePiece.player != this.player) {
-          pieces.Add (attackablePiece);
-        }     
-      }
-    }
-    return pieces;
-  }
-
-  public List<GameObject> getAttackableTiles() {
-    List<GameObject> attackableTiles = new List<GameObject>();
-    for (int i = -attackRange; i <= attackRange; i++) {
-      GameObject tile = board.getCellAt(x+i, z);
+    GameObject tile;
+    Piece other;
+    // Center
+    locations.Add(board.getCellAt(x,z));
+    // Left/Down
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x-i, z-i);
+      other = board.getPieceAt(x-i, z-i);
       if (tile) {
-        attackableTiles.Add(tile);
+        locations.Add(tile);
       }
-      if (i != 0) {
-        tile = board.getCellAt(x, z+i);
-        if (tile) {
-          attackableTiles.Add(tile);
-        }
+      if (other) {
+        break;
       }
     }
-    return attackableTiles;  
+    // Right/Down
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x+i, z-i);
+      other = board.getPieceAt(x+i, z-i);
+      if (tile) {
+        locations.Add(tile);
+      }
+      if (other) {
+        break;
+      }
+    }
+    // Left/Up
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x-i, z+i);
+      other = board.getPieceAt(x-i, z+i);
+      if (tile) {
+        locations.Add(tile);
+      }
+      if (other) {
+        break;
+      }
+    }
+    // Right/Up
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x+i, z+i);
+      other = board.getPieceAt(x+i, z+i);
+      if (tile) {
+        locations.Add(tile);
+      }
+      if (other) {
+        break;
+      }
+    }
+    
+    return locations; 
   }
+  // ... attack on rows/columns.
+  public override List<GameObject> getAttackableTiles() {
+    List<GameObject> locations = new List<GameObject> ();
+    GameObject tile;
+    Piece other;
 
-  public override void setAttackHighlights(bool onOrOff) {
-    attacksHighlighted = onOrOff;
-    foreach (Piece piece in getAttackablePieces()) {
-      GameObject tile = board.getCellAt(piece.x, piece.z);
-      piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
+    // Left
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x-i, z);
+      other = board.getPieceAt(x-i, z);
+      if (tile) {
+        locations.Add(tile);
+      }
+      if (other) {
+        break;
+      }
     }
-    foreach (GameObject tile in getAttackableTiles()) {
-      TileController tc = tile.GetComponent<TileController>();
-      tc.setColor(onOrOff ? Color.cyan : tc.baseColor);
+    // Right
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x+i, z);
+      other = board.getPieceAt(x+i, z);
+      if (tile) {
+        locations.Add(tile);
+      }
+      if (other) {
+        break;
+      }
     }
+    // Down 
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x, z-i);
+      other = board.getPieceAt(x, z-i);
+      if (tile) {
+        locations.Add(tile);
+      }
+      if (other) {
+        break;
+      }
+    }
+    // Up
+    for (int i = 1; i <= movementRange; i++) {
+      tile = board.getCellAt(x, z+i);
+      other = board.getPieceAt(x, z+i);
+      if (tile) {
+        locations.Add(tile);
+      }
+      if (other) {
+        break;
+      }
+    }
+    
+    return locations; 
   }
 
   public override IEnumerator attack() {
@@ -93,8 +138,9 @@ public class RangerPiece : Piece {
             selectedPiece = selectedObject.GetComponent<Piece>();
           }
         }
-
-        damageEnemy(selectedPiece);
+       Bullet bullet = (Bullet) Instantiate(bulletPrefab, transform.position + new Vector3(0,1,0), Quaternion.identity);
+       bullet.creator = this;
+       bullet.velocity = bulletSpeed * (selectedPiece.transform.position - this.transform.position).normalized;
       }
       setAttackHighlights(false);
     }

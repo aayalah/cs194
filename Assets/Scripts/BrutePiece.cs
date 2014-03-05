@@ -21,8 +21,23 @@ public class BrutePiece : Piece {
     return locations;
   }
 
+  public override List<GameObject> getAttackableTiles() {
+    List<GameObject> tiles = new List<GameObject> ();
+    for (int i = x - attackRange; i <= x + attackRange; i++) {
+      for (int j = z - attackRange; j <= z + attackRange; j++) {
+        if (Mathf.Sqrt((x-i)*(x-i) + (z-j)*(z-j)) <= attackRange) {
+          GameObject attackableTile = board.getCellAt (i, j);
+          if (attackableTile) {
+            tiles.Add (attackableTile);
+          }
+        }
+      }
+    }
+    return tiles;
+  }   
+
   // And attack within radius, too.
-  public virtual List<Piece> getAttackablePieces() {
+  public override List<Piece> getAttackablePieces() {
     // Default attack is, oh let's say anypoint <= attackRange spots away...
     List<Piece> pieces = new List<Piece> ();
     for (int i = x - attackRange; i <= x + attackRange; i++) {
