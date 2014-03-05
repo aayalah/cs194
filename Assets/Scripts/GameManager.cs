@@ -10,6 +10,9 @@ public class GameManager : MonoBehaviour {
 
 	//Non-Static Variables
 	public GUISkin skin;
+
+	public Texture up;
+	public Texture down;
 	private static string piecePlacementText = "Click on one of the colored squares to place each of your pieces.";
 	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
 	private static string pieceMovementText = "Click on a colored square to move your piece."; 
@@ -19,6 +22,7 @@ public class GameManager : MonoBehaviour {
 	public Camera camera;
 	public UnitManager manager;
 	public Clock clock;	
+	private bool hintsHidden;
 
 	public Player[] players;
 	public Piece[,] playersPieces;
@@ -81,7 +85,8 @@ public class GameManager : MonoBehaviour {
 		//Setup
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
 		clock = GameObject.Find ("Clock").GetComponent<Clock>();
-		numberSelectedPlayersPieces = manager.armySize;
+		if(!manager.kingMode) Destroy(clock);
+		numberSelectedPlayersPieces = manager.turnsPerRound;
 		//playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
 		//currentNumberOfPlayersPieces = new int[numPlayers];
 
@@ -99,18 +104,17 @@ public class GameManager : MonoBehaviour {
 			players[i] = (Player)Instantiate (player, v, Quaternion.identity);
 			players[i].Initialize (i, camera, this, manager);
 		}
-
-		clock.startTimeCountdown();
+		if(manager.kingMode) clock.startTimeCountdown();
 		//Start Game Loop
 		StartCoroutine (mainLoops ());
 	}
 
 	public IEnumerator mainLoops() {
 
-		//setInstructionText(0);
+		setInstructionText(0);
 		stage = 0;
 		for (int i = 0; i < numPlayers; i++) {
-			//setTurnText(i);
+			setTurnText(i);
 			yield return StartCoroutine(changeCameraPosition (i));
 			yield return StartCoroutine(players[i].setUpPieces());
 	   }
@@ -121,7 +125,7 @@ public class GameManager : MonoBehaviour {
 			stage = 1;
 			for (int i = 0; i < numPlayers; i++) {
 					yield return StartCoroutine(changeCameraPosition (i));
-					//setTurnText(i);
+					setTurnText(i);
 					if(!orderFixed[i]) {
 						yield return StartCoroutine (players [i].choosePieces ());	
 					}
@@ -138,7 +142,7 @@ public class GameManager : MonoBehaviour {
 					List<Piece> playersPieces = players[i].getSelectedPieces();
 					//currentPlayersTurn = i;
 					if(playersPieces.Capacity >= j){
-						//setTurnText(i);
+						setTurnText(i);
 						yield return StartCoroutine(changeCameraPosition (i));
 						playersPieces[j].setColor(Color.grey);
 						stage = 2;
@@ -235,20 +239,26 @@ public class GameManager : MonoBehaviour {
 		if (gameIsOver) {
 			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
 		}
+		if(!hintsHidden){
+			if (showTurnLabel) {
+				GUI.Box(new Rect(Screen.width/2-500,0, 1000, 75), "", GUI.skin.GetStyle("box"));
+				GUI.contentColor = Color.yellow;
+				GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+				GUI.skin.label.fontSize = 20;
+				GUI.Label(new Rect(Screen.width/2 - 250, 1, 500, 50), turnText, GUI.skin.label);
+			}
 
-		if (showTurnLabel) {
-			GUI.Box(new Rect(Screen.width/2-500,0, 1000, 75), "", GUI.skin.GetStyle("box"));
-			GUI.contentColor = Color.yellow;
-			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-			GUI.skin.label.fontSize = 20;
-			GUI.Label(new Rect(Screen.width/2 - 250, 1, 500, 50), turnText, GUI.skin.label);
-		}
+			if (showInstructionLabel) {
+				GUI.contentColor = Color.red;
+				GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+				GUI.skin.label.fontSize = 18;
+				GUI.Label(new Rect(Screen.width/2 - 450, 25, 900, 50), instructionText, GUI.skin.label);
+			}
+			if(GUI.Button(new Rect(Screen.width/2+400,60, 40, 20), up, GUI.skin.GetStyle("button"))) hintsHidden = true;
 
-		if (showInstructionLabel) {
-			GUI.contentColor = Color.red;
-			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-			GUI.skin.label.fontSize = 18;
-			GUI.Label(new Rect(Screen.width/2 - 450, 25, 900, 50), instructionText, GUI.skin.label);
+		}else{
+			GUI.Box(new Rect(Screen.width/2-500,0, 1000, 25), "", GUI.skin.GetStyle("box"));
+			if(GUI.Button(new Rect(Screen.width/2+400,10, 40, 20), down, GUI.skin.GetStyle("button"))) hintsHidden = false;
 		}
 
 		if (showFixedOrderGui) {
@@ -256,13 +266,6 @@ public class GameManager : MonoBehaviour {
 			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
 		}
 
-		if (GUI.Button (new Rect (745,22, 40, 22), "Help")) {
-			
-			showHelpWindow = true;
-			
-		}
-		
-		
 		if (showHelpWindow) {
 			
 			windowRect = GUI.Window (1, windowRect, helpWindow, "Help Window");
@@ -384,13 +387,7 @@ public class GameManager : MonoBehaviour {
 //	}
 //
 //
-//
-//	private void setTurnText(int p) {
-//		showTurnLabel = false;
-//		turnText = "Player: " + p + "'s Turn";
-//		showTurnLabel = true;
-//	}
-//	
+
 	private string getInstructionText(int i) {
 		string instructionText = "";
 		switch(i) {

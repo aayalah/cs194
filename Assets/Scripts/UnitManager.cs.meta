@@ -2,7 +2,13 @@ fileFormatVersion: 2
 guid: 74bfa99d475b14451a372fd2ac1c2303
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - redBumblebee: {fileID: 11400000, guid: 318d53431869b44b49250d17a77a9b8d, type: 2}
+  - redWorker: {fileID: 11400002, guid: 3159177b88c03479db9e1e7103db3e7c, type: 2}
+  - redHornet: {fileID: 11400000, guid: 228179e84c1334f29b513dc1ef92699b, type: 2}
+  - blueBumblebee: {fileID: 11400000, guid: e56eda694ff034271a08422d44e1a330, type: 2}
+  - blueWorker: {fileID: 11400000, guid: 028c2886391bd48c7817728229665dcb, type: 2}
+  - blueHornet: {fileID: 11400000, guid: 462013b094fe04e0ca3d0ebc10773a36, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

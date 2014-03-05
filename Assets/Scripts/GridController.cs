@@ -52,7 +52,7 @@ public class GridController : MonoBehaviour {
 			chooseRandomTile(xDimension,zDimension);
 
 		}
-		BuildTerrain();
+		//BuildTerrain();
 	}
 	
 	void BuildTerrain(){

@@ -43,7 +43,7 @@ public class Player : MonoBehaviour {
 			piece.tag = "piece";
 			pieceArray.Add (piece);
 			if(id == 0) {
-				pieceArray[i].baseColor = Color.green;
+				pieceArray[i].baseColor = Color.red;
 			} else {
 				pieceArray[i].baseColor = Color.blue;
 			}
@@ -64,9 +64,11 @@ public class Player : MonoBehaviour {
 		um = man;
 
 		Vector3 v = new Vector3 (0, 0, 0);
-		clock = (ClockKing)Instantiate (clock, v, Quaternion.identity);
-		clock.Initialize(id);
-		
+
+		if(um.kingMode){
+			clock = (ClockKing)Instantiate (clock, v, Quaternion.identity);
+			clock.Initialize(id);
+		}
 	}
 
 	
@@ -87,7 +89,7 @@ public class Player : MonoBehaviour {
 	public IEnumerator choosePieces() {
 		numPieces = 0;
 		Piece chosenPiece = null;
-		while (numPieces != numSelectedPieces) {
+		while (numPieces != um.turnsPerRound) {
 			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
