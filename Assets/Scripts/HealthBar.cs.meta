@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 5541a2a0757a84017b14ecfaa9c5548b
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - myPiece: {instanceID: 0}
+  - cube: {fileID: 400000, guid: 5632ee9cb05c249678e41e20cc76ef64, type: 2}
+  - green: {fileID: 2800000, guid: 26d9d48a0855b47c9aba7453cb393b36, type: 3}
+  - red: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 

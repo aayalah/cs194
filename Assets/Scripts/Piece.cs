@@ -41,10 +41,13 @@ public class Piece : MonoBehaviour {
 	private bool showcaseRotate = false;
 	private Vector3 startingRotation;
 	public int numMarkers = 0;
+	private HealthBar healthBar;
 
 	public void Initialize(Player player, GameManager game) {
 		this.player = player;
 		this.game = game;
+		this.healthBar = transform.gameObject.GetComponent<HealthBar> ();
+		healthBar.myPiece = this;
 	}
 
 	// Use this for initialization
@@ -65,6 +68,8 @@ public class Piece : MonoBehaviour {
 			moveTo(startingCell);
 			transform.position = new Vector3(0,-100000,0);
 			showcaseRotate = false;
+			healthBar.currentHP = currentHP;
+			healthBar.maxHP = maxHP;
 			//setColor(baseColor);
 		}
 		startingRotation = transform.localEulerAngles;
@@ -83,6 +88,7 @@ public class Piece : MonoBehaviour {
 
 		if (showGUI && guiT == 0) {
 			showGUI = false;
+			healthBar.showBar = false;
 		} else if (showGUI) {
 			guiT--;
 		}
@@ -324,6 +330,8 @@ public class Piece : MonoBehaviour {
 		} 
 		Debug.Log("Remaining HP: " + (currentHP - damage));
 		currentHP = Mathf.Max (0, currentHP - damage);
+		healthBar.currentHP = currentHP;
+		healthBar.showBar = true;
 		if (currentHP <= 0) {
 			die();
 		}
@@ -470,6 +478,7 @@ public class Piece : MonoBehaviour {
 
 	void OnMouseOver() {
 		showGUI = true;
+		healthBar.showBar = true;
 		guiT = guiTimer;
 	}
 
@@ -479,6 +488,8 @@ public class Piece : MonoBehaviour {
 		if (showGUI) {
 			windowRect = GUI.Window (0, windowRect, DoMyWindow, "Piece Info");
 		}
+		//Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
+		//GUI.Box(new Rect(targetPos.x-20, targetPos.y, 40, 10), "foo");
 	}
 
 	void DoMyWindow(int windowID) {
