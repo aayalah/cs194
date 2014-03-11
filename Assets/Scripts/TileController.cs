@@ -11,6 +11,8 @@ public class TileController : MonoBehaviour {
 	public int z;
 	public Color baseColor = Color.white;
 
+	public bool isKingTile = false;
+
 	void Start() {
 		off = this.gameObject.renderer.material;
 		this.gameObject.renderer.material.color = baseColor;

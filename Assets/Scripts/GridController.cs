@@ -166,8 +166,8 @@ public class GridController : MonoBehaviour {
 	private void chooseRandomTile(int width, int height) {
 		Random rnd = new Random();	 
 	
-		int x = Random.Range(1, width-1);
-		int y = Random.Range(1, height-1);
+		int x = width/2;
+		int y = height/2;
 
 		if (width <= 2) {
 			x = Random.Range (0,width);	
@@ -178,7 +178,7 @@ public class GridController : MonoBehaviour {
 		}
 
 		TileController t = grid [x, y].transform.GetComponent<TileController> ();
-		t.tag = "king";
+		t.isKingTile = true;
 		t.transform.renderer.material = flowers;
 
 

@@ -43,7 +43,7 @@ public class GameOptions : MonoBehaviour {
 
 	void OnGUI() {
 		if (display) {
-			GUI.skin = skin;
+						GUI.skin = skin;
 						GUI.skin.label.alignment = TextAnchor.MiddleCenter;
 						GUI.skin.label.fontSize = 60;
 						GUI.Label (new Rect (Screen.width / 2 - 150, 30, 400, 100), "Game Options", GUI.skin.label);
@@ -55,12 +55,20 @@ public class GameOptions : MonoBehaviour {
 						width = GUI.TextField (new Rect (Screen.width / 2, 160, 50, 20), width);
 						GUI.Label (new Rect (Screen.width / 2 - 250, 180, 300, 40), "Height: ", GUI.skin.label);
 						height = GUI.TextField (new Rect (Screen.width / 2, 190, 50, 20), height);
-						GUI.Label (new Rect (Screen.width / 2 - 250, 210, 300, 40), "Number Of Pieces: ", GUI.skin.label);
-						numberOfPieces = GUI.TextField (new Rect (Screen.width / 2, 220, 50, 20), numberOfPieces);
+						GUI.skin.label.fontSize = 30;
+						GUI.Label (new Rect (Screen.width / 2 - 300, 210, 300, 40), "Piece Configuration", GUI.skin.label);
+						GUI.skin.label.fontSize = 20;
+						GUI.Label (new Rect (Screen.width / 2 - 250, 240, 300, 40), "Number Of Pieces: ", GUI.skin.label);
+						numberOfPieces = GUI.TextField (new Rect (Screen.width / 2, 250, 50, 20), numberOfPieces);
 						GUI.skin.toggle.alignment = TextAnchor.UpperCenter;
-						GUI.skin.toggle.fontSize = 20;
-						gameMode = GUI.Toggle(new Rect(Screen.width / 2 - 250, 250, 200, 40), gameMode, "King of the Hill", GUI.skin.toggle);
-						if (GUI.Button (new Rect (Screen.width / 2, 300, 50, 20), "Enter")) {
+						
+						GUI.skin.label.fontSize = 30;
+						GUI.Label (new Rect (Screen.width / 2 - 300, 270, 300, 40), "Game Mode", GUI.skin.label);
+						GUI.skin.label.fontSize = 20;
+						GUI.Label (new Rect (Screen.width / 2 - 250, 300, 300, 40), "King of the Hill: ", GUI.skin.label);
+						gameMode = GUI.Toggle(new Rect(Screen.width / 2 + 20, 310, 10, 40), gameMode, "", GUI.skin.toggle);
+						
+						if (GUI.Button (new Rect (Screen.width / 2, 345, 50, 20), "Enter")) {
 								Int32.TryParse (width, out w);
 								Int32.TryParse (height, out h);
 								Int32.TryParse (numberOfPieces, out np);
@@ -83,7 +91,7 @@ public class GameOptions : MonoBehaviour {
 
 						if (showMessage) {
 								GUI.contentColor = Color.yellow;
-								GUI.Label (new Rect (Screen.width / 2 - 250, 360, 300, 40), "Enter an integer above 0.");
+				GUI.Label (new Rect (Screen.width / 2 - 250, 380, 800, 40), "One of the values you entered is not a valid value. Enter a number above 0.");
 			
 						}
 						

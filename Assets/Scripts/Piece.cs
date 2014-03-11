@@ -171,6 +171,10 @@ public class Piece : MonoBehaviour {
 		float halfPieceHeight = transform.localScale.y / 2;
 		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
 		GameObject currentCell = board.getCellAt(oldX, oldZ);
+		TileController t = currentCell.transform.GetComponent<TileController> ();
+		if(t.isKingTile){
+			player.removeKing();
+		}
 		GameObject endCell = board.getCellAt(newX, newZ);
 		float currentHeight = currentCell.transform.position.y + currentCell.transform.localScale.y / 2;
 		float endHeight = endCell.transform.position.y + endCell.transform.localScale.y;// / 2;
@@ -205,8 +209,9 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator lerpTo(GameObject tile) {
-		if(tile.tag.Equals("king")){
-			player.startClock();
+		TileController t = tile.transform.GetComponent<TileController> ();
+		if(t.isKingTile){
+			player.setKing();
 		}
 		
 
@@ -306,9 +311,9 @@ public class Piece : MonoBehaviour {
 		currentHP = 0;
 		dead = true;
 		gameObject.transform.position = new Vector3(0,-100000,0);
-		GameObject tile = board.getCellAt (this.x, this.z);
-		if (tile.tag.Equals ("king")) {
-			player.stopClock();
+		TileController tile = board.getCellAt (this.x, this.z).transform.GetComponent<TileController> ();
+		if (tile.isKingTile) {
+			player.removeKing();
 		}
 		board.removePiece(this);
 		player.removePiece(this);
@@ -384,6 +389,7 @@ public class Piece : MonoBehaviour {
 				// If no attacks, just move on
 				yield return null;
 			} else {
+				game.getInstructionText(3);
 				setAttackHighlights(true);
 				GameObject selectedObject = null;
 				Piece selectedPiece = null;
