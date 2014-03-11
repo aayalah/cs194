@@ -4,9 +4,11 @@ MonoImporter:
   serializedVersion: 2
   defaultReferences:
   - orderMarker: {fileID: 2800000, guid: 4b27652807a28481aaed8ef0c750a39b, type: 3}
+  - healthBar: {fileID: 13100000, guid: 501d9f2927b074ccd8fdd99a54f81494, type: 2}
   - game: {instanceID: 0}
   - player: {instanceID: 0}
   - board: {instanceID: 0}
+  - bulletPrefab: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

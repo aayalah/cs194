@@ -6,6 +6,7 @@ public class TeamBuilder : MonoBehaviour {
 	public UnitManager manager;
 	public Transform bar;
 	public Material mat;
+	public HealthBar health;
 	
 	public Transform redBumblebee;
 	public Transform redWorker;
