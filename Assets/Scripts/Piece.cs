@@ -334,6 +334,14 @@ public class Piece : MonoBehaviour {
 		player.removePiece(this);
 	}
 
+	/*
+	public IEnumerator flashHealthBar() {
+		healthBar.showBar = true;
+		yield return new WaitForSeconds(1);
+		healthBar.showBar = false;
+	}
+	*/
+
 	public void takeDamage(int damage) {
 		int index = Random.Range(0, defenseHistogram.Length);
 		int shield = defenseHistogram[index];
@@ -346,6 +354,7 @@ public class Piece : MonoBehaviour {
 		currentHP = Mathf.Max (0, currentHP - damage);
 		healthBar.currentHP = currentHP;
 		healthBar.showBar = true;
+		//StartCoroutine(flashHealthBar());
 		if (currentHP <= 0) {
 			die();
 		}
