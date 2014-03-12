@@ -146,7 +146,7 @@ public class GameManager : MonoBehaviour {
 						yield return StartCoroutine(changeCameraPosition (i));
 						playersPieces[j].setColor(Color.grey);
 						stage = 2;
-						yield return StartCoroutine (playersPieces[j].makeMove ()); 
+						yield return StartCoroutine (playersPieces[j].moveOrCharge()); 
 
 						yield return StartCoroutine (playersPieces[j].attack ());
 						playersPieces[j].setColor(playersPieces[j].baseColor);

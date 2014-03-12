@@ -123,6 +123,7 @@ public class RangerPiece : Piece {
       List<Piece> attackablePieces = getAttackablePieces();
       if (attackablePieces.Count == 0) {
         // If no attacks, just move on
+        Debug.Log("There are no pieces this RangerPiece can attack");
         yield return null;
       } else {
         setAttackHighlights(true);
