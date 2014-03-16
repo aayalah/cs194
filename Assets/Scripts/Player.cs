@@ -28,6 +28,34 @@ public class Player : MonoBehaviour {
 
 	}
 
+	public IEnumerator AIsetUpPieces() {
+		numberOfPieces = um.armySize;
+		numSelectedPieces = um.armySize;
+		pieceArray = new List<Piece>();
+		selectedPieceArray = new List<Piece>();
+		
+		for(int i = 0; i < numberOfPieces; i++) {
+			Piece piece = um.getUnit(id, i);
+			piece.Initialize(this, game);
+			piece.id = "player" + id;
+			piece.player = this;
+			piece.tag = "piece";
+			pieceArray.Add (piece);
+			if(id == 0) {
+				pieceArray[i].baseColor = Color.red;
+			} else {
+				pieceArray[i].baseColor = Color.blue;
+			}
+			
+			yield return StartCoroutine(pieceArray[i].AIinitialPlacement(id));
+			
+		}
+		yield return new WaitForSeconds(2f);
+		
+		yield return null;
+
+	}
+
 
 	public IEnumerator setUpPieces() {
 
@@ -85,6 +113,30 @@ public class Player : MonoBehaviour {
 	
 	public int getId() {
 		return id;
+	}
+	
+	public IEnumerator AIchoosePieces() {
+		int turnsAssigned = 0;
+		for(int j = 0; j < um.turnsPerRound; j++){
+			int rand = Random.Range(0, pieceArray.Count-1);
+			int bestScore = 0;
+			Piece bestPiece = pieceArray[rand];
+			for(int i = 0; i < pieceArray.Count; i++){
+				Piece piece = pieceArray[i];
+				int score = 0;
+				if(piece.currentHP < 20) score = (j == 0) ? score + 5 : score - 5;
+				if(piece.getAttackablePieces().Count > 0) score += 10;
+				if(score > bestScore){
+					bestScore = score;
+					bestPiece = piece;
+				}
+			}
+			selectedPieceArray.Add (bestPiece);
+			bestPiece.numMarkers++;
+			numPieces++;
+		}
+		yield return new WaitForSeconds(2);
+		//yield return StartCoroutine(choosePieces());
 	}
 	
 	public IEnumerator choosePieces() {

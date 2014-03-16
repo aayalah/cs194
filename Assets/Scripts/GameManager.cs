@@ -21,11 +21,13 @@ public class GameManager : MonoBehaviour {
 	public Player player;
 	public Camera camera;
 	public UnitManager manager;
+	public GridController board;
 	public Clock clock;	
 	private bool hintsHidden;
 
 	public Player[] players;
 	public Piece[,] playersPieces;
+	public bool[] usingAI;
 
 
 	/*
@@ -76,11 +78,13 @@ public class GameManager : MonoBehaviour {
 	void Start() {
 		//Setup
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+		board = GameObject.Find("Game").GetComponent<GridController> ();
 		if(!manager.kingMode) Destroy(clock);
 		numberSelectedPlayersPieces = manager.turnsPerRound;
 		//playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
 		//currentNumberOfPlayersPieces = new int[numPlayers];
-
+		usingAI = new bool[numPlayers];
+		usingAI[0] = true;
 		orderFixed = new bool[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
 			orderFixed[i] = false;
@@ -106,7 +110,11 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < numPlayers; i++) {
 			setTurnText(i);
 			yield return StartCoroutine(changeCameraPosition (i));
-			yield return StartCoroutine(players[i].setUpPieces());
+			if(usingAI[i]){
+				yield return StartCoroutine(players[i].AIsetUpPieces());
+			}else{
+				yield return StartCoroutine(players[i].setUpPieces());
+			}
 	   }
 
 		while (allPlayersHavePieces()) {
@@ -118,8 +126,12 @@ public class GameManager : MonoBehaviour {
 					yield return StartCoroutine(changeCameraPosition (i));
 					setTurnText(i);
 					if(!orderFixed[i]) {
-						yield return StartCoroutine (players [i].choosePieces ());	
-					}
+						if(usingAI[i]){
+							yield return StartCoroutine (players [i].AIchoosePieces());
+					}else{
+							yield return StartCoroutine (players [i].choosePieces ());
+						}
+					}	
 					
 			}
 
@@ -132,15 +144,19 @@ public class GameManager : MonoBehaviour {
 				for (int i = 0; i < numPlayers; i++) {
 					List<Piece> playersPieces = players[i].getSelectedPieces();
 					//currentPlayersTurn = i;
-					if(playersPieces.Capacity >= j){
+					if(playersPieces.Count > j){
 						setTurnText(i);
 						setInstructionText(2);
 						yield return StartCoroutine(changeCameraPosition (i));
-						playersPieces[j].setColor(Color.grey);
 						stage = 2;
-						yield return StartCoroutine (playersPieces[j].makeMove ()); 
-						yield return StartCoroutine (playersPieces[j].attack ());
-						playersPieces[j].setColor(playersPieces[j].baseColor);
+							if(usingAI[i]){
+								yield return StartCoroutine(playersPieces[j].AImakeMove());
+								yield return StartCoroutine(playersPieces[j].AIattack());
+							}else{
+								yield return StartCoroutine (playersPieces[j].makeMove ()); 
+								yield return StartCoroutine (playersPieces[j].attack ());
+							}
+						//playersPieces[j].setColor(playersPieces[j].baseColor);
 						playersPieces [j].numMarkers--;
 					}
 				}	
@@ -289,11 +305,11 @@ public class GameManager : MonoBehaviour {
 		Vector3 newPos = new Vector3(0,0,0);
 		Quaternion newRot = Quaternion.Euler(0,0,0);
 		if (player == 0) {
-			newPos = new Vector3(10, 10, -5);
-			newRot = Quaternion.Euler(45, 0, 0);
+			newPos = new Vector3((float)board.xDimension/2f, (float)board.zDimension/2f+2.5f, -3.5f);
+			newRot = Quaternion.Euler(50, 0, 0);
 		} else if (player == 1) {
-			newPos = new Vector3(10, 10, 25);
-			newRot = Quaternion.Euler(45, 180, 0);
+			newPos = new Vector3((float)board.xDimension/2f, (float)board.zDimension/2f+2.5f, 22.5f);
+			newRot = Quaternion.Euler(50, 180, 0);
 		}
 
 		int numSteps = 40;
