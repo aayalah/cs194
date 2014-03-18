@@ -73,21 +73,23 @@ public class GameManager : MonoBehaviour {
 	}
 
 	// Use this for initialization
+	/*
+	 *Sets up all the data structures that are required to keep track of the players and their pieces 
+	 * 
+	 * 
+	 */
+
 	void Start() {
+
 		//Setup
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
-		if(!manager.kingMode) Destroy(clock);
 		numberSelectedPlayersPieces = manager.turnsPerRound;
-		//playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
-		//currentNumberOfPlayersPieces = new int[numPlayers];
+
 
 		orderFixed = new bool[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
 			orderFixed[i] = false;
-			//currentNumberOfPlayersPieces[i] = numberOfPlayersPieces;
 		}
-
-		Debug.Log("Game initialized");
 
 		//Setup Players
 		for (int i = 0; i < numPlayers; i++) {
@@ -95,12 +97,19 @@ public class GameManager : MonoBehaviour {
 			players[i] = (Player)Instantiate (player, v, Quaternion.identity);
 			players[i].Initialize (i, camera, this, manager);
 		}
+
 		//Start Game Loop
 		StartCoroutine (mainLoops ());
+	
 	}
-
+	/*
+	 *	Manages the main loop of the game. The game is divided into three phases: selection of pieces, 
+	 *  movement or charging of special ability for each piece and attacking of pieces. At the beginning   
+	 *  of the game there is an additional phase where you place each or your pieces on the board
+	 */
 	public IEnumerator mainLoops() {
 
+		//Changes the instruction that appear at the top of the screen that servas a guide for the players
 		setInstructionText(0);
 		stage = 0;
 		for (int i = 0; i < numPlayers; i++) {
@@ -224,6 +233,11 @@ public class GameManager : MonoBehaviour {
 
 	}
 
+
+	/*
+	 * Manages and creates the user interface elements, such as hint window, that appear on the screen.
+	 * 
+	 */
 	void OnGUI() {
 
 		GUI.skin = skin;
@@ -257,10 +271,6 @@ public class GameManager : MonoBehaviour {
 			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
 		}
 
-		if (showHelpWindow) {
-			
-			windowRect = GUI.Window (1, windowRect, helpWindow, "Help Window");
-		}
 
 	}
 
@@ -283,6 +293,13 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+
+	/*
+	 * Moves the camera so that it pointing at the right side of the board.
+	 * When a players turn ends, the camera rotates to the other side of the
+	 * board.
+	 * 
+	 */
 	public IEnumerator changeCameraPosition(int player) {
 		Vector3 oldPos = camera.transform.position;
 		Quaternion oldRot = camera.transform.rotation;
@@ -303,82 +320,12 @@ public class GameManager : MonoBehaviour {
 			yield return null;
 		}
 	}
-//
-//	public void reduceNumPieces(int p) {
-//
-//		currentNumberOfPlayersPieces [p]--;
-//
-//	}
-//
 
-//	void OnGUI() {
-		
-//		if (gameIsOver) {
-//			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
-//		}
-//		
-//		if (showTurnLabel) {
-//			//			GUI.contentColor = Color.yellow;
-//			//			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-//			//			GUI.skin.label.fontSize = 20;
-//			//			GUI.Label(new Rect(Screen.width/2 - 200, 1, 500, 50), turnText,GUI.skin.label);
-//		}
-//		
-//		if (showInstructionLabel) {
-//			//			GUI.contentColor = Color.red;
-//			//			GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-//			//			GUI.skin.label.fontSize = 18;
-//			//			GUI.Label(new Rect(Screen.width/2 - 400, 25, 900, 50), instructionText,GUI.skin.label);
-//		}
-//		
-//		if (showFixedOrderGui) {
-//			
-//			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
-//		}
-//		
-
-
-		
-//	}
-
-
-	void helpWindow(int windowID) {
-
-
-		GUI.contentColor = Color.red;
-		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-		GUI.backgroundColor = Color.black;
-		GUI.Label (new Rect (10, 30, 600, 45), getInstructionText(stage), GUI.skin.label);
-		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-		if (GUI.Button (new Rect (270, 80, 55, 30), "Close")) {
-			showHelpWindow = false;
-		}
-
-	}
-
-
-	
-//	void pieceOrderWindow(int windowID) {
-//		GUI.contentColor = Color.yellow;
-//		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-//		GUI.backgroundColor = Color.black;
-//		GUI.Label (new Rect (10, 30, 350, 40), "Do you want to save the current order?", GUI.skin.label);
-//		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-//		if (GUI.Button (new Rect (60, 80, 40, 30), "Yes")) {
-//			orderFixed[currentPlayersTurn] = true;
-//			showFixedOrderGui = false;
-//		}
-//		
-//		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-//		
-//		if(GUI.Button (new Rect (275, 80, 40, 30), "No")) {
-//			orderFixed[currentPlayersTurn] = false;
-//			showFixedOrderGui = false;
-//		}
-//	}
-//
-//
-
+	/*
+	 * Returns the instruction that should be displayed depending on which 
+	 * stage or phase the game is currently at
+	 * 
+	 */ 
 	public string getInstructionText(int i) {
 		string instructionText = "";
 		switch(i) {

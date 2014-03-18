@@ -72,13 +72,6 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	
-	//Keeps track of pieces
-	
-	// Keeps track of stats
-	
-	
-	
 	public Player(){
 
 	}
@@ -117,19 +110,6 @@ public class Player : MonoBehaviour {
 			p.setColor(p.baseColor);
 		}
 	}
-	
-//	private bool containsPiece(Piece[] playersPieces,Piece piece) {
-//		
-//		for(int i = 0; i < numberOfPieces; i++) {
-//			if((playersPieces[i] != null) && (playersPieces[i].Equals(piece))) {
-//
-//				return true;
-//			}
-//			
-//		}
-//		return false;
-//	}
-
 
 	public void reset() {
 		numPieces = 0;
