@@ -84,7 +84,8 @@ public class GameManager : MonoBehaviour {
 		//playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
 		//currentNumberOfPlayersPieces = new int[numPlayers];
 		usingAI = new bool[numPlayers];
-		usingAI[0] = true;
+		usingAI[0] = !manager.p1Human;
+		usingAI[1] = !manager.p2Human;
 		orderFixed = new bool[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
 			orderFixed[i] = false;
@@ -116,46 +117,45 @@ public class GameManager : MonoBehaviour {
 				yield return StartCoroutine(players[i].setUpPieces());
 			}
 	   }
+		int round = 0;
 
 		while (allPlayersHavePieces()) {
 
 			setInstructionText(1);
 			/////Stage 1: Piece Selection
 			stage = 1;
-			for (int i = 0; i < numPlayers; i++) {
-					yield return StartCoroutine(changeCameraPosition (i));
-					setTurnText(i);
-					if(!orderFixed[i]) {
-						if(usingAI[i]){
-							yield return StartCoroutine (players [i].AIchoosePieces());
+			for (int k = 0; k < numPlayers; k++) {
+				int i = Mathf.Abs(k - (round % 2));
+				yield return StartCoroutine(changeCameraPosition (i));
+				setTurnText(i);
+				if(!orderFixed[i]) {
+					if(usingAI[i]){
+						yield return StartCoroutine (players [i].AIchoosePieces());
 					}else{
-							yield return StartCoroutine (players [i].choosePieces ());
-						}
-					}	
+						yield return StartCoroutine (players [i].choosePieces ());
+					}
+				}	
 					
 			}
 
-			////Stage 2: Piece Movement and Attack
-			/*for (int i = 0; i < numPlayers; i++) {
-				currentNumberOfPlayersPieces[i] = numberOfPlayersPieces;
-			}*/
-
 			for (int j = 0; j < numberSelectedPlayersPieces; j++) {
-				for (int i = 0; i < numPlayers; i++) {
+				for (int k = 0; k < numPlayers; k++) {
+					int i = Mathf.Abs(k - (round % 2));
 					List<Piece> playersPieces = players[i].getSelectedPieces();
-					//currentPlayersTurn = i;
 					if(playersPieces.Count > j){
 						setTurnText(i);
 						setInstructionText(2);
 						yield return StartCoroutine(changeCameraPosition (i));
 						stage = 2;
-							if(usingAI[i]){
-								yield return StartCoroutine(playersPieces[j].AImakeMove());
-								yield return StartCoroutine(playersPieces[j].AIattack());
-							}else{
-								yield return StartCoroutine (playersPieces[j].makeMove ()); 
-								yield return StartCoroutine (playersPieces[j].attack ());
-							}
+						if(usingAI[i]){
+							yield return StartCoroutine(playersPieces[j].AImakeMove());
+							setInstructionText(3);
+							yield return StartCoroutine(playersPieces[j].AIattack());
+						}else{
+							yield return StartCoroutine (playersPieces[j].makeMove ()); 
+							setInstructionText(3);
+							yield return StartCoroutine (playersPieces[j].attack ());
+						}
 						//playersPieces[j].setColor(playersPieces[j].baseColor);
 						playersPieces [j].numMarkers--;
 					}
@@ -167,6 +167,7 @@ public class GameManager : MonoBehaviour {
 				players[i].reset ();
 				players[i].incrementClock();
 			}
+			round++;
 
 		}
 
@@ -308,7 +309,7 @@ public class GameManager : MonoBehaviour {
 			newPos = new Vector3((float)board.xDimension/2f, (float)board.zDimension/2f+2.5f, -3.5f);
 			newRot = Quaternion.Euler(50, 0, 0);
 		} else if (player == 1) {
-			newPos = new Vector3((float)board.xDimension/2f, (float)board.zDimension/2f+2.5f, 22.5f);
+			newPos = new Vector3((float)board.xDimension/2f, (float)board.zDimension/2f+2.5f, board.zDimension+3.5f);
 			newRot = Quaternion.Euler(50, 180, 0);
 		}
 

@@ -97,6 +97,8 @@ public class GameOptions : MonoBehaviour {
 										man.kingMode = gameMode;
 										Application.LoadLevel (0);
 								}
+				man.p1Human = (player1Status == 0);
+				man.p2Human = (player2Status == 0);
 
 						}
 

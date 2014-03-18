@@ -411,6 +411,9 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator AImakeMove(){
+		if (dead) {
+			yield return null;
+		} else { 
 		List<GameObject> moveLocations = getMoveLocations();
 		int rand = Random.Range(0, moveLocations.Count);
 		int bestScore = 0;
@@ -429,8 +432,7 @@ public class Piece : MonoBehaviour {
 			yield return StartCoroutine(lerpTo(bestLocation));
 			setMoveHighlights(false, moveLocations);
 			yield return new WaitForSeconds(1f);
-
-		//yield return StartCoroutine(makeMove());
+		}
 	}
 
 	public IEnumerator makeMove() {
