@@ -23,8 +23,11 @@ public class UnitManager : MonoBehaviour {
 
 	public int w;
 	public int h;
+	public bool p1Human = true;
+	public bool p2Human = false;
 	private bool hasSetUp = false;
 	
+
 	void Awake() {
     	if (!created) {
         	// this is the first instance - make it persist
@@ -46,7 +49,8 @@ public class UnitManager : MonoBehaviour {
 //		specials = new int[armySize*numPlayers][];
 //		types = new int[armySize*numPlayers];
 	}
-	
+
+
 	// Update is called once per frame
 	void Update () {
 	}

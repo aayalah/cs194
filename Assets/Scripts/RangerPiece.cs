@@ -115,8 +115,9 @@ public class RangerPiece : Piece {
     
     return locations; 
   }
-
+	/*
   public override IEnumerator attack() {
+
     if (dead) {
       yield return null;
     } else {
@@ -144,5 +145,5 @@ public class RangerPiece : Piece {
       }
       setAttackHighlights(false);
     }
-  }
+  }*/
 }

@@ -40,9 +40,13 @@ public class TeamBuilder : MonoBehaviour {
 	private int numColors = 3;
 	private int statPoints = 250;
 	private int numBars = 25;
+
+	public bool usingAI = false;
+	public int personalityType = 0;
 	
 	// Use this for initialization
 	void Start () {
+		if(usingAI) personalityType = Random.Range(0, 2);
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
 		armySize = manager.armySize;
 		numGraphs = armySize+2;
@@ -79,6 +83,15 @@ public class TeamBuilder : MonoBehaviour {
 		}
 		
 		setUpUnitSelect();
+		if(usingAI){
+			for(int i = 0; i < armySize; i++){//while(unitsCreated < armySize)
+				int rand = Random.Range(1, 4);
+				unitNum = rand;
+				Debug.Log("UnitNum = " + unitNum);
+				StartCoroutine(AIcreateNewUnit(rand));
+			}
+			
+		}
 		
 	}
 	void initializeGraphs(){
@@ -208,6 +221,8 @@ public class TeamBuilder : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
+		if(!usingAI){
+
 		if(Input.GetKeyUp(KeyCode.RightArrow)){
 			currentGraph = nextGraph[currentGraph];
 			if(numGraphs > 0) drawNewGraph();	
@@ -242,6 +257,30 @@ public class TeamBuilder : MonoBehaviour {
 			currentBumble.GetComponentInChildren<Renderer>().enabled = false;
 			currentWorker.GetComponentInChildren<Renderer>().enabled = false;
 			currentHornet.GetComponentInChildren<Renderer>().enabled = true;
+		}
+		}
+	}
+
+	void showUnit(int num){
+		if(num == 1){
+			currentBumble.GetComponentInChildren<Renderer>().enabled = true;
+			currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+			currentHornet.GetComponentInChildren<Renderer>().enabled = false;
+		}
+		if(num == 2){
+			currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+			currentWorker.GetComponentInChildren<Renderer>().enabled = true;
+			currentHornet.GetComponentInChildren<Renderer>().enabled = false;
+		}
+		if(num == 3){
+			currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+			currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+			currentHornet.GetComponentInChildren<Renderer>().enabled = true;
+		}
+		if(num == 0){
+			currentBumble.GetComponentInChildren<Renderer>().enabled = false;
+			currentWorker.GetComponentInChildren<Renderer>().enabled = false;
+			currentHornet.GetComponentInChildren<Renderer>().enabled = false;
 		}
 	}
 				
@@ -290,6 +329,62 @@ public class TeamBuilder : MonoBehaviour {
 			}
 
 		}
+	}
+
+	public IEnumerator AIcreateNewUnit(int unitNo){
+		//Random selection
+		if(personalityType == 0){
+			Debug.Log("Type 0");
+			showUnit(unitNo);
+			int rand = Random.Range(1, 4);
+			for(int j = 0; j < rand; j++){
+				currentGraph = nextGraph[currentGraph];
+				currentColor = prevColor[currentColor];
+				drawNewGraph();
+				yield return new WaitForSeconds(2f);
+			}
+			int [] attack = findArray(Color.red);
+			int [] shield = findArray(Color.green);
+			int [] special = findArray(Color.yellow);
+			manager.addUnit(unitNo, attack, shield, special);
+			unitsCreated++;
+			removeCombination();
+			eraseGraph();
+		}
+		//Max attack focus
+		if(personalityType == 1){
+			Debug.Log("Type 1");
+			showUnit(unitNo);
+			float bestAttack = 0;
+			int bestGraph = 0;
+			int bestColor = 0;
+			for(int i = 0; i < numGraphs; i++){
+				currentGraph = nextGraph[currentGraph];
+				for(int j = 0; j < numColors; j++){
+					currentColor = nextColor[currentColor];
+					drawNewGraph();
+					yield return new WaitForSeconds(.2f);
+					float att = maxSkill(Color.red);
+					if(att > bestAttack){
+						bestAttack = att;
+						bestGraph = currentGraph;
+						bestColor = currentColor;
+					}
+				}
+			}
+			currentGraph = bestGraph;
+			currentColor = bestColor;
+			drawNewGraph();
+			int [] attack = findArray(Color.red);
+			int [] shield = findArray(Color.green);
+			int [] special = findArray(Color.yellow);
+			manager.addUnit(unitNo, attack, shield, special);
+			unitsCreated++;
+			removeCombination();
+			eraseGraph();
+		}
+		showUnit(0);
+		yield return new WaitForSeconds(2f);
 	}
 
 	void RandomizeRemainingUnits(){

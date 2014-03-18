@@ -21,11 +21,13 @@ public class GameManager : MonoBehaviour {
 	public Player player;
 	public Camera camera;
 	public UnitManager manager;
+	public GridController board;
 	public Clock clock;	
 	private bool hintsHidden;
 
 	public Player[] players;
 	public Piece[,] playersPieces;
+	public bool[] usingAI;
 
 
 	/*
@@ -83,9 +85,12 @@ public class GameManager : MonoBehaviour {
 
 		//Setup
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
+		board = GameObject.Find("Game").GetComponent<GridController> ();
+		if(!manager.kingMode) Destroy(clock);
 		numberSelectedPlayersPieces = manager.turnsPerRound;
-
-
+		usingAI = new bool[numPlayers];
+		usingAI[0] = !manager.p1Human;
+		usingAI[1] = !manager.p2Human;
 		orderFixed = new bool[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
 			orderFixed[i] = false;
@@ -115,41 +120,52 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < numPlayers; i++) {
 			setTurnText(i);
 			yield return StartCoroutine(changeCameraPosition (i));
-			yield return StartCoroutine(players[i].setUpPieces());
+			if(usingAI[i]){
+				yield return StartCoroutine(players[i].AIsetUpPieces());
+			}else{
+				yield return StartCoroutine(players[i].setUpPieces());
+			}
 	   }
+		int round = 0;
 
 		while (allPlayersHavePieces()) {
 
 			setInstructionText(1);
 			/////Stage 1: Piece Selection
 			stage = 1;
-			for (int i = 0; i < numPlayers; i++) {
-					yield return StartCoroutine(changeCameraPosition (i));
-					setTurnText(i);
-					if(!orderFixed[i]) {
-						yield return StartCoroutine (players [i].choosePieces ());	
+			for (int k = 0; k < numPlayers; k++) {
+				int i = Mathf.Abs(k - (round % 2));
+				yield return StartCoroutine(changeCameraPosition (i));
+				setTurnText(i);
+				if(!orderFixed[i]) {
+					if(usingAI[i]){
+						yield return StartCoroutine (players [i].AIchoosePieces());
+					}else{
+						yield return StartCoroutine (players [i].choosePieces ());
 					}
+				}	
 					
 			}
 
-			////Stage 2: Piece Movement and Attack
-			/*for (int i = 0; i < numPlayers; i++) {
-				currentNumberOfPlayersPieces[i] = numberOfPlayersPieces;
-			}*/
-
 			for (int j = 0; j < numberSelectedPlayersPieces; j++) {
-				for (int i = 0; i < numPlayers; i++) {
+				for (int k = 0; k < numPlayers; k++) {
+					int i = Mathf.Abs(k - (round % 2));
 					List<Piece> playersPieces = players[i].getSelectedPieces();
-					//currentPlayersTurn = i;
-					if(playersPieces.Capacity >= j){
+					if(playersPieces.Count > j){
 						setTurnText(i);
 						setInstructionText(2);
 						yield return StartCoroutine(changeCameraPosition (i));
-						playersPieces[j].setColor(Color.grey);
 						stage = 2;
-						yield return StartCoroutine (playersPieces[j].makeMove ()); 
-						yield return StartCoroutine (playersPieces[j].attack ());
-						playersPieces[j].setColor(playersPieces[j].baseColor);
+						if(usingAI[i]){
+							yield return StartCoroutine(playersPieces[j].AImakeMove());
+							setInstructionText(3);
+							yield return StartCoroutine(playersPieces[j].AIattack());
+						}else{
+							yield return StartCoroutine (playersPieces[j].makeMove ()); 
+							setInstructionText(3);
+							yield return StartCoroutine (playersPieces[j].attack ());
+						}
+						//playersPieces[j].setColor(playersPieces[j].baseColor);
 						playersPieces [j].numMarkers--;
 					}
 				}	
@@ -160,6 +176,7 @@ public class GameManager : MonoBehaviour {
 				players[i].reset ();
 				players[i].incrementClock();
 			}
+			round++;
 
 		}
 
@@ -306,11 +323,11 @@ public class GameManager : MonoBehaviour {
 		Vector3 newPos = new Vector3(0,0,0);
 		Quaternion newRot = Quaternion.Euler(0,0,0);
 		if (player == 0) {
-			newPos = new Vector3(10, 10, -5);
-			newRot = Quaternion.Euler(45, 0, 0);
+			newPos = new Vector3((float)board.xDimension/2f, (float)board.zDimension/2f+2.5f, -3.5f);
+			newRot = Quaternion.Euler(50, 0, 0);
 		} else if (player == 1) {
-			newPos = new Vector3(10, 10, 25);
-			newRot = Quaternion.Euler(45, 180, 0);
+			newPos = new Vector3((float)board.xDimension/2f, (float)board.zDimension/2f+2.5f, board.zDimension+3.5f);
+			newRot = Quaternion.Euler(50, 180, 0);
 		}
 
 		int numSteps = 40;

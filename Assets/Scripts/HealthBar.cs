@@ -23,7 +23,6 @@ public class HealthBar : MonoBehaviour {
 	void OnGUI(){
 		if(showBar){
 			float percentHealthy = (float)currentHP/(float)maxHP;
-			Debug.Log(percentHealthy);
 			Vector2 targetPos = Camera.main.WorldToScreenPoint (myPiece.transform.position);
 			GUI.DrawTexture(new Rect(targetPos.x - 25, Screen.height - targetPos.y, 50*percentHealthy, 10), green);
 			GUI.DrawTexture(new Rect(targetPos.x - 25 + 50*percentHealthy, Screen.height - targetPos.y, 50-(50*percentHealthy), 10), red);
