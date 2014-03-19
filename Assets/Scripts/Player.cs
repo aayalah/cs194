@@ -14,6 +14,7 @@ public class Player : MonoBehaviour {
 	private int numberOfPieces;
 	private int numSelectedPieces;
 	private int id;
+	private bool isKing = false;
 
 
 	// Use this for initialization
@@ -139,7 +140,7 @@ public class Player : MonoBehaviour {
 
 	public bool hasPieces() {
 
-		return pieceArray.Capacity > 0;
+		return pieceArray.Count > 0;
 
 	}
 
@@ -152,24 +153,27 @@ public class Player : MonoBehaviour {
 
 	public int numberPiecesLeft() {
 
-		return pieceArray.Capacity;
+		return pieceArray.Count;
 	}
-
-
-	public void startClock() {
-
-		clock.unpause();
-
-	}
-
-	public void stopClock() {
-		clock.pause();
-	}
-
-	public float getTime(){
-
-		return clock.getTimePassed ();
 	
+	public void incrementClock() {
+
+		if (isKing) {
+				clock.addTurn ();
+		}
+	}
+
+	public bool hasReachedGoal() {
+		return clock.reachedGoal();
+	}
+
+	public void setKing(){
+		isKing = true;
+	}
+
+	
+	public void removeKing(){
+		isKing = false;
 	}
 
 	// Update is called once per frame

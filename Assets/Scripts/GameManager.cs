@@ -69,14 +69,6 @@ public class GameManager : MonoBehaviour {
 		if (Input.GetKey ("f") && currentPlayersTurn != -1) {
 			showFixedOrderGui = true;
 		}
-
-
-		if (manager.kingMode && clock.outOfTime ()) {
-						gameOver (2);
-
-				} else if(clock.outOfTime()){
-			gameOver (0);
-				}
 		
 	}
 
@@ -84,7 +76,6 @@ public class GameManager : MonoBehaviour {
 	void Start() {
 		//Setup
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
-		clock = GameObject.Find ("Clock").GetComponent<Clock>();
 		if(!manager.kingMode) Destroy(clock);
 		numberSelectedPlayersPieces = manager.turnsPerRound;
 		//playersPieces = new Piece[numPlayers, numberOfPlayersPieces];
@@ -104,7 +95,6 @@ public class GameManager : MonoBehaviour {
 			players[i] = (Player)Instantiate (player, v, Quaternion.identity);
 			players[i].Initialize (i, camera, this, manager);
 		}
-		if(manager.kingMode) clock.startTimeCountdown();
 		//Start Game Loop
 		StartCoroutine (mainLoops ());
 	}
@@ -121,6 +111,7 @@ public class GameManager : MonoBehaviour {
 
 		while (allPlayersHavePieces()) {
 
+			setInstructionText(1);
 			/////Stage 1: Piece Selection
 			stage = 1;
 			for (int i = 0; i < numPlayers; i++) {
@@ -143,11 +134,11 @@ public class GameManager : MonoBehaviour {
 					//currentPlayersTurn = i;
 					if(playersPieces.Capacity >= j){
 						setTurnText(i);
+						setInstructionText(2);
 						yield return StartCoroutine(changeCameraPosition (i));
 						playersPieces[j].setColor(Color.grey);
 						stage = 2;
 						yield return StartCoroutine (playersPieces[j].moveOrCharge()); 
-
 						yield return StartCoroutine (playersPieces[j].attack ());
 						playersPieces[j].setColor(playersPieces[j].baseColor);
 						playersPieces [j].numMarkers--;
@@ -158,6 +149,7 @@ public class GameManager : MonoBehaviour {
 			///Reset
 			for (int i = 0; i < numPlayers; i++) {
 				players[i].reset ();
+				players[i].incrementClock();
 			}
 
 		}
@@ -193,10 +185,9 @@ public class GameManager : MonoBehaviour {
 								}
 						}
 				} else if (c == 2) {
-					float maxTime = 0;
+					
 					for (int i = 0; i < numPlayers; i++) {
-						if (players [i].getTime() > maxTime) {
-							maxTime = players [i].getTime();
+						if (players[i].hasReachedGoal()) {							
 							winner = i + 1;
 						}
 					}
@@ -388,7 +379,7 @@ public class GameManager : MonoBehaviour {
 //
 //
 
-	private string getInstructionText(int i) {
+	public string getInstructionText(int i) {
 		string instructionText = "";
 		switch(i) {
 			
@@ -400,6 +391,9 @@ public class GameManager : MonoBehaviour {
 			break;
 		case 2:
 			instructionText = pieceMovementText;
+			break;
+		case 3:
+			instructionText = pieceAttackText;
 			break;
 		}
 
