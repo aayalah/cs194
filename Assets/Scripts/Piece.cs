@@ -29,7 +29,7 @@ public class Piece : MonoBehaviour {
 	public int movementRange = 3;
 	public int attackRange = 1;
 	public int specialRange = 2;
-	public int specialStrength = 20;
+	public int specialStrength = 50;
 	public int experience = 0;
 
 	public Color baseColor = Color.white;
@@ -60,7 +60,7 @@ public class Piece : MonoBehaviour {
 	private float startingY;
 	private float direction = 0;
 	private bool showcaseRotate = false;
-	protected bool decidingToMoveOrCharge = false;
+	protected bool decidingToAttackOrCharge = false;
 	protected string optionChosen = "Move";
 	private Vector3 startingRotation;
 
@@ -313,6 +313,10 @@ public class Piece : MonoBehaviour {
 
 		return pieces;
 	}
+
+	public bool hasAttackablePieces() {
+		return getAttackablePieces().Count > 0;
+	}
 	
 	/*
 	public virtual void setAttackHighlights(bool onOrOff) {
@@ -412,6 +416,10 @@ public class Piece : MonoBehaviour {
 		int val = specialHistogram[index];
 
 		currentSpecial = Mathf.Min(maxSpecial, currentSpecial + val);
+	}
+
+	public bool canUseSpecial() {
+		return currentSpecial >= maxSpecial;
 	}
 
 	protected virtual IEnumerator specialDoDamage(TileController tile) {
@@ -612,15 +620,14 @@ public class Piece : MonoBehaviour {
 	}
 
 
-	public virtual IEnumerator AIattack(){
-		if (dead) {
+	public virtual IEnumerator AIattackOrCharge(){
+		List<Piece> attackablePieces = getAttackablePieces();
+		if (dead || attackablePieces.Count == 0) {
 			yield return null;
 		} else {
-			List<Piece> attackablePieces = getAttackablePieces();
-			if (attackablePieces.Count == 0) {
-				// If no attacks, just move on
-				yield return null;
-			} else {
+			setAttackHighlights(true);
+			if (Random.value < 0.5) {
+				// attack
 				int lowestHP = 100;
 				Piece choice = attackablePieces[0];
 				for(int i = 0; i < attackablePieces.Count; i++){
@@ -630,54 +637,68 @@ public class Piece : MonoBehaviour {
 						choice = piece;
 					}
 				}
-				setAttackHighlights(true);
 				yield return new WaitForSeconds(1.5f);
 				if (!dead) {
 					damageEnemy(choice);
 				}
-				setAttackHighlights(false);
+			} else {
+				// charge
+				yield return new WaitForSeconds(0.5f);
 				if (!dead) {
-					yield return new WaitForSeconds(1f);
+					if (currentSpecial < maxSpecial) {
+						incrementSpecial();
+					} else {
+						yield return StartCoroutine(AIspecialAttack());
+					}
 				}
+			}
+			setAttackHighlights(false);
+			if (!dead) {
+				yield return new WaitForSeconds(1f);
 			}
 		}
 	}
 
-	public virtual IEnumerator attack() {
-		if (dead) {
+	public virtual IEnumerator attackOrCharge() {
+		List<Piece> attackablePieces = getAttackablePieces();
+		if (dead || attackablePieces.Count == 0) {
 			yield return null;
 		} else {
-			List<Piece> attackablePieces = getAttackablePieces();
-			if (attackablePieces.Count == 0) {
-				// If no attacks, just move on
+			game.getInstructionText(3);
+			setAttackHighlights(true);
+			GameObject selectedObject = null;
+			Piece selectedPiece = null;
+			while (!attackablePieces.Contains(selectedPiece)) {
+				if (dead) {
+					break;
+				}
 				yield return null;
-			} else {
-				game.getInstructionText(3);
-				setAttackHighlights(true);
-				GameObject selectedObject = null;
-				Piece selectedPiece = null;
-				while (!attackablePieces.Contains(selectedPiece)) {
-					if (dead) {
-						break;
-					}
+				while (!Input.GetMouseButtonDown(0) && !Input.GetKeyUp("space")) {
 					yield return null;
-					while (!Input.GetMouseButtonDown(0)) {
-						yield return null;
-					}
+				}
+				if (Input.GetMouseButtonDown(0)) {
 					selectedObject = getSelectedObject();
 					if (selectedObject) {
 						selectedPiece = selectedObject.GetComponent<Piece>();
 					}
-				}
-				if (selectedPiece) {
-					damageEnemy(selectedPiece);
+				} else if (Input.GetKeyUp("space")) {
+					if (currentSpecial < maxSpecial) {
+						incrementSpecial();
+					} else {
+						yield return StartCoroutine(specialAttack());
+					}
+					break;
 				}
 			}
-			setAttackHighlights(false);
+			if (selectedPiece) {
+				damageEnemy(selectedPiece);
+			}
 		}
+		setAttackHighlights(false);
 	}
 
-	public IEnumerator AImoveOrCharge() {
+	/*
+	public IEnumerator AIattackOrCharge() {
 		if (dead) {
 			yield return null;
 		} else {
@@ -688,22 +709,26 @@ public class Piece : MonoBehaviour {
 					incrementSpecial();
 				}
 			} else {
-				yield return StartCoroutine(AImakeMove());
+				if (getAttackablePieces().Count > 0) {
+					yield return StartCoroutine(AIattack());
+				} else {
+					incrementSpecial();
+				}
 			}
 		}
 	}
 
-	public IEnumerator moveOrCharge() {
+	public IEnumerator attackOrCharge() {
 		if (dead) {
 			yield return null;
 		} else {
-			decidingToMoveOrCharge = true;
+			decidingToAttackOrCharge = true;
 			// We'll make the decision
-			while (decidingToMoveOrCharge) {
+			while (decidingToAttackOrCharge) {
 				yield return null;
 			}
-			if (optionChosen == "Move") {
-				yield return StartCoroutine(makeMove());
+			if (optionChosen == "Attack") {
+				yield return StartCoroutine(attack());
 			} else if (optionChosen == "Charge") {
 				incrementSpecial();
 			} else if (optionChosen == "SpecialAttack") {
@@ -713,6 +738,7 @@ public class Piece : MonoBehaviour {
 			}
 		}
 	}
+	*/
 
 
 	public IEnumerator AIinitialPlacement(int id){
@@ -803,17 +829,23 @@ public class Piece : MonoBehaviour {
 		//Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
 		//GUI.Box(new Rect(targetPos.x-20, targetPos.y, 40, 10), "foo");
 
-		if (decidingToMoveOrCharge) {
-			if (GUI.Button(new Rect(10, 60, 300, 40), "Move")) {
-				decidingToMoveOrCharge = false;
-				optionChosen = "Move";
+		/*
+		if (decidingToAttackOrCharge) {
+			if (getAttackablePieces().Count > 0 ) {
+				if (GUI.Button(new Rect(10, 60, 300, 40), "Attack")) {
+					decidingToAttackOrCharge = false;
+					optionChosen = "Attack";
+				}
+			} else {
+				GUI.Label(new Rect(10, 60, 300, 40), "No Attacks Possible :(");
 			}
 			string specialText = currentSpecial == maxSpecial ? "SpecialAttack" : "Charge";
 			if (GUI.Button(new Rect(10, 100, 300, 40), specialText)) {
-				decidingToMoveOrCharge = false;
+				decidingToAttackOrCharge = false;
 				optionChosen = specialText;
 			}
 		}
+		*/
 	}
 
 	void DoMyWindow(int windowID) {

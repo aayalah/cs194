@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour {
 	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
 	private static string pieceMovementText = "Click on a colored square to move your piece."; 
 	private static string pieceAttackText = "Click on an enemy within range to attack or press SPACE to charge special";
+	private static string pieceAttackWithFullSpecialText = "Your special attack is charged! Press space to use it, or click to attack normally.";
 
 
 	//boolean variables
@@ -167,19 +168,27 @@ public class GameManager : MonoBehaviour {
 
 						if(usingAI[i]){
 							if (j < playersPieces.Count) {	// To avoid an error if the piece has just died
-								yield return StartCoroutine(playersPieces[j].AImoveOrCharge());
+								yield return StartCoroutine(playersPieces[j].AImakeMove());
 							}
-							setInstructionText(3);
-							if (j < playersPieces.Count) {
-								yield return StartCoroutine(playersPieces[j].AIattack());
+							if (j < playersPieces.Count && playersPieces[j].hasAttackablePieces()) {
+								if (playersPieces[j].canUseSpecial()) {
+									setInstructionText(4);
+								} else {
+									setInstructionText(3);
+								}
+								yield return StartCoroutine(playersPieces[j].AIattackOrCharge());
 							}
 						}else{
 							if (j < playersPieces.Count) {
-								yield return StartCoroutine (playersPieces[j].moveOrCharge()); 
+								yield return StartCoroutine (playersPieces[j].makeMove()); 
 							}
-							setInstructionText(3);
-							if (j < playersPieces.Count) {
-								yield return StartCoroutine (playersPieces[j].attack ());
+							if (j < playersPieces.Count && playersPieces[j].hasAttackablePieces()) {
+								if (playersPieces[j].canUseSpecial()) {
+									setInstructionText(4);
+								} else {
+									setInstructionText(3);
+								}
+								yield return StartCoroutine (playersPieces[j].attackOrCharge());
 							}
 
 						}
@@ -290,6 +299,9 @@ public class GameManager : MonoBehaviour {
 			case 3:
 				instructionText = pieceAttackText;
 				break;
+			case 4:
+				instructionText = pieceAttackWithFullSpecialText;
+				break;
 		}
 	
 
@@ -342,13 +354,13 @@ public class GameManager : MonoBehaviour {
 
 		style1.normal.textColor = Color.red;
 		style1.fontSize = 18;
-		GUI.Label (new Rect (Screen.width / 2 - 665, 10, 300, 40), "Fix Piece Order: ", style1);
-		orderFixed[0] = GUI.Toggle(new Rect(Screen.width / 2 - 750 + 230, 12, 10, 40), orderFixed[0], "", GUI.skin.toggle);
+		GUI.Label (new Rect (Screen.width / 2 - 600, Screen.height - 25, 300, 40), "Fix Piece Order: ", style1);
+		orderFixed[0] = GUI.Toggle(new Rect(Screen.width / 2 - 455, Screen.height - 25, 10, 40), orderFixed[0], "", GUI.skin.toggle);
 
 		style2.normal.textColor = Color.blue;
 		style2.fontSize = 18;
-		GUI.Label (new Rect (Screen.width / 2 + 500, 10, 300, 40), "Fix Piece Order: ", style2);
-		orderFixed[1] = GUI.Toggle(new Rect(Screen.width / 2 + 400 + 245, 12, 10, 40), orderFixed[1], "", GUI.skin.toggle);
+		GUI.Label (new Rect (Screen.width / 2 + 400, Screen.height - 25, 300, 40), "Fix Piece Order: ", style2);
+		orderFixed[1] = GUI.Toggle(new Rect(Screen.width / 2 + 545, Screen.height - 25, 10, 40), orderFixed[1], "", GUI.skin.toggle);
 
 
 	}
@@ -400,6 +412,9 @@ public class GameManager : MonoBehaviour {
 			break;
 		case 3:
 			instructionText = pieceAttackText;
+			break;
+		case 4:
+			instructionText = pieceAttackWithFullSpecialText;
 			break;
 		}
 

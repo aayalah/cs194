@@ -69,7 +69,7 @@ public class TeamBuilder : MonoBehaviour {
 			for(int k = 0; k < numBars; k++){
 				Transform t = (Transform)Instantiate(bar, position, Quaternion.identity);
 				t.transform.localScale = new Vector3(.5f, values[g, k], .5f);
-				t.transform.Translate(0, values[g, k]/2f, 0);
+				t.transform.Translate(3, values[g, k]/2f, 0);
 				t.gameObject.renderer.material.color = GetColorMix(k);
 				bars[g,k] = t;
 				if(g != currentGraph)

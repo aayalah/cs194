@@ -122,7 +122,7 @@ public class RangerPiece : Piece {
     bullet.velocity = bulletSpeed * (piece.transform.position - this.transform.position).normalized;
   }
 
-  public override IEnumerator AIattack() {
+  public override IEnumerator AIattackOrCharge() {
     if (dead) {
       yield return null;
     } else {
@@ -133,24 +133,37 @@ public class RangerPiece : Piece {
         yield return null;
       } else {
         setAttackHighlights(true);
-        yield return new WaitForSeconds(0.5f);
-        Piece selectedPiece = attackablePieces[0];
-        int minEnemyHP = attackablePieces[0].currentHP;
-        foreach (Piece p in attackablePieces) {
-          if (p.currentHP < minEnemyHP) {
-            minEnemyHP = p.currentHP;
-            selectedPiece = p;
+        if (Random.value < 0.5) {
+          // attack
+          yield return new WaitForSeconds(1.5f);
+          Piece selectedPiece = attackablePieces[0];
+          int minEnemyHP = attackablePieces[0].currentHP;
+          foreach (Piece p in attackablePieces) {
+            if (p.currentHP < minEnemyHP) {
+              minEnemyHP = p.currentHP;
+              selectedPiece = p;
+            }
           }
-        }
-        if (!dead) {
-          fireBulletAt(selectedPiece);
+          if (!dead) {
+            fireBulletAt(selectedPiece);
+          }
+        } else {
+          // special
+          yield return new WaitForSeconds(0.5f);
+          if (!dead) {
+            if (currentSpecial < maxSpecial) {
+              incrementSpecial();
+            } else {
+              yield return StartCoroutine(AIspecialAttack());
+            }
+          }
         }
       }
       setAttackHighlights(false);
     }
   }
 
-  public override IEnumerator attack() {
+  public override IEnumerator attackOrCharge() {
 
     if (dead) {
       yield return null;
@@ -169,12 +182,21 @@ public class RangerPiece : Piece {
             break;
           }
           yield return null;
-          while (!Input.GetMouseButtonDown(0)) {
+          while (!Input.GetMouseButtonDown(0) && !Input.GetKeyUp("space")) {
             yield return null;
           }
-          selectedObject = getSelectedObject();
-          if (selectedObject) {
-            selectedPiece = selectedObject.GetComponent<Piece>();
+          if (Input.GetMouseButtonDown(0)) {
+            selectedObject = getSelectedObject();
+            if (selectedObject) {
+              selectedPiece = selectedObject.GetComponent<Piece>();
+            }
+          } else if (Input.GetKeyUp("space")) {
+            if (currentSpecial < maxSpecial) {
+              incrementSpecial();
+            } else {
+              yield return StartCoroutine(specialAttack());
+            }
+            break;
           }
         }
         if (selectedPiece) {
