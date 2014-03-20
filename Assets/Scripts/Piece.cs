@@ -399,6 +399,71 @@ public class Piece : MonoBehaviour {
 		currentSpecial = Mathf.Min(maxSpecial, currentSpecial + val);
 	}
 
+	protected virtual IEnumerator specialDoDamage(TileController tile) {
+		for (int i = -specialRange; i <= specialRange; i++) {
+			for (int j = -specialRange; j <= specialRange; j++) {
+				if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
+					GameObject attackedCell = board.getCellAt(tile.x+i, tile.z+j);
+					if (attackedCell) {
+						TileController attackedTile = attackedCell.GetComponent<TileController>();
+						attackedTile.setColor(Color.red);
+					}
+				}
+			}
+		}
+		yield return new WaitForSeconds(1);
+		
+		for (int i = -specialRange; i <= specialRange; i++) {
+			for (int j = -specialRange; j <= specialRange; j++) {
+				if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
+					Piece attackedPiece = board.getPieceAt(tile.x+i, tile.z+j);
+					GameObject attackedCell = board.getCellAt(tile.x+i, tile.z+j);
+					if (attackedPiece) {
+						attackedPiece.takeDamage(specialStrength / (Mathf.Abs(i)+Mathf.Abs(j)+1));
+					}
+					if (attackedCell) {
+						TileController attackedTile = attackedCell.GetComponent<TileController>();
+						attackedTile.setColor(attackedTile.baseColor);
+					}
+				}
+			}
+		}	
+	}
+
+	public virtual IEnumerator AIspecialAttack() {
+		if (dead || currentSpecial != maxSpecial) {
+			yield return null;
+		} else {
+			currentSpecial = 0;
+			GameObject selected = null;
+
+			List<GameObject> allTiles = new List<GameObject>();
+			GameObject cellToAttack = null;
+			int enemyMaxHP = -1;
+
+			for (int i = 0; i < board.xDimension; i++) {
+				for (int j = 0; j < board.zDimension; j++) {
+					GameObject cell = board.getCellAt(i,j);
+					allTiles.Add(cell);
+					Piece p = board.getPieceAt(i,j);
+					if (p && p.player != this.player && p.currentHP > enemyMaxHP) {
+						enemyMaxHP = p.currentHP;
+						cellToAttack = cell;
+					}
+				}
+			}
+
+			setAttackHighlights(true, allTiles);
+
+			yield return WaitForSeconds(0.5f);
+			TileController tile = cell.GetComponent<TileController>();
+
+			setAttackHighlights(false, allTiles);
+
+			yield return specialDoDamage(tile);
+		}
+	}
+
 	public virtual IEnumerator specialAttack() {
 		if (dead || currentSpecial != maxSpecial) {
 			yield return null;
@@ -426,34 +491,74 @@ public class Piece : MonoBehaviour {
 
 			setAttackHighlights(false, allTiles);
 			
-			for (int i = -specialRange; i <= specialRange; i++) {
-				for (int j = -specialRange; j <= specialRange; j++) {
-					if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
-						GameObject attackedCell = board.getCellAt(tile.x+i, tile.z+j);
-						if (attackedCell) {
-							TileController attackedTile = attackedCell.GetComponent<TileController>();
-							attackedTile.setColor(Color.red);
-						}
-					}
-				}
+			yield return specialDoDamage(tile);
+		}
+	}
+
+
+	private int scoreLocation(GameObject location){
+		TileController tileController = location.GetComponent<TileController>();
+		int score = 0;
+		int tempX = this.x;
+		int tempZ = this.z;
+		this.x = tileController.x;
+		this.z = tileController.z;
+
+		if(teamNo == 0 && z <= board.zDimension/2){
+			score += (z-tempZ)/2;
+			//score += Mathf.Abs(tempX-x)/3;
+		}
+		if(teamNo == 1 && z >= board.zDimension/2){
+			score += (tempZ-z)/2;
+			//score += Mathf.Abs(tempX-x)/3;
+		}
+
+		List<Piece> enemiesInRange = getAttackablePieces();
+		List<GameObject> attackableTiles = getAttackableTiles();
+		if(enemiesInRange.Count > 0){
+			score += 10;
+		}
+		for(int i = 0; i < enemiesInRange.Count; i++){
+			Piece enemy = enemiesInRange[i];
+			if(enemy.currentHP <= maxSkill(attackHistogram)){
+				score += 10;
+			}else if(enemy.currentHP <= maxSkill(attackHistogram)*2){
+				score += 5;
 			}
-			yield return new WaitForSeconds(1);
-			
-			for (int i = -specialRange; i <= specialRange; i++) {
-				for (int j = -specialRange; j <= specialRange; j++) {
-					if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
-						Piece attackedPiece = board.getPieceAt(tile.x+i, tile.z+j);
-						GameObject attackedCell = board.getCellAt(tile.x+i, tile.z+j);
-						if (attackedPiece) {
-							attackedPiece.takeDamage(specialStrength / (Mathf.Abs(i)+Mathf.Abs(j)+1));
-						}
-						if (attackedCell) {
-							TileController attackedTile = attackedCell.GetComponent<TileController>();
-							attackedTile.setColor(attackedTile.baseColor);
-						}
-					}
-				}
-			}		
+		}
+		for(int i = 0; i < attackableTiles.Count; i++){
+			TileController tc = attackableTiles[i].GetComponent<TileController>();
+			score += Mathf.Abs(tc.x-x)/2;
+			score += Mathf.Abs(tc.z-z)/2;
+		}
+
+		this.x = tempX;
+		this.z = tempZ;
+		return score;
+	}
+
+	public IEnumerator AImakeMove(){
+		if (dead) {
+			yield return null;
+		} else { 
+		List<GameObject> moveLocations = getMoveLocations();
+		int rand = Random.Range(0, moveLocations.Count);
+		int bestScore = 0;
+		GameObject bestLocation = moveLocations[rand];
+		for(int i = 0; i < moveLocations.Count; i++){
+			GameObject location = moveLocations[i];
+			int score = scoreLocation(location);
+			if(score > bestScore){
+				bestLocation = location;
+				bestScore = score;
+			}
+		}
+		if(bestScore == 0) bestLocation = moveLocations[rand];
+			setMoveHighlights(true, moveLocations);
+			yield return new WaitForSeconds(1.5f);
+			yield return StartCoroutine(lerpTo(bestLocation));
+			setMoveHighlights(false, moveLocations);
+			yield return new WaitForSeconds(1f);
 		}
 	}
 
@@ -473,6 +578,34 @@ public class Piece : MonoBehaviour {
 			}
 			setMoveHighlights(false, moveLocations);
 			yield return StartCoroutine(lerpTo(selected));
+		}
+	}
+
+
+	public virtual IEnumerator AIattack(){
+		if (dead) {
+			yield return null;
+		} else {
+			List<Piece> attackablePieces = getAttackablePieces();
+			if (attackablePieces.Count == 0) {
+				// If no attacks, just move on
+				yield return null;
+			} else {
+				int lowestHP = 100;
+				Piece choice = attackablePieces[0];
+				for(int i = 0; i < attackablePieces.Count; i++){
+					Piece piece = attackablePieces[i];
+					if (piece.currentHP < lowestHP){
+						lowestHP = piece.currentHP;
+						choice = piece;
+					}
+				}
+				setAttackHighlights(true);
+				yield return new WaitForSeconds(1.5f);
+				damageEnemy(choice);
+				setAttackHighlights(false);
+				yield return new WaitForSeconds(1f);
+			}
 		}
 	}
 
@@ -505,6 +638,22 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator AImoveOrCharge() {
+		if (dead) {
+			yield return null;
+		} else {
+			if (Random.value < 0.3) {
+				if (currentSpecial >= maxSpecial) {
+					yield return StartCoroutine(specialAttack());
+				} else {
+					incrementSpecial();
+				}
+			} else {
+				yield return StartCoroutine(makeMove());
+			}
+		}
+	}
+
 	public IEnumerator moveOrCharge() {
 		if (dead) {
 			yield return null;
@@ -527,15 +676,24 @@ public class Piece : MonoBehaviour {
 	}
 
 
+	public IEnumerator AIinitialPlacement(int id){
+		if (board == null) {
+			board = GameObject.Find("Game").GetComponent<GridController> ();
+		}
+		List<GameObject> moveLocations = getInitialLocations(id);
+		setMoveHighlights(true, moveLocations);
+		yield return new WaitForSeconds(2f);
+		int index = Random.Range(0, moveLocations.Count);
+		moveTo(moveLocations[index]);
+		setMoveHighlights(false, moveLocations);
+	}
+
 	public IEnumerator initialPlacement(int id) {
 
 		if (board == null) {
 			board = GameObject.Find("Game").GetComponent<GridController> ();
 		}
 
-
-
-		Debug.Log ("initialPlacement Start");
 		List<GameObject> moveLocations = getInitialLocations(id);
 		setMoveHighlights(true, moveLocations);
 		GameObject hoveredOver = null;
@@ -551,12 +709,10 @@ public class Piece : MonoBehaviour {
 			}
 		}
 		setMoveHighlights(false, moveLocations);
-		Debug.Log ("initialPlacement Start");
 	}
 
 
 	public List<GameObject> getInitialLocations(int player) {
-		Debug.Log ("initialLocations Start");
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		int row;
 		if (player == 0) {
@@ -593,7 +749,7 @@ public class Piece : MonoBehaviour {
 
 	void OnMouseOver() {
 		showGUI = true;
-		if (healthBar) {
+		if(healthBar != null) {
 			healthBar.showBar = true;
 		}
 		guiT = guiTimer;

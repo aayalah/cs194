@@ -22,6 +22,9 @@ public class GameOptions : MonoBehaviour {
 	private bool display = false;
 	private UnitManager man;
 
+	public int player1Status = 0;
+	public int player2Status = 1;
+
 	void Awake() {
 		
 		DontDestroyOnLoad(this.gameObject);
@@ -68,7 +71,16 @@ public class GameOptions : MonoBehaviour {
 						GUI.Label (new Rect (Screen.width / 2 - 250, 300, 300, 40), "King of the Hill: ", GUI.skin.label);
 						gameMode = GUI.Toggle(new Rect(Screen.width / 2 + 20, 310, 10, 40), gameMode, "", GUI.skin.toggle);
 						
-						if (GUI.Button (new Rect (Screen.width / 2, 345, 50, 20), "Enter")) {
+			GUI.skin.label.fontSize = 30;
+			GUI.Label (new Rect (Screen.width / 2 - 300, 330, 300, 40), "Player Configuration", GUI.skin.label);
+			GUI.skin.label.fontSize = 20;
+			GUI.Label (new Rect (Screen.width / 2 - 250, 360, 300, 40), "Player 1: ", GUI.skin.label);
+			string[] toolbarStrings = new string[] {"Human", "CPU"};
+			player1Status = GUI.Toolbar(new Rect(Screen.width / 2 - 75, 370, 200, 20), player1Status, toolbarStrings);
+			GUI.Label (new Rect (Screen.width / 2 - 250, 390, 300, 40), "Player 2: ", GUI.skin.label);
+			player2Status = GUI.Toolbar(new Rect(Screen.width / 2 - 75, 400, 200, 20), player2Status, toolbarStrings);
+						
+						if (GUI.Button (new Rect (Screen.width / 2, 425, 50, 20), "Enter")) {
 								Int32.TryParse (width, out w);
 								Int32.TryParse (height, out h);
 								Int32.TryParse (numberOfPieces, out np);
@@ -85,6 +97,8 @@ public class GameOptions : MonoBehaviour {
 										man.kingMode = gameMode;
 										Application.LoadLevel (0);
 								}
+				man.p1Human = (player1Status == 0);
+				man.p2Human = (player2Status == 0);
 
 						}
 
