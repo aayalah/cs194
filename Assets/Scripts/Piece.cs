@@ -21,11 +21,15 @@ public class Piece : MonoBehaviour {
 	public int[] attackHistogram = {5};
 	public int[] defenseHistogram = {5};
 	public int[] specialHistogram = {5};
+	public int maxSpecial = 20;
+	public int currentSpecial = 0;
 	public int minDamage;
 	public int attackModifier = 0;
 	public int defenseModifier = 0;
 	public int movementRange = 3;
 	public int attackRange = 1;
+	public int specialRange = 2;
+	public int specialStrength = 20;
 	public int experience = 0;
 
 	public Color baseColor = Color.white;
@@ -56,6 +60,8 @@ public class Piece : MonoBehaviour {
 	private float startingY;
 	private float direction = 0;
 	private bool showcaseRotate = false;
+	protected bool decidingToMoveOrCharge = false;
+	protected string optionChosen = "Move";
 	private Vector3 startingRotation;
 
 	public void Initialize(Player player, GameManager game) {
@@ -189,7 +195,7 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator movePhysically(int oldX, int oldZ, int newX, int newZ) {
-		float halfPieceHeight = transform.localScale.y / 2;
+		float halfPieceHeight = transform.localScale.y / 2; // This is no longer accurate with meshes
 		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
 		GameObject currentCell = board.getCellAt(oldX, oldZ);
 		TileController t = currentCell.transform.GetComponent<TileController> ();
@@ -220,10 +226,15 @@ public class Piece : MonoBehaviour {
 	}
 
 	public void moveTo(GameObject tile, bool changePosition = true) {
-		TileController tileController = tile.GetComponent<TileController>();
-		board.movePiece(this, tileController.x, tileController.z);
-		x = tileController.x;
-		z = tileController.z;
+		/*
+		TileController oldController = board.getCellAt(x, z).GetComponent<TileController>();
+		oldController.setColor(oldController.baseColor);
+		*/
+		TileController newController = tile.GetComponent<TileController>();
+		//ewController.setColor(Color.black);
+		board.movePiece(this, newController.x, newController.z);
+		x = newController.x;
+		z = newController.z;
 		if (changePosition) {
 			transform.position = tile.transform.position + new Vector3(0,tile.transform.localScale.y/2,0) + new Vector3(0, transform.localScale.y, 0);
 		}
@@ -312,13 +323,16 @@ public class Piece : MonoBehaviour {
 		}
 	}
 	*/
-  public virtual void setAttackHighlights(bool onOrOff) {
+  public virtual void setAttackHighlights(bool onOrOff, List<GameObject> tiles = null) {
+  	if (tiles == null) {
+  		tiles = getAttackableTiles();
+  	}
     attacksHighlighted = onOrOff;
     foreach (Piece piece in getAttackablePieces()) {
       GameObject tile = board.getCellAt(piece.x, piece.z);
       piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
     }
-    foreach (GameObject tile in getAttackableTiles()) {
+    foreach (GameObject tile in tiles) {
       TileController tc = tile.GetComponent<TileController>();
       tc.setColor(onOrOff ? Color.cyan : tc.baseColor);
     }
@@ -340,6 +354,14 @@ public class Piece : MonoBehaviour {
 		player.removePiece(this);
 	}
 
+	/*
+	public IEnumerator flashHealthBar() {
+		healthBar.showBar = true;
+		yield return new WaitForSeconds(1);
+		healthBar.showBar = false;
+	}
+	*/
+
 	public void takeDamage(int damage) {
 		int index = Random.Range(0, defenseHistogram.Length);
 		int shield = defenseHistogram[index];
@@ -352,6 +374,7 @@ public class Piece : MonoBehaviour {
 		currentHP = Mathf.Max (0, currentHP - damage);
 		healthBar.currentHP = currentHP;
 		healthBar.showBar = true;
+		//StartCoroutine(flashHealthBar());
 		if (currentHP <= 0) {
 			die();
 		}
@@ -383,6 +406,112 @@ public class Piece : MonoBehaviour {
 		}
 		return selected;
 	}
+
+	public void incrementSpecial() {
+		int index = Random.Range(0, specialHistogram.Length);
+		int val = specialHistogram[index];
+
+		currentSpecial = Mathf.Min(maxSpecial, currentSpecial + val);
+	}
+
+	protected virtual IEnumerator specialDoDamage(TileController tile) {
+		for (int i = -specialRange; i <= specialRange; i++) {
+			for (int j = -specialRange; j <= specialRange; j++) {
+				if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
+					GameObject attackedCell = board.getCellAt(tile.x+i, tile.z+j);
+					if (attackedCell) {
+						TileController attackedTile = attackedCell.GetComponent<TileController>();
+						attackedTile.setColor(Color.red);
+						Debug.Log("Attempting to set tile " + tile.x+i + ", " + tile.z+j + " color to red");
+					}
+				}
+			}
+		}
+		Debug.Log("About to wait");
+		yield return new WaitForSeconds(1);
+		
+		for (int i = -specialRange; i <= specialRange; i++) {
+			for (int j = -specialRange; j <= specialRange; j++) {
+				if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
+					Piece attackedPiece = board.getPieceAt(tile.x+i, tile.z+j);
+					GameObject attackedCell = board.getCellAt(tile.x+i, tile.z+j);
+					if (attackedPiece) {
+						attackedPiece.takeDamage(specialStrength / (Mathf.Abs(i)+Mathf.Abs(j)+1));
+					}
+					if (attackedCell) {
+						TileController attackedTile = attackedCell.GetComponent<TileController>();
+						attackedTile.setColor(attackedTile.baseColor);
+					}
+				}
+			}
+		}	
+	}
+
+	public virtual IEnumerator AIspecialAttack() {
+		if (dead || currentSpecial != maxSpecial) {
+			yield return null;
+		} else {
+			currentSpecial = 0;
+			GameObject selected = null;
+
+			List<GameObject> allTiles = new List<GameObject>();
+			GameObject cellToAttack = null;
+			int enemyMaxHP = -1;
+
+			for (int i = 0; i < board.xDimension; i++) {
+				for (int j = 0; j < board.zDimension; j++) {
+					GameObject cell = board.getCellAt(i,j);
+					allTiles.Add(cell);
+					Piece p = board.getPieceAt(i,j);
+					if (p && p.player != this.player && p.currentHP > enemyMaxHP) {
+						enemyMaxHP = p.currentHP;
+						cellToAttack = cell;
+					}
+				}
+			}
+
+			setAttackHighlights(true, allTiles);
+
+			yield return new WaitForSeconds(0.5f);
+			TileController tile = cellToAttack.GetComponent<TileController>();
+
+			setAttackHighlights(false, allTiles);
+
+			yield return StartCoroutine(specialDoDamage(tile));
+		}
+	}
+
+	public virtual IEnumerator specialAttack() {
+		if (dead || currentSpecial != maxSpecial) {
+			yield return null;
+		} else {
+			currentSpecial = 0;
+			GameObject selected = null;
+
+			List<GameObject> allTiles = new List<GameObject>();
+			for (int i = 0; i < board.xDimension; i++) {
+				for (int j = 0; j < board.zDimension; j++) {
+					allTiles.Add(board.getCellAt(i,j));
+				}
+			}
+
+			setAttackHighlights(true, allTiles);
+
+			while (!selected || !selected.GetComponent<TileController>()) {
+				yield return null;
+				while (!Input.GetMouseButtonDown(0)) {
+					yield return null;
+				}
+				selected = getSelectedObject("Tile");
+			}
+			TileController tile = selected.GetComponent<TileController>();
+
+			setAttackHighlights(false, allTiles);
+			
+			yield return StartCoroutine(specialDoDamage(tile));
+		}
+	}
+
 
 	private int scoreLocation(GameObject location){
 		TileController tileController = location.GetComponent<TileController>();
@@ -526,6 +655,43 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator AImoveOrCharge() {
+		if (dead) {
+			yield return null;
+		} else {
+			if (Random.value < 0.3) {
+				if (currentSpecial >= maxSpecial) {
+					yield return StartCoroutine(AIspecialAttack());
+				} else {
+					incrementSpecial();
+				}
+			} else {
+				yield return StartCoroutine(AImakeMove());
+			}
+		}
+	}
+
+	public IEnumerator moveOrCharge() {
+		if (dead) {
+			yield return null;
+		} else {
+			decidingToMoveOrCharge = true;
+			// We'll make the decision
+			while (decidingToMoveOrCharge) {
+				yield return null;
+			}
+			if (optionChosen == "Move") {
+				yield return StartCoroutine(makeMove());
+			} else if (optionChosen == "Charge") {
+				incrementSpecial();
+			} else if (optionChosen == "SpecialAttack") {
+				yield return StartCoroutine(specialAttack());
+			} else {
+				Debug.Log("Unknown option " + optionChosen + " chosen for piece action.");
+			}
+		}
+	}
+
 
 	public IEnumerator AIinitialPlacement(int id){
 		if (board == null) {
@@ -600,8 +766,9 @@ public class Piece : MonoBehaviour {
 
 	void OnMouseOver() {
 		showGUI = true;
-		if(healthBar != null)
+		if(healthBar != null) {
 			healthBar.showBar = true;
+		}
 		guiT = guiTimer;
 	}
 
@@ -613,6 +780,18 @@ public class Piece : MonoBehaviour {
 		}
 		//Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
 		//GUI.Box(new Rect(targetPos.x-20, targetPos.y, 40, 10), "foo");
+
+		if (decidingToMoveOrCharge) {
+			if (GUI.Button(new Rect(10, 60, 300, 40), "Move")) {
+				decidingToMoveOrCharge = false;
+				optionChosen = "Move";
+			}
+			string specialText = currentSpecial == maxSpecial ? "SpecialAttack" : "Charge";
+			if (GUI.Button(new Rect(10, 100, 300, 40), specialText)) {
+				decidingToMoveOrCharge = false;
+				optionChosen = specialText;
+			}
+		}
 	}
 
 	void DoMyWindow(int windowID) {
@@ -621,7 +800,7 @@ public class Piece : MonoBehaviour {
 		GUI.Label (new Rect (10, 40, 300, 40), "Attack Range: " + attackRange);
 		GUI.Label (new Rect (10, 60, 300, 40), "Movement Range: " + movementRange);
 		GUI.Label (new Rect (10, 80, 300, 40), "Hit Points: " + currentHP + "/" + maxHP);
-		GUI.Label (new Rect (10, 100, 300, 40), "Special Points: " + 0 + "/" + 50);
+		GUI.Label (new Rect (10, 100, 300, 40), "Special Points: " + currentSpecial + "/" + maxSpecial);
 
 		GUI.Label (new Rect (10, 120, 300, 40), "Max Attack: " + maxSkill(attackHistogram));
 		GUI.Label (new Rect (10, 140, 300, 40), "Average Attack: " + averageSkill(attackHistogram));

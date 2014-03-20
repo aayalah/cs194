@@ -163,12 +163,13 @@ public class GameManager : MonoBehaviour {
 						setInstructionText(2);
 						yield return StartCoroutine(changeCameraPosition (i));
 						stage = 2;
+
 						if(usingAI[i]){
-							yield return StartCoroutine(playersPieces[j].AImakeMove());
+							yield return StartCoroutine(playersPieces[j].AImoveOrCharge());
 							setInstructionText(3);
 							yield return StartCoroutine(playersPieces[j].AIattack());
 						}else{
-							yield return StartCoroutine (playersPieces[j].makeMove ()); 
+							yield return StartCoroutine (playersPieces[j].moveOrCharge()); 
 							setInstructionText(3);
 							yield return StartCoroutine (playersPieces[j].attack ());
 
