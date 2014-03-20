@@ -180,7 +180,7 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator movePhysically(int oldX, int oldZ, int newX, int newZ) {
-		float halfPieceHeight = transform.localScale.y / 2;
+		float halfPieceHeight = /transform.localScale.y / 2; // This is no longer accurate with meshes
 		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
 		GameObject currentCell = board.getCellAt(oldX, oldZ);
 		TileController t = currentCell.transform.GetComponent<TileController> ();
@@ -455,8 +455,8 @@ public class Piece : MonoBehaviour {
 
 			setAttackHighlights(true, allTiles);
 
-			yield return WaitForSeconds(0.5f);
-			TileController tile = cell.GetComponent<TileController>();
+			yield return new WaitForSeconds(0.5f);
+			TileController tile = cellToAttack.GetComponent<TileController>();
 
 			setAttackHighlights(false, allTiles);
 
@@ -644,12 +644,12 @@ public class Piece : MonoBehaviour {
 		} else {
 			if (Random.value < 0.3) {
 				if (currentSpecial >= maxSpecial) {
-					yield return StartCoroutine(specialAttack());
+					yield return StartCoroutine(AIspecialAttack());
 				} else {
 					incrementSpecial();
 				}
 			} else {
-				yield return StartCoroutine(makeMove());
+				yield return StartCoroutine(AImakeMove());
 			}
 		}
 	}
