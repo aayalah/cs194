@@ -35,6 +35,7 @@ public class GameManager : MonoBehaviour {
 	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
 	private static string pieceMovementText = "Click on a colored square to move your piece."; 
 	private static string pieceAttackText = "Click on an enemy within range to attack or press SPACE to charge special";
+	private static string pieceAttackWithFullSpecialText = "Your special attack is charged! Press space to use it, or click to attack normally.";
 
 
 	//boolean variables
@@ -166,19 +167,27 @@ public class GameManager : MonoBehaviour {
 
 						if(usingAI[i]){
 							if (j < playersPieces.Count) {	// To avoid an error if the piece has just died
-								yield return StartCoroutine(playersPieces[j].AImoveOrCharge());
+								yield return StartCoroutine(playersPieces[j].AImakeMove());
 							}
-							setInstructionText(3);
-							if (j < playersPieces.Count) {
-								yield return StartCoroutine(playersPieces[j].AIattack());
+							if (j < playersPieces.Count && playersPieces[j].hasAttackablePieces()) {
+								if (playersPieces[j].canUseSpecial()) {
+									setInstructionText(4);
+								} else {
+									setInstructionText(3);
+								}
+								yield return StartCoroutine(playersPieces[j].AIattackOrCharge());
 							}
 						}else{
 							if (j < playersPieces.Count) {
-								yield return StartCoroutine (playersPieces[j].moveOrCharge()); 
+								yield return StartCoroutine (playersPieces[j].makeMove()); 
 							}
-							setInstructionText(3);
-							if (j < playersPieces.Count) {
-								yield return StartCoroutine (playersPieces[j].attack ());
+							if (j < playersPieces.Count && playersPieces[j].hasAttackablePieces()) {
+								if (playersPieces[j].canUseSpecial()) {
+									setInstructionText(4);
+								} else {
+									setInstructionText(3);
+								}
+								yield return StartCoroutine (playersPieces[j].attackOrCharge());
 							}
 						}
 						//playersPieces[j].setColor(playersPieces[j].baseColor);
@@ -282,6 +291,9 @@ public class GameManager : MonoBehaviour {
 				break;
 			case 3:
 				instructionText = pieceAttackText;
+				break;
+			case 4:
+				instructionText = pieceAttackWithFullSpecialText;
 				break;
 		}
 	
@@ -417,6 +429,9 @@ public class GameManager : MonoBehaviour {
 			break;
 		case 3:
 			instructionText = pieceAttackText;
+			break;
+		case 4:
+			instructionText = pieceAttackWithFullSpecialText;
 			break;
 		}
 
