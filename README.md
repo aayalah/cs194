@@ -1,6 +1,6 @@
 cs194 Final Project - Bees With Jetpacks!
 ==========================================
-Miles Johnson, Nick Yannecone, Alejandro Ayala-Hurtado
+Miles Johnson, Nick Yannacone, Alejandro Ayala-Hurtado
 
 
 
