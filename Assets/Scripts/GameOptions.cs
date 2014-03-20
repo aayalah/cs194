@@ -59,7 +59,7 @@ public class GameOptions : MonoBehaviour {
 	}
 
 	/*
-	 * Creates all the user interface elements and handles the user's input, placing the data in the appropriate data structures
+	 * Creates all the user interface elements and handles the users' input, placing the data in the appropriate data structures
 	 *  so they can be accessed in othe parts of the code
 	 * 
 	 * 

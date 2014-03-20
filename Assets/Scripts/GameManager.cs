@@ -117,12 +117,12 @@ public class GameManager : MonoBehaviour {
 	}
 	/*
 	 *	Manages the main loop of the game. The game is divided into three phases: selection of pieces, 
-	 *  movement or charging of special ability for each piece and attacking of pieces. At the beginning   
+	 *  movement, and charging of special ability o attacking of pieces. At the beginning   
 	 *  of the game there is an additional phase where you place each or your pieces on the board
 	 */
 	public IEnumerator mainLoops() {
 
-		//Changes the instruction that appear at the top of the screen that servas a guide for the players
+		//Changes the instruction that appear at the top of the screen that serves a guide for the players
 		setInstructionText(0);
 		stage = 0;
 		for (int i = 0; i < numPlayers; i++) {
@@ -145,13 +145,14 @@ public class GameManager : MonoBehaviour {
 				int i = Mathf.Abs(k - (round % 2));
 				yield return StartCoroutine(changeCameraPosition (i));
 				setTurnText(i);
-				if(!orderFixed[i] || (players[i].getSelectedPieces().Count != manager.numTurns)) {
+				//if(!orderFixed[i]) {
+
 					if(usingAI[i]){
 						yield return StartCoroutine (players [i].AIchoosePieces());
 					}else{
 						yield return StartCoroutine (players [i].choosePieces ());
 					}
-				}	
+				//}	
 					
 			}
 
@@ -193,7 +194,6 @@ public class GameManager : MonoBehaviour {
 
 						}
 
-						//playersPieces[j].setColor(playersPieces[j].baseColor);
 						if (j < playersPieces.Count) {
 							playersPieces [j].numMarkers--;
 						}
@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviour {
 	 * Runs through all the end conditions of the game and checks to see if any of them
 	 * are satisfied. In the normal game mode, the game ends when one of the players does
 	 * not have any pieces. In the King of the Hill game mode the game ends when one of the
-	 * players has stayed on the specified square for the specified number of turns
+	 * players has stayed on the specified square for the max number of turns
 	 */ 
 
 	public void gameOver(int c) {
@@ -276,7 +276,7 @@ public class GameManager : MonoBehaviour {
 
 	/*
 	 * Updates the text that describes what the player should do next to the appropriate message
-	 * depending on whhat part of the round the player is currently at
+	 * depending on what part of the round the player is currently at
 	 * 
 	 */
 

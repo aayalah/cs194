@@ -24,7 +24,7 @@ public class ClockKing : MonoBehaviour {
 
 	}
 
-	//Inctremens the variable that keeps track of the number of times the player has had a piece on the
+	//Increments the variable that keeps track of the number of times the player has had a piece on the
 	//square
 	public void addTurn() {
 		numTurns++;
@@ -33,7 +33,7 @@ public class ClockKing : MonoBehaviour {
 
 	/*
 	 * Creates the two counters that are displayed on the screen, that keep track
-	 * of the number of turns a player has had a piece on the squuare
+	 * of the number of turns a player has had a piece on the square
 	 */ 
 	public void Initialize(int id) {
 
