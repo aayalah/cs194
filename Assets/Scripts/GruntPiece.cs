@@ -109,22 +109,4 @@ public class GruntPiece : Piece {
     return locations; 
   }
 
-  /*
-  public override List<Piece> getAttackablePieces() {
-    List<Piece> pieces = new List<Piece> ();
-    for (int i = -attackRange; i <= attackRange; i++) {
-      Piece attackablePiece = board.getPieceAt(x+i, z);
-      if (attackablePiece && attackablePiece.player != this.player) {
-        pieces.Add (attackablePiece);
-      }
-      if (i != 0) {
-        attackablePiece = board.getPieceAt(x, z+i);
-        if (attackablePiece && attackablePiece.player != this.player) {
-          pieces.Add (attackablePiece);
-        }     
-      }
-    }
-    return pieces;
-  }
-  */
 }

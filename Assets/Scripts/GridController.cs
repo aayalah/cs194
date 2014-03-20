@@ -78,6 +78,9 @@ public class GridController : MonoBehaviour {
 		}
 	}
 
+	/* Compute the maximum height of terrain along a path from (startX, startZ) to 
+	 * (endX, endZ) 
+	 */
 	public float maxHeightOnPath(int startX, int startZ, int endX, int endZ) {
 		int minX = Mathf.Min(startX, endX);
 		int maxX = Mathf.Max(startX, endX);

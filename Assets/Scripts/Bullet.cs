@@ -22,6 +22,8 @@ public class Bullet : MonoBehaviour {
     }
 	}
 
+  // Disappear on contact with another object; if it's a piece, 
+  // damage it.
   void OnTriggerEnter(Collider coll) {
     Debug.Log("Collided with " + coll.gameObject.name);
     Piece otherPiece = coll.gameObject.GetComponent<Piece>();

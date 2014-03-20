@@ -151,6 +151,7 @@ public class Piece : MonoBehaviour {
 
 	}
 
+	// Idle floating animation
 	void idle(){
 		if(direction == 1){
 			if(transform.position.y > startingY + .5){
@@ -187,6 +188,8 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	// Return the object the user's pointing at (or clicking on), 
+	// if it matches the given tag.
 	public GameObject getSelectedObject(string tag){
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit[] hits;
@@ -202,6 +205,7 @@ public class Piece : MonoBehaviour {
 		return null;
 	}
 
+	// Smoothly move from oldPos to newPos
 	public IEnumerator lerpPosition(Vector3 oldPos, Vector3 newPos) {
 		int steps = (int) (Vector3.Distance(oldPos, newPos) * LERP_STEPS_PER_TILE);
 		for (int i = 1; i <= steps; i++) {
@@ -222,6 +226,7 @@ public class Piece : MonoBehaviour {
 		yield return null;
 	}
 
+	// Move up, then over, then down, from a given old position to a given new one.
 	public IEnumerator movePhysically(int oldX, int oldZ, int newX, int newZ) {
 		float halfPieceHeight = 1.5f;//transform.localScale.y / 2; // This is no longer accurate with meshes
 		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
@@ -253,6 +258,9 @@ public class Piece : MonoBehaviour {
 		yield return StartCoroutine(lerpPosition(aboveEnd, end));
 	}
 
+
+	// Move this piece's internal, code representation to the given tile. 
+	// (basically a subroutine for lerpTo)
 	public void moveTo(GameObject tile, bool changePosition = true) {
 		/*
 		TileController oldController = board.getCellAt(x, z).GetComponent<TileController>();
@@ -268,6 +276,8 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	// Move this piece's internal representation AND in-game object to the 
+	// given tile.
 	public IEnumerator lerpTo(GameObject tile) {
 		TileController t = tile.transform.GetComponent<TileController> ();
 		if(t.isKingTile){
@@ -283,14 +293,17 @@ public class Piece : MonoBehaviour {
 		yield return StartCoroutine(movePhysically(oldX, oldZ, tileController.x, tileController.z));
 	}
 
+	// moveTo, but using the tile's coordinates instead of the object itself.
 	public void moveToCoords(int xCoord, int zCoord) {
 		moveTo (board.getCellAt (xCoord, zCoord));
 	}
 
+	// lerpTo, but using the tile's coordinates instead of the object itself.
 	public IEnumerator lerpToCoords(int xCoord, int zCoord) {
 		yield return StartCoroutine(lerpTo(board.getCellAt (xCoord, zCoord)));
 	}
 
+	// Returns a list of tiles to which this piece can move.
 	public virtual List<GameObject> getMoveLocations() {
 		// Default movement is, let's say... everything forward, backward, left, and right.
 		List<GameObject> locations = new List<GameObject> ();
@@ -315,6 +328,8 @@ public class Piece : MonoBehaviour {
 		}
 		return locations;
 	}
+
+	// Highlights the tiles to which this piece can move.
 	public void setMoveHighlights(bool onOrOff, List<GameObject> locations = null) {
 		if (locations == null) {
 			locations = getMoveLocations();
@@ -327,10 +342,13 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	// Returns a list of tiles which this piece can attack
+	// (default implementation, to be overridden by subclasses)
 	public virtual List<GameObject> getAttackableTiles() {
 		return getMoveLocations();
 	}
 
+	// Returns a list of pieces which this piece can attack
 	public virtual List<Piece> getAttackablePieces() {
 		List<Piece> pieces = new List<Piece>();
 		List<GameObject> tiles = getAttackableTiles();
@@ -349,15 +367,9 @@ public class Piece : MonoBehaviour {
 		return getAttackablePieces().Count > 0;
 	}
 	
-	/*
-	public virtual void setAttackHighlights(bool onOrOff) {
-		attacksHighlighted = onOrOff;
-		foreach (Piece piece in getAttackablePieces()) {
-			GameObject tile = board.getCellAt(piece.x, piece.z);
-			//piece.setColor(onOrOff ? Color.yellow : piece.baseColor);
-		}
-	}
-	*/
+
+	// Highlights the tiles which this piece can attack (or the provided alternate list, 
+	// if there is one)
   public virtual void setAttackHighlights(bool onOrOff, List<GameObject> tiles = null) {
   	if (tiles == null) {
   		tiles = getAttackableTiles();
@@ -377,6 +389,7 @@ public class Piece : MonoBehaviour {
 		//gameObject.renderer.material.color = color;
 	}
 
+	// Set HP to 0, remove from play
 	public void die() {
 		currentHP = 0;
 		dead = true;
@@ -391,14 +404,8 @@ public class Piece : MonoBehaviour {
 		player.removePiece(this);
 	}
 
-	/*
-	public IEnumerator flashHealthBar() {
-		healthBar.showBar = true;
-		yield return new WaitForSeconds(1);
-		healthBar.showBar = false;
-	}
-	*/
-
+	// Calculate a shield value to see whether damage gets shielded. If so, block damage; 
+	// if not, reduce HP.
 	public void takeDamage(int damage) {
 		int index = Random.Range(0, defenseHistogram.Length);
 		int shield = defenseHistogram[index];
@@ -432,6 +439,8 @@ public class Piece : MonoBehaviour {
 	/******************************
 	 * STUFF REQUIRING PLAYER INPUT
 	 * ****************************/
+
+	// "Charge" the special attack -- after enough charges it will be usable
 	public void incrementSpecial() {
 		int index = Random.Range(0, specialHistogram.Length);
 		int val = specialHistogram[index];
@@ -443,6 +452,8 @@ public class Piece : MonoBehaviour {
 		return currentSpecial >= maxSpecial;
 	}
 
+	// Subroutine of the specialAttack() methods -- create an explosion effect 
+	// at the given tile, and do damage to the pieces near it.
 	protected virtual IEnumerator specialDoDamage(TileController tile) {
 		GameObject exp = (GameObject) Instantiate(explosion, tile.transform.position, explosion.transform.rotation);
 		specialAttacking = true;
@@ -478,6 +489,7 @@ public class Piece : MonoBehaviour {
 		Destroy(exp);
 	}
 
+	// AI special-attacks the enemy with highest HP.
 	public virtual IEnumerator AIspecialAttack() {
 		if (dead || currentSpecial != maxSpecial) {
 			yield return null;
@@ -513,6 +525,7 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	// Select a tile and special-attack whatever's near it.
 	public virtual IEnumerator specialAttack() {
 		if (dead || currentSpecial != maxSpecial) {
 			yield return null;
@@ -549,7 +562,7 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
-
+	// Scoring for King of the Hill
 	private int scoreLocation(GameObject location){
 		TileController tileController = location.GetComponent<TileController>();
 		int score = 0;
@@ -591,6 +604,7 @@ public class Piece : MonoBehaviour {
 		return score;
 	}
 
+	// AI moves to whatever tile scoreLocation() says is best.
 	public IEnumerator AImakeMove(){
 		if (dead) {
 			yield return null;
@@ -618,6 +632,7 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	// Select a tile to move to, then move there
 	public IEnumerator makeMove() {
 		if (dead) {
 			yield return null;
@@ -642,7 +657,9 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
-
+	// AI randomly chooses to charge special, use special, or attack 
+	// normally. If attacking normally it attacks the piece with 
+	// lowest HP.
 	public virtual IEnumerator AIattackOrCharge(){
 		List<Piece> attackablePieces = getAttackablePieces();
 		if (dead || attackablePieces.Count == 0) {
@@ -682,6 +699,7 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	// Choose whether to attack a piece or charge/use special attack.
 	public virtual IEnumerator attackOrCharge() {
 		List<Piece> attackablePieces = getAttackablePieces();
 		if (dead || attackablePieces.Count == 0) {
@@ -721,6 +739,7 @@ public class Piece : MonoBehaviour {
 		yield return new WaitForSeconds(1);
 	}
 
+	// AI places pieces randomly.
 	public IEnumerator AIinitialPlacement(int id){
 		if (board == null) {
 			board = GameObject.Find("Game").GetComponent<GridController> ();
@@ -733,6 +752,7 @@ public class Piece : MonoBehaviour {
 		setMoveHighlights(false, moveLocations);
 	}
 
+	// Place pieces in their starting positions on the board.
 	public IEnumerator initialPlacement(int id) {
 
 		if (board == null) {
@@ -756,9 +776,8 @@ public class Piece : MonoBehaviour {
 		setMoveHighlights(false, moveLocations);
 	}
 
-
+	// Returns a list of the available locations for a starting piece.
 	public List<GameObject> getInitialLocations(int player) {
-		// Default movement is, let's say... everything forward, backward, left, and right.
 		int row;
 		if (player == 0) {
 			row = 0;
@@ -808,6 +827,7 @@ public class Piece : MonoBehaviour {
 		//Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
 		//GUI.Box(new Rect(targetPos.x-20, targetPos.y, 40, 10), "foo");
 
+		// Labels that appear after attacks/shields/specials:
 		if(attackFor != -1){
 			Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
 			GUIStyle style = new GUIStyle ();
@@ -841,6 +861,7 @@ public class Piece : MonoBehaviour {
 		}
 	}
 
+	// Unit stats screen.
 	void DoMyWindow(int windowID) {
 		GUI.skin.label.alignment = TextAnchor.MiddleLeft;;
 		GUI.Label (new Rect (10, 20, 300, 40), "Type: " + getName());
