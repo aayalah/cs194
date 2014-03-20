@@ -297,15 +297,15 @@ public class TeamBuilder : MonoBehaviour {
 	void OnGUI(){
 		if(unitsCreated < armySize){
 		GUI.contentColor = Color.black;
-		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 50), "Current Graph #"+(currentGraph+1));
-		GUI.Label(new Rect(Screen.width/10-10, Screen.height-115, 300, 50), "Current Color Distribution #"+(currentColor+1));
+		GUI.Label(new Rect(Screen.width/10, Screen.height-190, 200, 50), "Current Graph #"+(currentGraph+1));
+		GUI.Label(new Rect(Screen.width/10-10, Screen.height-175, 300, 50), "Current Color Distribution #"+(currentColor+1));
 		
-		GUI.Label(new Rect(Screen.width/10, Screen.height-100, 200, 100), "Avg. Attack: "+averageSkill(Color.red));
-		GUI.Label(new Rect(Screen.width/10+200, Screen.height-100, 200, 100), "Max Attack: "+maxSkill(Color.red));
-		GUI.Label(new Rect(Screen.width/10, Screen.height-85, 200, 100), "Avg. Shield: "+averageSkill(Color.green));
-		GUI.Label(new Rect(Screen.width/10+200, Screen.height-85, 200, 100), "Max Shield: "+maxSkill(Color.green));
-		GUI.Label(new Rect(Screen.width/10, Screen.height-70, 200, 100), "Avg. Special: "+averageSkill(Color.yellow));
-		GUI.Label(new Rect(Screen.width/10+200, Screen.height-70, 200, 100), "Max Special: "+maxSkill(Color.yellow));
+		GUI.Label(new Rect(Screen.width/10, Screen.height-160, 200, 100), "Avg. Attack: "+averageSkill(Color.red));
+		GUI.Label(new Rect(Screen.width/10+200, Screen.height-160, 200, 100), "Max Attack: "+maxSkill(Color.red));
+		GUI.Label(new Rect(Screen.width/10, Screen.height-145, 200, 100), "Avg. Shield: "+averageSkill(Color.green));
+		GUI.Label(new Rect(Screen.width/10+200, Screen.height-145, 200, 100), "Max Shield: "+maxSkill(Color.green));
+		GUI.Label(new Rect(Screen.width/10, Screen.height-130, 200, 100), "Avg. Special: "+averageSkill(Color.yellow));
+		GUI.Label(new Rect(Screen.width/10+200, Screen.height-130, 200, 100), "Max Special: "+maxSkill(Color.yellow));
 		
 		UnitLabels();
 
@@ -316,12 +316,12 @@ public class TeamBuilder : MonoBehaviour {
 				int [] special = findArray(Color.yellow);
 				manager.addUnit(unitNum, attack, shield, special);
 				unitsCreated++;
+				eraseGraph();
 				removeCombination();
 				if(unitsCreated == armySize){
 					currentBumble.GetComponentInChildren<Renderer>().enabled = false;
 					currentWorker.GetComponentInChildren<Renderer>().enabled = false;
 					currentHornet.GetComponentInChildren<Renderer>().enabled = false;
-					eraseGraph();
 				}
 			}
 
@@ -358,8 +358,8 @@ public class TeamBuilder : MonoBehaviour {
 			int [] special = findArray(Color.yellow);
 			manager.addUnit(unitNo, attack, shield, special);
 			unitsCreated++;
-			removeCombination();
 			eraseGraph();
+			removeCombination();
 		}
 		//Max attack focus
 		if(personalityType == 1){
@@ -417,22 +417,22 @@ public class TeamBuilder : MonoBehaviour {
 
 	void UnitLabels(){
 		if(currentBumble.GetComponentInChildren<Renderer>().enabled){
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Bumblebee");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 60");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 1");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 4");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-190, 200, 100), "Unit Type: Bumblebee");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-175, 200, 100), "Hit Points: 60");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-160, 200, 100), "Attack Range: 1");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-145, 200, 100), "Movement: 4");
 		}
 		if(currentWorker.GetComponentInChildren<Renderer>().enabled){
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Worker");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 40");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 3");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 5");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-190, 200, 100), "Unit Type: Worker");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-175, 200, 100), "Hit Points: 40");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-160, 200, 100), "Attack Range: 3");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-145, 200, 100), "Movement: 5");
 		}
 		if(currentHornet.GetComponentInChildren<Renderer>().enabled){
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Hornet");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 20");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 6");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 8");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-190, 200, 100), "Unit Type: Hornet");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-175, 200, 100), "Hit Points: 20");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-160, 200, 100), "Attack Range: 6");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-145, 200, 100), "Movement: 8");
 		}
 	}
 	

@@ -324,7 +324,10 @@ public class GameManager : MonoBehaviour {
 
 		GUI.skin = skin;
 		if (gameIsOver) {
-			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
+			GUIStyle st = new GUIStyle();
+			st.normal.textColor = Color.magenta;
+			st.fontSize = 24;
+			GUI.Label(new Rect(Screen.width/2 - 125, Screen.height/2-10, 200, 20), gameOverText, st);
 		}
 		if(!hintsHidden){
 			GUIStyle style4 = new GUIStyle ();
@@ -370,13 +373,20 @@ public class GameManager : MonoBehaviour {
 		orderFixed[1] = GUI.Toggle(new Rect(Screen.width / 2 + 545, Screen.height - 25, 10, 40), orderFixed[1], "", GUI.skin.toggle);
 
 		if(paused){
-			if(GUI.Button(new Rect(Screen.width/2-100,Screen.height - 40, 200, 40), "Exit to Main Menu", GUI.skin.GetStyle("button"))) {
+			if(GUI.Button(new Rect(Screen.width/2-100,Screen.height - 100, 200, 40), "Exit to Main Menu", GUI.skin.GetStyle("button"))) {
 				manager.teamsBuilt = 0;
 				manager.totalUnits = 0;
 				Application.LoadLevel(0);
 			}
 			GUI.skin.label.fontSize = 10;
 			GUI.Label (new Rect (Screen.width / 2 - 25, Screen.height/2 - 20, 75, 40), "Paused", style2);
+		}
+		if(gameIsOver){
+			if(GUI.Button(new Rect(Screen.width/2-100,Screen.height - 100, 200, 40), "Exit to Main Menu", GUI.skin.GetStyle("button"))) {
+				manager.teamsBuilt = 0;
+				manager.totalUnits = 0;
+				Application.LoadLevel(0);
+			}
 		}
 	}
 
