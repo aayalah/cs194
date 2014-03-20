@@ -11,27 +11,27 @@ Bees With Jetpacks was created with the Unity game engine with scripting done in
 
 Scripts:
 
-MainMenu.cs -
+MainMenu.cs - Handles the GUI elements of the main menu as well as their underlying logic.
 
-GameOptions.cs -
+GameOptions.cs - This is the primary script involved in the options menu. It creates GUI elements which allow the user to change board size, army size, game mode (Standard or King of the Hill), and whether each player is Human or AI controlled.
 
-TeamBuilder.cs -
+TeamBuilder.cs - Responsible for generating histograms and stat distributions for unit creation. Responds to user input to switch graphs/stat distrobutions and unit types, while displaying relevant information on the screen about the current unit configuration.
 
-UnitManager.cs -
+UnitManager.cs - Instantiated in the MainMenu scene, this script persists throughout both players unit creation scenes and the game scene itself. While TeamBuilder.cs creates the tools for creating units, UnitManager stores the data for each of the units created as well as which player each unit belongs to. When the game starts, this script instantiates an object of type Piece for each of the units created. The Player scripts can then retrieve these pieces with a call to the function GetUnit(int unitNum).
 
-GameManager.cs -
+GameManager.cs - Handles all of the logic behind the game's rules. This script dictates what the players should be doing at any stage of the game while providing text prompts to guide the player. Keeps track of player turn order, piece order, units remaining per team, and things like whether the piece in play is on it's move phase or its attack phase, etc. 
 
-Player.cs -
+Player.cs - Keeps track of all data pertaining to a single player like the units in their army. Contains methods for the actions a player can take (choosing piece placement, choosing order which pieces are to be used, etc). Also has corresponding AI methods for each function that normally requires user input.
 
-Piece.cs -
+Piece.cs - Parent of the following 3 scripts. Contains all the underlying data of a unit from attack and defense histograms, to number of remaining hitpoints, to current board position. Has User and AI functions for moving and attacking with pieces.
 
-BrutePiece.cs -
+BrutePiece.cs - Brutes (Bumblebees) are units with lots of hitpoints, short movement range, and short attack range. This script overrides the getMoveLocations() and getAttackableTiles() methods of Piece.cs. The bumblebee can move to any space within a 5 square radius and can only attack adjacent units.
 
-GruntPiece.cs -
+GruntPiece.cs - Grunts (Workers) are overall balanced units with moderate hitpoints, movement range and attack range. This script overrides the getMoveLocations() and getAttackableTiles() methods of Piece.cs. The worker can move up to 5 spaces away but can only move vertically or horizontally like a chess rook and can only attack vertically and horizontally as well. 
 
-RangerPiece.cs -
+RangerPiece.cs - Rangers (Hornets) are high range, low durability units. They have very low hitpoints, but can move and attack over a long range. This script overrides the getMoveLocations(), getAttackableTiles(), and attack() methods of Piece.cs. The hornet can move up to 8 diagonal spaces away and can attack horizontally or vertically up to 6 spaces away. The hornet launces a projectile when attacking, so it must override the attack() function as well. 
 
-HealthBar.cs -
+HealthBar.cs - Simply keeps track of the amount of health a unit has and displays a red and green healthbar over the unit when the user hovers their mouse over it. 
 
 CameraMovement.cs -
 
@@ -39,7 +39,7 @@ Clock.cs -
 
 ClockKing.cs -
 
-GridController.cs -
+GridController.cs - 
 
 TileController.cs -
 
