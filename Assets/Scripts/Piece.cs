@@ -56,8 +56,19 @@ public class Piece : MonoBehaviour {
 	//Allow communication between classes
 	private HealthBar healthBar;
 
-	private Queue<string> messageQueue = new Queue<string>();
-	
+	class MessageInfo {
+		public string message;
+		public int framesAlive;
+	};
+
+	public GameObject explosion;
+
+	private List<MessageInfo> messages = new List<MessageInfo>();
+	public int messageHeight = 20;
+	public int messageWidth = 50;
+	public int messageLifetime = 30;
+	public float messageHeightPerFrame = 1.0f;
+
 	private Rect windowRect = new Rect(20, 100, 250, 300);
 	private bool flashing = false;
 	private int flashingTimer = 5;
@@ -164,10 +175,6 @@ public class Piece : MonoBehaviour {
 	/************************
 	 * STUFF W/O PLAYER INPUT
 	 * **********************/
-
-	private IEnumerator actuallyYield() {
-		yield return null;
-	}
 	// Do a raycast to wherever mouse is pointing (?) and return the object 
 	// that was hit.
 	public GameObject getSelectedObject() {
@@ -308,7 +315,10 @@ public class Piece : MonoBehaviour {
 		}
 		return locations;
 	}
-	public void setMoveHighlights(bool onOrOff, List<GameObject> locations) {
+	public void setMoveHighlights(bool onOrOff, List<GameObject> locations = null) {
+		if (locations == null) {
+			locations = getMoveLocations();
+		}
 		movesHighlighted = onOrOff;
 		foreach (GameObject tile in locations) {
 			tile.GetComponent<TileController>().setFlashing(onOrOff);
@@ -370,6 +380,8 @@ public class Piece : MonoBehaviour {
 	public void die() {
 		currentHP = 0;
 		dead = true;
+		setAttackHighlights(false);
+		setMoveHighlights(false);
 		gameObject.transform.position = new Vector3(0,-100000,0);
 		TileController tile = board.getCellAt (this.x, this.z).transform.GetComponent<TileController> ();
 		if (tile.isKingTile) {
@@ -390,11 +402,13 @@ public class Piece : MonoBehaviour {
 	public void takeDamage(int damage) {
 		int index = Random.Range(0, defenseHistogram.Length);
 		int shield = defenseHistogram[index];
+
 		shieldFor = shield/2;
 		timeOfDisplay = Time.deltaTime;
 		if(shield/2 >= damage){
 			damage = 0;
 		} 
+
 		Debug.Log("Remaining HP: " + (currentHP - damage));
 		currentHP = Mathf.Max (0, currentHP - damage);
 		healthBar.currentHP = currentHP;
@@ -418,20 +432,6 @@ public class Piece : MonoBehaviour {
 	/******************************
 	 * STUFF REQUIRING PLAYER INPUT
 	 * ****************************/
-
-	// Wait for the player to click on a permissible tile. Then, 
-	// return that tile GameObject.
-	private GameObject getTile(List<GameObject> allowedTiles) {
-		GameObject selected = null;
-		while (!allowedTiles.Contains(selected)) {
-			while (!Input.GetMouseButtonDown(0)) {
-				actuallyYield();
-			}
-			selected = getSelectedObject();
-		}
-		return selected;
-	}
-
 	public void incrementSpecial() {
 		int index = Random.Range(0, specialHistogram.Length);
 		int val = specialHistogram[index];
@@ -444,7 +444,9 @@ public class Piece : MonoBehaviour {
 	}
 
 	protected virtual IEnumerator specialDoDamage(TileController tile) {
+		GameObject exp = (GameObject) Instantiate(explosion, tile.transform.position, explosion.transform.rotation);
 		specialAttacking = true;
+
 		for (int i = -specialRange; i <= specialRange; i++) {
 			for (int j = -specialRange; j <= specialRange; j++) {
 				if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
@@ -456,8 +458,7 @@ public class Piece : MonoBehaviour {
 				}
 			}
 		}
-		Debug.Log("About to wait");
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(3.0f);
 		
 		for (int i = -specialRange; i <= specialRange; i++) {
 			for (int j = -specialRange; j <= specialRange; j++) {
@@ -473,7 +474,8 @@ public class Piece : MonoBehaviour {
 					}
 				}
 			}
-		}	
+		}
+		Destroy(exp);
 	}
 
 	public virtual IEnumerator AIspecialAttack() {
@@ -718,50 +720,6 @@ public class Piece : MonoBehaviour {
 		yield return new WaitForSeconds(1);
 	}
 
-	/*
-	public IEnumerator AIattackOrCharge() {
-		if (dead) {
-			yield return null;
-		} else {
-			if (Random.value < 0.3) {
-				if (currentSpecial >= maxSpecial) {
-					yield return StartCoroutine(AIspecialAttack());
-				} else {
-					incrementSpecial();
-				}
-			} else {
-				if (getAttackablePieces().Count > 0) {
-					yield return StartCoroutine(AIattack());
-				} else {
-					incrementSpecial();
-				}
-			}
-		}
-	}
-
-	public IEnumerator attackOrCharge() {
-		if (dead) {
-			yield return null;
-		} else {
-			decidingToAttackOrCharge = true;
-			// We'll make the decision
-			while (decidingToAttackOrCharge) {
-				yield return null;
-			}
-			if (optionChosen == "Attack") {
-				yield return StartCoroutine(attack());
-			} else if (optionChosen == "Charge") {
-				incrementSpecial();
-			} else if (optionChosen == "SpecialAttack") {
-				yield return StartCoroutine(specialAttack());
-			} else {
-				Debug.Log("Unknown option " + optionChosen + " chosen for piece action.");
-			}
-		}
-	}
-	*/
-
-
 	public IEnumerator AIinitialPlacement(int id){
 		if (board == null) {
 			board = GameObject.Find("Game").GetComponent<GridController> ();
@@ -841,7 +799,6 @@ public class Piece : MonoBehaviour {
 		guiT = guiTimer;
 	}
 
-
 	void OnGUI() {
 		//windowRect = new Rect(Input.mousePosition.x - Input.mousePosition.x%10, Input.mousePosition.y - Input.mousePosition.y%10, 250, 300);
 		if (showGUI) {
@@ -850,23 +807,6 @@ public class Piece : MonoBehaviour {
 		//Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
 		//GUI.Box(new Rect(targetPos.x-20, targetPos.y, 40, 10), "foo");
 
-		/*
-		if (decidingToAttackOrCharge) {
-			if (getAttackablePieces().Count > 0 ) {
-				if (GUI.Button(new Rect(10, 60, 300, 40), "Attack")) {
-					decidingToAttackOrCharge = false;
-					optionChosen = "Attack";
-				}
-			} else {
-				GUI.Label(new Rect(10, 60, 300, 40), "No Attacks Possible :(");
-			}
-			string specialText = currentSpecial == maxSpecial ? "SpecialAttack" : "Charge";
-			if (GUI.Button(new Rect(10, 100, 300, 40), specialText)) {
-				decidingToAttackOrCharge = false;
-				optionChosen = specialText;
-			}
-		}
-		*/
 		if(attackFor != -1){
 			Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
 			GUIStyle style = new GUIStyle ();
