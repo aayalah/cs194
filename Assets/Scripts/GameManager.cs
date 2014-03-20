@@ -1,4 +1,5 @@
-﻿using UnityEngine;using System.Collections;
+﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
@@ -10,7 +11,6 @@ public class GameManager : MonoBehaviour {
 
 	//Non-Static Variables
 	public GUISkin skin;
-
 	public Texture up;
 	public Texture down;
 	private static string piecePlacementText = "Click on one of the colored squares to place each of your pieces.";
@@ -33,10 +33,6 @@ public class GameManager : MonoBehaviour {
 	/*
 	 * Variables: Private 
 	 */
-
-	///Static Variables
-	//Help Messages
-
 	//boolean variables
 	private bool gameIsOver = false;
 	private bool playerTurn= true;
@@ -88,9 +84,14 @@ public class GameManager : MonoBehaviour {
 		board = GameObject.Find("Game").GetComponent<GridController> ();
 		if(!manager.kingMode) Destroy(clock);
 		numberSelectedPlayersPieces = manager.turnsPerRound;
+
+
+		//determines if there are AI players
 		usingAI = new bool[numPlayers];
 		usingAI[0] = !manager.p1Human;
 		usingAI[1] = !manager.p2Human;
+
+
 		orderFixed = new bool[numPlayers];
 		for (int i = 0; i < numPlayers; i++) {
 			orderFixed[i] = false;
@@ -149,6 +150,7 @@ public class GameManager : MonoBehaviour {
 
 			for (int j = 0; j < numberSelectedPlayersPieces; j++) {
 				for (int k = 0; k < numPlayers; k++) {
+
 					int i = Mathf.Abs(k - (round % 2));
 					List<Piece> playersPieces = players[i].getSelectedPieces();
 					if(playersPieces.Count > j){
@@ -164,17 +166,19 @@ public class GameManager : MonoBehaviour {
 							yield return StartCoroutine (playersPieces[j].makeMove ()); 
 							setInstructionText(3);
 							yield return StartCoroutine (playersPieces[j].attack ());
+
 						}
-						//playersPieces[j].setColor(playersPieces[j].baseColor);
 						playersPieces [j].numMarkers--;
+						players[k].incrementClock();
 					}
 				}	
 			}
 
 			///Reset
 			for (int i = 0; i < numPlayers; i++) {
-				players[i].reset ();
-				players[i].incrementClock();
+				if(!orderFixed[i]) {
+					players[i].reset ();
+				}
 			}
 			round++;
 
@@ -184,6 +188,10 @@ public class GameManager : MonoBehaviour {
 		gameOver(1);
 	}
 
+	/*
+	 * Checks to see if any of the players have any pieces left 
+	 * 
+	 */
 	private bool allPlayersHavePieces() {
 
 		for (int i = 0; i < numPlayers; i++) { 
@@ -194,39 +202,51 @@ public class GameManager : MonoBehaviour {
 		return true;
 	}
 
+	/*
+	 * Runs through all the end conditions of the game and checks to see if any of them
+	 * are satisfied. In the normal game mode, the game ends when one of the players does
+	 * not have any pieces. In the King of the Hill game mode the game ends when one of the
+	 * players has stayed on the specified square for the specified number of turns
+	 */ 
+
 	public void gameOver(int c) {
 		int winner = 1;
-		if (c == 0) {
-						int maxNumPieces = 0;
-						for (int i = 0; i < numPlayers; i++) {
-								if (players [i].numberPiecesLeft () > maxNumPieces) {
-										maxNumPieces = players [i].numberPiecesLeft ();
-										winner = i + 1;
-								}
+		if (c == 1) {
+				for (int i = 0; i < numPlayers; i++) {
+						if (players [i].hasPieces ()) {
+								winner = i + 1;
 						}
-				} else if (c == 1) {
-						for (int i = 0; i < numPlayers; i++) {
-								if (players [i].hasPieces ()) {
-										winner = i + 1;
-								}
-						}
-				} else if (c == 2) {
-					
-					for (int i = 0; i < numPlayers; i++) {
-						if (players[i].hasReachedGoal()) {							
-							winner = i + 1;
-						}
-					}
 				}
+		} else if (c == 2) {
+			
+			for (int i = 0; i < numPlayers; i++) {
+				if (players[i].hasReachedGoal()) {							
+					winner = i + 1;
+				}
+			}
+		}
 		gameOverText = "Game Over: Player " + winner + " Wins! :D :D";
 		gameIsOver = true;
 	}
 
+
+	/*
+	 * Updates the text that displays, whose turn it is, to the correct player 
+     *
+	 */ 
 	private void setTurnText(int p) {
 		showTurnLabel = false;
 		turnText = "Player: " + (p+1) + "'s Turn";
 		showTurnLabel = true;
 	}
+
+
+
+	/*
+	 * Updates the text that describes what the player should do next to the appropriate message
+	 * depending on whhat part of the round the player is currently at
+	 * 
+	 */
 
 	private void setInstructionText(int i) {
 
@@ -262,19 +282,26 @@ public class GameManager : MonoBehaviour {
 			GUI.Label(new Rect(Screen.width/2 - 100, Screen.height/2-10, 200, 20), gameOverText, GUI.skin.textArea);
 		}
 		if(!hintsHidden){
+			GUIStyle style4 = new GUIStyle ();
+			GUIStyle style3 = new GUIStyle ();
+
+
 			if (showTurnLabel) {
 				GUI.Box(new Rect(Screen.width/2-500,0, 1000, 75), "", GUI.skin.GetStyle("box"));
-				GUI.contentColor = Color.yellow;
-				GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-				GUI.skin.label.fontSize = 20;
-				GUI.Label(new Rect(Screen.width/2 - 250, 1, 500, 50), turnText, GUI.skin.label);
+				style3.normal.textColor = Color.yellow;
+				style3.fontSize = 20;
+				style3.alignment = TextAnchor.MiddleCenter;
+
+				GUI.Label(new Rect(Screen.width/2 - 250, 1, 500, 50), turnText, style3);
 			}
 
 			if (showInstructionLabel) {
-				GUI.contentColor = Color.red;
-				GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-				GUI.skin.label.fontSize = 18;
-				GUI.Label(new Rect(Screen.width/2 - 450, 25, 900, 50), instructionText, GUI.skin.label);
+
+				style4.normal.textColor = Color.red;
+				style4.fontSize = 18;
+				style4.alignment = TextAnchor.MiddleCenter;
+
+				GUI.Label(new Rect(Screen.width/2 - 450, 25, 900, 50), instructionText, style4);
 			}
 			if(GUI.Button(new Rect(Screen.width/2+400,60, 40, 20), up, GUI.skin.GetStyle("button"))) hintsHidden = true;
 
@@ -287,6 +314,19 @@ public class GameManager : MonoBehaviour {
 
 			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
 		}
+
+		GUIStyle style1 = new GUIStyle ();
+		GUIStyle style2 = new GUIStyle ();
+
+		style1.normal.textColor = Color.red;
+		style1.fontSize = 18;
+		GUI.Label (new Rect (Screen.width / 2 - 665, 10, 300, 40), "Fix Piece Order: ", style1);
+		orderFixed[0] = GUI.Toggle(new Rect(Screen.width / 2 - 750 + 230, 12, 10, 40), orderFixed[0], "", GUI.skin.toggle);
+
+		style2.normal.textColor = Color.blue;
+		style2.fontSize = 18;
+		GUI.Label (new Rect (Screen.width / 2 + 500, 10, 300, 40), "Fix Piece Order: ", style2);
+		orderFixed[1] = GUI.Toggle(new Rect(Screen.width / 2 + 400 + 245, 12, 10, 40), orderFixed[1], "", GUI.skin.toggle);
 
 
 	}

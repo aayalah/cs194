@@ -19,8 +19,10 @@ public class GameOptions : MonoBehaviour {
 	public int w;
 	public int h;
 	public int np;
+	public int nt;
 	private bool display = false;
 	private UnitManager man;
+	private string numTurns = "5";
 
 	public int player1Status = 0;
 	public int player2Status = 1;
@@ -42,6 +44,14 @@ public class GameOptions : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	/*
+	 * Creates all the user interface elements and handles the user's input, placing the data in the appropriate data structures
+	 *  so they can be accessed in othe parts of the code
+	 * 
+	 * 
+	 * 
+	 */ 
 
 
 	void OnGUI() {
@@ -65,26 +75,31 @@ public class GameOptions : MonoBehaviour {
 						numberOfPieces = GUI.TextField (new Rect (Screen.width / 2, 250, 50, 20), numberOfPieces);
 						GUI.skin.toggle.alignment = TextAnchor.UpperCenter;
 						
-						GUI.skin.label.fontSize = 30;
-						GUI.Label (new Rect (Screen.width / 2 - 300, 270, 300, 40), "Game Mode", GUI.skin.label);
-						GUI.skin.label.fontSize = 20;
-						GUI.Label (new Rect (Screen.width / 2 - 250, 300, 300, 40), "King of the Hill: ", GUI.skin.label);
-						gameMode = GUI.Toggle(new Rect(Screen.width / 2 + 20, 310, 10, 40), gameMode, "", GUI.skin.toggle);
-						
 			GUI.skin.label.fontSize = 30;
-			GUI.Label (new Rect (Screen.width / 2 - 300, 330, 300, 40), "Player Configuration", GUI.skin.label);
+			GUI.Label (new Rect (Screen.width / 2 - 300, 270, 300, 40), "Player Configuration", GUI.skin.label);
 			GUI.skin.label.fontSize = 20;
-			GUI.Label (new Rect (Screen.width / 2 - 250, 360, 300, 40), "Player 1: ", GUI.skin.label);
+			GUI.Label (new Rect (Screen.width / 2 - 250, 300, 300, 40), "Player 1: ", GUI.skin.label);
 			string[] toolbarStrings = new string[] {"Human", "CPU"};
-			player1Status = GUI.Toolbar(new Rect(Screen.width / 2 - 75, 370, 200, 20), player1Status, toolbarStrings);
-			GUI.Label (new Rect (Screen.width / 2 - 250, 390, 300, 40), "Player 2: ", GUI.skin.label);
-			player2Status = GUI.Toolbar(new Rect(Screen.width / 2 - 75, 400, 200, 20), player2Status, toolbarStrings);
-						
-						if (GUI.Button (new Rect (Screen.width / 2, 425, 50, 20), "Enter")) {
+			player1Status = GUI.Toolbar(new Rect(Screen.width / 2 - 75, 310, 200, 20), player1Status, toolbarStrings);
+			GUI.Label (new Rect (Screen.width / 2 - 250, 330, 300, 40), "Player 2: ", GUI.skin.label);
+			player2Status = GUI.Toolbar(new Rect(Screen.width / 2 - 75, 340, 200, 20), player2Status, toolbarStrings);
+			GUI.skin.label.fontSize = 30;
+			GUI.Label (new Rect (Screen.width / 2 - 300, 360, 300, 40), "Game Mode", GUI.skin.label);
+			GUI.skin.label.fontSize = 20;
+			GUI.Label (new Rect (Screen.width / 2 - 250, 390, 300, 40), "King of the Hill: ", GUI.skin.label);
+			gameMode = GUI.Toggle(new Rect(Screen.width / 2 + 20, 400, 10, 40), gameMode, "", GUI.skin.toggle);
+			if(gameMode) {
+				GUI.Label (new Rect (Screen.width / 2 - 250, 420, 300, 40), "Number Of Turns: ", GUI.skin.label);
+				numTurns = GUI.TextField (new Rect (Screen.width / 2, 430, 50, 20), numTurns);
+			}
+
+
+						if (GUI.Button (new Rect (Screen.width / 2, 480, 50, 20), "Enter")) {
 								Int32.TryParse (width, out w);
 								Int32.TryParse (height, out h);
 								Int32.TryParse (numberOfPieces, out np);
-								if (w <= 0 || h <= 0 || np <= 0) {
+								Int32.TryParse (numTurns, out nt);
+								if (w <= 0 || h <= 0 || np <= 0 || nt <= 0) {
 										Debug.Log (w);
 										showMessage = true;
 
@@ -93,6 +108,7 @@ public class GameOptions : MonoBehaviour {
 										man.armySize = np;
 										man.w = w;
 										man.h = h;
+										man.numTurns = nt;
 										man.setUp();
 										man.kingMode = gameMode;
 										Application.LoadLevel (0);
@@ -105,7 +121,7 @@ public class GameOptions : MonoBehaviour {
 
 						if (showMessage) {
 								GUI.contentColor = Color.yellow;
-				GUI.Label (new Rect (Screen.width / 2 - 250, 380, 800, 40), "One of the values you entered is not a valid value. Enter a number above 0.");
+				GUI.Label (new Rect (Screen.width / 2 - 250, 510, 800, 40), "One of the values you entered is not a valid value. Enter a number above 0.");
 			
 						}
 						

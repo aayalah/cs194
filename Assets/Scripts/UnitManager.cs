@@ -20,7 +20,7 @@ public class UnitManager : MonoBehaviour {
 	private int[][] shields;
 	private int[][] specials;
 	private static bool created = false;
-
+	public int numTurns;
 	public int w;
 	public int h;
 	public bool p1Human = true;
