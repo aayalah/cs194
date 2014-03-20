@@ -180,7 +180,7 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator movePhysically(int oldX, int oldZ, int newX, int newZ) {
-		float halfPieceHeight = /transform.localScale.y / 2; // This is no longer accurate with meshes
+		float halfPieceHeight = transform.localScale.y / 2; // This is no longer accurate with meshes
 		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
 		GameObject currentCell = board.getCellAt(oldX, oldZ);
 		TileController t = currentCell.transform.GetComponent<TileController> ();
@@ -407,10 +407,12 @@ public class Piece : MonoBehaviour {
 					if (attackedCell) {
 						TileController attackedTile = attackedCell.GetComponent<TileController>();
 						attackedTile.setColor(Color.red);
+						Debug.Log("Attempting to set tile " + tile.x+i + ", " + tile.z+j + " color to red");
 					}
 				}
 			}
 		}
+		Debug.Log("About to wait");
 		yield return new WaitForSeconds(1);
 		
 		for (int i = -specialRange; i <= specialRange; i++) {
@@ -460,7 +462,7 @@ public class Piece : MonoBehaviour {
 
 			setAttackHighlights(false, allTiles);
 
-			yield return specialDoDamage(tile);
+			yield return StartCoroutine(specialDoDamage(tile));
 		}
 	}
 
@@ -491,7 +493,7 @@ public class Piece : MonoBehaviour {
 
 			setAttackHighlights(false, allTiles);
 			
-			yield return specialDoDamage(tile);
+			yield return StartCoroutine(specialDoDamage(tile));
 		}
 	}
 
