@@ -3,14 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
+
+	/*
+	 * Variables: Public 
+	 */
+
+	//Allow communication between classes
 	public Piece piece;
-	private List<Piece> pieceArray;
-	private List<Piece> selectedPieceArray;
 	public Camera camera;
-	public int numPieces = 0;
 	public UnitManager um;	
 	public GameManager game;
 	public ClockKing clock;
+
+
+	/*
+	 * Variables: Private
+	 */
+
+	//data structures for storing pieces
+	private List<Piece> pieceArray;
+	private List<Piece> selectedPieceArray;
+
+	private int numPieces = 0;
 	private int numberOfPieces;
 	private int numSelectedPieces;
 	private int id;
@@ -22,11 +36,22 @@ public class Player : MonoBehaviour {
 	
 	}
 
+
+
+	/* Returns array of the pieces the player has selected
+	 */ 
+
 	public List<Piece> getSelectedPieces() {
 
 		return selectedPieceArray;
 
 	}
+
+	/* 
+	 * Sets up data structures to manage the pieces for the AI players
+	 * 
+	 * 
+	 */ 
 
 	public IEnumerator AIsetUpPieces() {
 		numberOfPieces = um.armySize;
@@ -57,6 +82,12 @@ public class Player : MonoBehaviour {
 	}
 
 
+	/* 
+	 * Sets up data structures to manage the pieces for the AI players
+	 * 
+	 * 
+	 */ 
+
 	public IEnumerator setUpPieces() {
 
 		numberOfPieces = um.armySize;
@@ -86,6 +117,10 @@ public class Player : MonoBehaviour {
 	}
 
 
+	/*
+ 	 * Sets up the data structurs that help it communicate with other scripts
+ 	 * If the King of the Hill mode is being played then the data structure for this mode if set up
+     */
 	public void Initialize(int id, Camera camera, GameManager game, UnitManager man){
 		this.id = id;
 		this.camera = camera;
@@ -100,13 +135,6 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	
-	//Keeps track of pieces
-	
-	// Keeps track of stats
-	
-	
-	
 	public Player(){
 
 	}
@@ -114,7 +142,13 @@ public class Player : MonoBehaviour {
 	public int getId() {
 		return id;
 	}
+
 	
+	/*
+     * Manages the piece selection phase of the game for the AI players
+	 *
+     */
+
 	public IEnumerator AIchoosePieces() {
 		int turnsAssigned = 0;
 		for(int j = 0; j < um.turnsPerRound; j++){
@@ -138,6 +172,11 @@ public class Player : MonoBehaviour {
 		yield return new WaitForSeconds(2);
 		//yield return StartCoroutine(choosePieces());
 	}
+
+	/*
+     * Manages the piece selection phase of the game for the human players
+	 *
+     */
 	
 	public IEnumerator choosePieces() {
 		numPieces = 0;
@@ -169,20 +208,12 @@ public class Player : MonoBehaviour {
 			p.setColor(p.baseColor);
 		}
 	}
-	
-//	private bool containsPiece(Piece[] playersPieces,Piece piece) {
-//		
-//		for(int i = 0; i < numberOfPieces; i++) {
-//			if((playersPieces[i] != null) && (playersPieces[i].Equals(piece))) {
-//
-//				return true;
-//			}
-//			
-//		}
-//		return false;
-//	}
 
 
+
+	/*
+     * Clears the array that stores the pieces that player has selected, so that it is ready fir the next round of piece selection
+     */ 
 	public void reset() {
 		numPieces = 0;
 		selectedPieceArray.Clear();
@@ -190,24 +221,35 @@ public class Player : MonoBehaviour {
 	}
 
 
+	//returns if the player has any pieces left
 	public bool hasPieces() {
 
 		return pieceArray.Count > 0;
 
 	}
 
+	//removes one of the players pieces from the data structures that were 
+	//tracking the players pieces
 	public void removePiece(Piece piece) {
 
 		pieceArray.Remove (piece);
-		selectedPieceArray.Remove (piece);
-
+		for(int i = 0; i < selectedPieceArray.Count; i++) {
+			selectedPieceArray.Remove (piece);
+		}
 	}
 
+	//returns the number of pieces the player has left
 	public int numberPiecesLeft() {
 
 		return pieceArray.Count;
 	}
-	
+
+	/*
+	 * If the King of the Hill game mode is being played, the method calls a method
+	 * on the clock object, that increments the number of turns that the player has had a piece
+     * on the specified square
+     */
+
 	public void incrementClock() {
 
 		if (isKing) {
@@ -215,15 +257,27 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+
+	/*
+	 * Returns true/false if the player has been on a the specified square for the maximum number of turns.
+	 * Used when King of the Hill mode is being played
+	 */
 	public bool hasReachedGoal() {
 		return clock.reachedGoal();
 	}
 
-	public void setKing(){
+	/* 
+     * Used when King of the Hill mode is being played
+     * Sets the player as the current King 
+     */
+    public void setKing(){
 		isKing = true;
 	}
 
-	
+	/* 
+     * Used when King of the Hill mode is being played
+     * Removes the player from being King
+     */
 	public void removeKing(){
 		isKing = false;
 	}

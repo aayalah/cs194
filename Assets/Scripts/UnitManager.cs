@@ -2,29 +2,44 @@ using UnityEngine;
 using System.Collections;
 
 public class UnitManager : MonoBehaviour {
+
+	/*
+	 * Variables: Public 
+	 */
+
 	public Piece redBumblebee;
 	public Piece redWorker;
 	public Piece redHornet;
 	public Piece blueBumblebee;
 	public Piece blueWorker;
 	public Piece blueHornet;
-	
+
 	public int teamsBuilt = 0;
 	public int armySize;
 	public int numPlayers = 2;
-	public bool kingMode;
 	public int totalUnits;
-	public int [] types;
 	public int turnsPerRound = 3;
+	public int numTurns;
+	public int w;
+	public int h;
+	public bool kingMode;
+
+	public int [] types;
+
+	public bool p1Human = true;
+	public bool p2Human = false;
+
+	/*
+	 * Variables: Private 
+	 */
+
+	private static bool created = false;
+
+	//Data structures to keep tracks of the distribution of abilities each piece has
 	private int[][] attacks;
 	private int[][] shields;
 	private int[][] specials;
-	private static bool created = false;
-
-	public int w;
-	public int h;
-	public bool p1Human = true;
-	public bool p2Human = false;
+	
 	private bool hasSetUp = false;
 	
 
