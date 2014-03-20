@@ -125,12 +125,12 @@ public class GameManager : MonoBehaviour {
 	}
 	/*
 	 *	Manages the main loop of the game. The game is divided into three phases: selection of pieces, 
-	 *  movement or charging of special ability for each piece and attacking of pieces. At the beginning   
+	 *  movement, and charging of special ability o attacking of pieces. At the beginning   
 	 *  of the game there is an additional phase where you place each or your pieces on the board
 	 */
 	public IEnumerator mainLoops() {
 
-		//Changes the instruction that appear at the top of the screen that servas a guide for the players
+		//Changes the instruction that appear at the top of the screen that serves a guide for the players
 		setInstructionText(0);
 		stage = 0;
 		for (int i = 0; i < numPlayers; i++) {
@@ -152,13 +152,14 @@ public class GameManager : MonoBehaviour {
 				int i = Mathf.Abs(k - (round % 2));
 				yield return StartCoroutine(changeCameraPosition (i));
 				setTurnText(i);
-				if(!orderFixed[i]) {
+				//if(!orderFixed[i]) {
+
 					if(usingAI[i]){
 						yield return StartCoroutine (players [i].AIchoosePieces());
 					}else{
 						yield return StartCoroutine (players [i].choosePieces ());
 					}
-				}	
+				//}	
 					
 			}
 
@@ -197,19 +198,24 @@ public class GameManager : MonoBehaviour {
 								}
 								yield return StartCoroutine (playersPieces[j].attackOrCharge());
 							}
+
 						}
-						//playersPieces[j].setColor(playersPieces[j].baseColor);
+
 						if (j < playersPieces.Count) {
 							playersPieces [j].numMarkers--;
 						}
 						players[k].incrementClock();
 					}
-				}	
+				}
+
+				if(!allPlayersHavePieces()) {
+					break;
+				}
 			}
 
 			///Reset
 			for (int i = 0; i < numPlayers; i++) {
-				if(!orderFixed[i] || (players[i].getSelectedPieces().Count != manager.numTurns)) {
+				if(!orderFixed[i]) {
 					players[i].reset ();
 				}
 			}
@@ -239,7 +245,7 @@ public class GameManager : MonoBehaviour {
 	 * Runs through all the end conditions of the game and checks to see if any of them
 	 * are satisfied. In the normal game mode, the game ends when one of the players does
 	 * not have any pieces. In the King of the Hill game mode the game ends when one of the
-	 * players has stayed on the specified square for the specified number of turns
+	 * players has stayed on the specified square for the max number of turns
 	 */ 
 
 	public void gameOver(int c) {
@@ -277,7 +283,7 @@ public class GameManager : MonoBehaviour {
 
 	/*
 	 * Updates the text that describes what the player should do next to the appropriate message
-	 * depending on whhat part of the round the player is currently at
+	 * depending on what part of the round the player is currently at
 	 * 
 	 */
 
@@ -349,10 +355,6 @@ public class GameManager : MonoBehaviour {
 			if(GUI.Button(new Rect(Screen.width/2+400,10, 40, 20), down, GUI.skin.GetStyle("button"))) hintsHidden = false;
 		}
 
-		if (showFixedOrderGui) {
-
-			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
-		}
 
 		GUIStyle style1 = new GUIStyle ();
 		GUIStyle style2 = new GUIStyle ();
@@ -377,26 +379,6 @@ public class GameManager : MonoBehaviour {
 			GUI.Label (new Rect (Screen.width / 2 - 25, Screen.height/2 - 20, 75, 40), "Paused", style2);
 		}
 	}
-
-	void pieceOrderWindow(int windowID) {
-		GUI.contentColor = Color.yellow;
-		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-		GUI.backgroundColor = Color.black;
-		GUI.Label (new Rect (10, 30, 350, 40), "Do you want to save the current order?", GUI.skin.label);
-		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-		if (GUI.Button (new Rect (60, 80, 40, 30), "Yes")) {
-			orderFixed[currentPlayersTurn] = true;
-			showFixedOrderGui = false;
-		}
-
-		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-
-		if(GUI.Button (new Rect (275, 80, 40, 30), "No")) {
-			orderFixed[currentPlayersTurn] = false;
-			showFixedOrderGui = false;
-		}
-	}
-
 
 	/*
 	 * Moves the camera so that it pointing at the right side of the board.

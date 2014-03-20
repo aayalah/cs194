@@ -54,6 +54,8 @@ public class Piece : MonoBehaviour {
 
 	//Allow communication between classes
 	private HealthBar healthBar;
+
+	private Queue<string> messageQueue = new Queue<string>();
 	
 	private Rect windowRect = new Rect(20, 100, 250, 300);
 	private bool flashing = false;
