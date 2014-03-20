@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour {
 		if (Input.GetKey ("f") && currentPlayersTurn != -1) {
 			showFixedOrderGui = true;
 		}
+
 		
 	}
 
@@ -143,7 +144,7 @@ public class GameManager : MonoBehaviour {
 				int i = Mathf.Abs(k - (round % 2));
 				yield return StartCoroutine(changeCameraPosition (i));
 				setTurnText(i);
-				if(!orderFixed[i]) {
+				if(!orderFixed[i] || (players[i].getSelectedPieces().Count != manager.numTurns)) {
 					if(usingAI[i]){
 						yield return StartCoroutine (players [i].AIchoosePieces());
 					}else{
@@ -180,19 +181,25 @@ public class GameManager : MonoBehaviour {
 							if (j < playersPieces.Count) {
 								yield return StartCoroutine (playersPieces[j].attack ());
 							}
+
 						}
+
 						//playersPieces[j].setColor(playersPieces[j].baseColor);
 						if (j < playersPieces.Count) {
 							playersPieces [j].numMarkers--;
 						}
 						players[k].incrementClock();
 					}
-				}	
+				}
+
+				if(!allPlayersHavePieces()) {
+					break;
+				}
 			}
 
 			///Reset
 			for (int i = 0; i < numPlayers; i++) {
-				if(!orderFixed[i] || (players[i].getSelectedPieces().Count != manager.numTurns)) {
+				if(!orderFixed[i]) {
 					players[i].reset ();
 				}
 			}
@@ -329,10 +336,6 @@ public class GameManager : MonoBehaviour {
 			if(GUI.Button(new Rect(Screen.width/2+400,10, 40, 20), down, GUI.skin.GetStyle("button"))) hintsHidden = false;
 		}
 
-		if (showFixedOrderGui) {
-
-			windowRect = GUI.Window (1, windowRect, pieceOrderWindow, "Fix Order");
-		}
 
 		GUIStyle style1 = new GUIStyle ();
 		GUIStyle style2 = new GUIStyle ();
@@ -349,26 +352,6 @@ public class GameManager : MonoBehaviour {
 
 
 	}
-
-	void pieceOrderWindow(int windowID) {
-		GUI.contentColor = Color.yellow;
-		GUI.skin.label.alignment = TextAnchor.MiddleCenter;
-		GUI.backgroundColor = Color.black;
-		GUI.Label (new Rect (10, 30, 350, 40), "Do you want to save the current order?", GUI.skin.label);
-		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-		if (GUI.Button (new Rect (60, 80, 40, 30), "Yes")) {
-			orderFixed[currentPlayersTurn] = true;
-			showFixedOrderGui = false;
-		}
-
-		GUI.skin.button.alignment = TextAnchor.MiddleCenter;
-
-		if(GUI.Button (new Rect (275, 80, 40, 30), "No")) {
-			orderFixed[currentPlayersTurn] = false;
-			showFixedOrderGui = false;
-		}
-	}
-
 
 	/*
 	 * Moves the camera so that it pointing at the right side of the board.
