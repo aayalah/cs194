@@ -378,6 +378,13 @@ public class GameManager : MonoBehaviour {
 			GUI.skin.label.fontSize = 10;
 			GUI.Label (new Rect (Screen.width / 2 - 25, Screen.height/2 - 20, 75, 40), "Paused", style2);
 		}
+		if(gameIsOver){
+			if(GUI.Button(new Rect(Screen.width/2-100,Screen.height - 40, 200, 40), "Exit to Main Menu", GUI.skin.GetStyle("button"))) {
+				manager.teamsBuilt = 0;
+				manager.totalUnits = 0;
+				Application.LoadLevel(0);
+			}
+		}
 	}
 
 	/*

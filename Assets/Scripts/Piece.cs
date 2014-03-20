@@ -14,6 +14,7 @@ public class Piece : MonoBehaviour {
 	public GridController board;
 
 	public Texture orderMarker;
+	public Texture boxTex;
 	public string id;
 	public int teamNo;
 	public int maxHP = 10;
@@ -107,7 +108,6 @@ public class Piece : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		timer += Time.deltaTime;
 		if(flashing && flash == 0) {
 			//setColor(baseColor);
 			stopFlashing();
@@ -501,12 +501,11 @@ public class Piece : MonoBehaviour {
 
 			setAttackHighlights(true, allTiles);
 
-			yield return new WaitForSeconds(0.5f);
-
 			if (!dead) {
 				TileController tile = cellToAttack.GetComponent<TileController>();
 				setAttackHighlights(false, allTiles);
 				yield return StartCoroutine(specialDoDamage(tile));
+				yield return new WaitForSeconds(1.5f);
 			}
 		}
 	}
@@ -611,7 +610,7 @@ public class Piece : MonoBehaviour {
 			if (!dead) {
 				yield return StartCoroutine(lerpTo(bestLocation));
 				setMoveHighlights(false, moveLocations);
-				yield return new WaitForSeconds(1f);
+				yield return new WaitForSeconds(1.5f);
 			}
 		}
 	}
@@ -658,9 +657,9 @@ public class Piece : MonoBehaviour {
 						choice = piece;
 					}
 				}
-				yield return new WaitForSeconds(1.5f);
 				if (!dead) {
 					damageEnemy(choice);
+					yield return new WaitForSeconds(1.5f);
 				}
 			} else {
 				// charge

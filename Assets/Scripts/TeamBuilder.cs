@@ -316,12 +316,12 @@ public class TeamBuilder : MonoBehaviour {
 				int [] special = findArray(Color.yellow);
 				manager.addUnit(unitNum, attack, shield, special);
 				unitsCreated++;
+				eraseGraph();
 				removeCombination();
 				if(unitsCreated == armySize){
 					currentBumble.GetComponentInChildren<Renderer>().enabled = false;
 					currentWorker.GetComponentInChildren<Renderer>().enabled = false;
 					currentHornet.GetComponentInChildren<Renderer>().enabled = false;
-					eraseGraph();
 				}
 			}
 
@@ -358,8 +358,8 @@ public class TeamBuilder : MonoBehaviour {
 			int [] special = findArray(Color.yellow);
 			manager.addUnit(unitNo, attack, shield, special);
 			unitsCreated++;
-			removeCombination();
 			eraseGraph();
+			removeCombination();
 		}
 		//Max attack focus
 		if(personalityType == 1){

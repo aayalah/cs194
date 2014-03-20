@@ -11,13 +11,22 @@ public class HealthBar : MonoBehaviour {
 
 	public Texture green;
 	public Texture red;
+
+	private int counter = 0;
 	// Use this for initialization
 	void Start () {
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if(showBar){
+			counter++;
+			if(counter > 100){
+				showBar = false;
+			}
+		}else{
+			counter = 0;
+		}
 	}
 
 	void OnGUI(){
