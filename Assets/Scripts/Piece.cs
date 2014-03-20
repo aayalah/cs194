@@ -458,11 +458,12 @@ public class Piece : MonoBehaviour {
 			setAttackHighlights(true, allTiles);
 
 			yield return new WaitForSeconds(0.5f);
-			TileController tile = cellToAttack.GetComponent<TileController>();
 
-			setAttackHighlights(false, allTiles);
-
-			yield return StartCoroutine(specialDoDamage(tile));
+			if (!dead) {
+				TileController tile = cellToAttack.GetComponent<TileController>();
+				setAttackHighlights(false, allTiles);
+				yield return StartCoroutine(specialDoDamage(tile));
+			}
 		}
 	}
 
@@ -483,17 +484,22 @@ public class Piece : MonoBehaviour {
 			setAttackHighlights(true, allTiles);
 
 			while (!selected || !selected.GetComponent<TileController>()) {
+				if (dead) {
+					break;
+				}
 				yield return null;
 				while (!Input.GetMouseButtonDown(0)) {
 					yield return null;
 				}
 				selected = getSelectedObject("Tile");
 			}
-			TileController tile = selected.GetComponent<TileController>();
+			if (selected) {
+				TileController tile = selected.GetComponent<TileController>();
 
-			setAttackHighlights(false, allTiles);
-			
-			yield return StartCoroutine(specialDoDamage(tile));
+				setAttackHighlights(false, allTiles);
+				
+				yield return StartCoroutine(specialDoDamage(tile));
+			}
 		}
 	}
 
@@ -558,9 +564,11 @@ public class Piece : MonoBehaviour {
 		if(bestScore == 0) bestLocation = moveLocations[rand];
 			setMoveHighlights(true, moveLocations);
 			yield return new WaitForSeconds(1.5f);
-			yield return StartCoroutine(lerpTo(bestLocation));
-			setMoveHighlights(false, moveLocations);
-			yield return new WaitForSeconds(1f);
+			if (!dead) {
+				yield return StartCoroutine(lerpTo(bestLocation));
+				setMoveHighlights(false, moveLocations);
+				yield return new WaitForSeconds(1f);
+			}
 		}
 	}
 
@@ -572,6 +580,9 @@ public class Piece : MonoBehaviour {
 			setMoveHighlights(true, moveLocations);
 			GameObject selected = null;
 			while (!moveLocations.Contains(selected)) {
+				if (dead) {
+					break;
+				}
 				yield return null;
 				while (!Input.GetMouseButtonDown(0)) {
 					yield return null;
@@ -579,7 +590,9 @@ public class Piece : MonoBehaviour {
 				selected = getSelectedObject("Tile");
 			}
 			setMoveHighlights(false, moveLocations);
-			yield return StartCoroutine(lerpTo(selected));
+			if (selected) {
+				yield return StartCoroutine(lerpTo(selected));
+			}
 		}
 	}
 
@@ -604,9 +617,13 @@ public class Piece : MonoBehaviour {
 				}
 				setAttackHighlights(true);
 				yield return new WaitForSeconds(1.5f);
-				damageEnemy(choice);
+				if (!dead) {
+					damageEnemy(choice);
+				}
 				setAttackHighlights(false);
-				yield return new WaitForSeconds(1f);
+				if (!dead) {
+					yield return new WaitForSeconds(1f);
+				}
 			}
 		}
 	}
@@ -625,6 +642,9 @@ public class Piece : MonoBehaviour {
 				GameObject selectedObject = null;
 				Piece selectedPiece = null;
 				while (!attackablePieces.Contains(selectedPiece)) {
+					if (dead) {
+						break;
+					}
 					yield return null;
 					while (!Input.GetMouseButtonDown(0)) {
 						yield return null;
@@ -634,7 +654,9 @@ public class Piece : MonoBehaviour {
 						selectedPiece = selectedObject.GetComponent<Piece>();
 					}
 				}
-				damageEnemy(selectedPiece);
+				if (selectedPiece) {
+					damageEnemy(selectedPiece);
+				}
 			}
 			setAttackHighlights(false);
 		}

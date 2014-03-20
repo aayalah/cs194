@@ -115,7 +115,41 @@ public class RangerPiece : Piece {
     
     return locations; 
   }
-	/*
+
+  protected void fireBulletAt(Piece piece) {
+    Bullet bullet = (Bullet) Instantiate(bulletPrefab, transform.position + new Vector3(0,1,0), Quaternion.identity);
+    bullet.creator = this;
+    bullet.velocity = bulletSpeed * (piece.transform.position - this.transform.position).normalized;
+  }
+
+  public override IEnumerator AIattack() {
+    if (dead) {
+      yield return null;
+    } else {
+      List<Piece> attackablePieces = getAttackablePieces();
+      if (attackablePieces.Count == 0) {
+        // If no attacks, just move on
+        Debug.Log("There are no pieces this RangerPiece can attack");
+        yield return null;
+      } else {
+        setAttackHighlights(true);
+        yield return new WaitForSeconds(0.5f);
+        Piece selectedPiece = attackablePieces[0];
+        int minEnemyHP = attackablePieces[0].currentHP;
+        foreach (Piece p in attackablePieces) {
+          if (p.currentHP < minEnemyHP) {
+            minEnemyHP = p.currentHP;
+            selectedPiece = p;
+          }
+        }
+        if (!dead) {
+          fireBulletAt(selectedPiece);
+        }
+      }
+      setAttackHighlights(false);
+    }
+  }
+
   public override IEnumerator attack() {
 
     if (dead) {
@@ -131,6 +165,9 @@ public class RangerPiece : Piece {
         GameObject selectedObject = null;
         Piece selectedPiece = null;
         while (!attackablePieces.Contains(selectedPiece)) {
+          if (dead) {
+            break;
+          }
           yield return null;
           while (!Input.GetMouseButtonDown(0)) {
             yield return null;
@@ -140,11 +177,11 @@ public class RangerPiece : Piece {
             selectedPiece = selectedObject.GetComponent<Piece>();
           }
         }
-       Bullet bullet = (Bullet) Instantiate(bulletPrefab, transform.position + new Vector3(0,1,0), Quaternion.identity);
-       bullet.creator = this;
-       bullet.velocity = bulletSpeed * (selectedPiece.transform.position - this.transform.position).normalized;
+        if (selectedPiece) {
+          fireBulletAt(selectedPiece);
+        }
       }
       setAttackHighlights(false);
     }
-  }*/
+  }
 }

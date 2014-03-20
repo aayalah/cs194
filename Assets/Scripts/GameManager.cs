@@ -149,16 +149,26 @@ public class GameManager : MonoBehaviour {
 						stage = 2;
 
 						if(usingAI[i]){
-							yield return StartCoroutine(playersPieces[j].AImoveOrCharge());
+							if (j < playersPieces.Count) {	// To avoid an error if the piece has just died
+								yield return StartCoroutine(playersPieces[j].AImoveOrCharge());
+							}
 							setInstructionText(3);
-							yield return StartCoroutine(playersPieces[j].AIattack());
+							if (j < playersPieces.Count) {
+								yield return StartCoroutine(playersPieces[j].AIattack());
+							}
 						}else{
-							yield return StartCoroutine (playersPieces[j].moveOrCharge()); 
+							if (j < playersPieces.Count) {
+								yield return StartCoroutine (playersPieces[j].moveOrCharge()); 
+							}
 							setInstructionText(3);
-							yield return StartCoroutine (playersPieces[j].attack ());
+							if (j < playersPieces.Count) {
+								yield return StartCoroutine (playersPieces[j].attack ());
+							}
 						}
 						//playersPieces[j].setColor(playersPieces[j].baseColor);
-						playersPieces [j].numMarkers--;
+						if (j < playersPieces.Count) {
+							playersPieces [j].numMarkers--;
+						}
 					}
 				}	
 			}

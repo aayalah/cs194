@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Bullet : MonoBehaviour {
   public Piece creator;
-  public int damage = 20;
+  public int damage = 10;
   public int OUT_OF_BOUNDS = 100;
   public Vector3 velocity = new Vector3(1, 0, 0);
   public int FRAMES_PER_SECOND = 30;
