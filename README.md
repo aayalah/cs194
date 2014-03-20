@@ -9,11 +9,17 @@ This is an overview of our Stanford Senior Project for CS194. For this project, 
 
 Bees With Jetpacks was created with the Unity game engine with scripting done in C#. The bulk of the project can be found in the Assets directory. This primarily includes textures, models, scenes, and scripts. Prefabs are "prefabricated" objects that consist of all the elements that determine the look and behavior of the object. For instance, the RedHornet prefab contains the Hornet mesh, the Red hornet texture, and the scripts that dictate the behavior of a red hornet unit in the game. It should be fairly obvious what the various prefabs and textures in the project are for. Scenes are preset configurations of prefabs and scripts. For example, the Main Menu Scene contains gameObjects with scripts such as MainMenu.cs and UnitManager.cs which are instantiated at runtime. In addition, the Main Menu scene also has prefabs for each of the unit types already instantiated in the scene (ie they do not get instantiated from a script). Listed below are all of the different scripts in the project and an overview of the purpose of each. For a more detailed description of their function, please refer to the scripts themselves.
 
-Scripts:
+
+
+In Assets/Scripts:
 
 MainMenu.cs - Handles the GUI elements of the main menu as well as their underlying logic.
 
 GameOptions.cs - This is the primary script involved in the options menu. It creates GUI elements which allow the user to change board size, army size, game mode (Standard or King of the Hill), and whether each player is Human or AI controlled.
+
+Grapher.cs - Generates and draws stat histograms for piece selection.
+
+CameraMovement.cs - Allows for the keyboard-based camera motion in game.
 
 TeamBuilder.cs - Responsible for generating histograms and stat distributions for unit creation. Responds to user input to switch graphs/stat distrobutions and unit types, while displaying relevant information on the screen about the current unit configuration.
 
@@ -31,12 +37,18 @@ GruntPiece.cs - Grunts (Workers) are overall balanced units with moderate hitpoi
 
 RangerPiece.cs - Rangers (Hornets) are high range, low durability units. They have very low hitpoints, but can move and attack over a long range. This script overrides the getMoveLocations(), getAttackableTiles(), and attack() methods of Piece.cs. The hornet can move up to 8 diagonal spaces away and can attack horizontally or vertically up to 6 spaces away. The hornet launces a projectile when attacking, so it must override the attack() function as well. 
 
+Bullet.cs - Attached to the projectiles launched by hornets/rangers -- does damage on contact with an enemy piece.
+
 HealthBar.cs - Simply keeps track of the amount of health a unit has and displays a red and green healthbar over the unit when the user hovers their mouse over it. 
 
 GridController.cs - Keeps track of all tiles on the board as well as the units occupying them. Responsible for initiating the board as well as the terrain (if there is any).
 
 TileController.cs - Only knows what the tile knows about itself, which is basically just it's coordinates on the board.
 
+Clock.cs; ClockKing.cs - Manage time for King of the Hill mode.
+
 Jukebox.cs - Plays music.
+
+BallControls.cs; CameraManager.cs - Parts of our initial stab at making a responsive game in Unity. Kept as references while we were working on the rest of the code.
 
 

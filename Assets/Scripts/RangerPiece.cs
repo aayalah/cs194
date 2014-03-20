@@ -116,17 +116,20 @@ public class RangerPiece : Piece {
     return locations; 
   }
 
+  // Shoot a bullet object from this piece's location towards the given piece.
   protected void fireBulletAt(Piece piece) {
     Bullet bullet = (Bullet) Instantiate(bulletPrefab, transform.position + new Vector3(0,1,0), Quaternion.identity);
     bullet.creator = this;
-	if (attackHistogram.Length > 0) {
-		int index = Random.Range(0, attackHistogram.Length);
-		bullet.damage = attackHistogram[index];
-		attackFor = bullet.damage;
-	}
+  	if (attackHistogram.Length > 0) {
+  		int index = Random.Range(0, attackHistogram.Length);
+  		bullet.damage = attackHistogram[index];
+  		attackFor = bullet.damage;
+  	}
     bullet.velocity = bulletSpeed * (piece.transform.position - this.transform.position).normalized;
   }
 
+  // AIattackOrCharge has to be overwritten since we're using bullets 
+  // rather than a standard attack.
   public override IEnumerator AIattackOrCharge() {
     if (dead) {
       yield return null;
@@ -167,6 +170,8 @@ public class RangerPiece : Piece {
     }
   }
 
+  // attackOrCharge also has to be overwritten since we're using bullets 
+  // rather than a standard attack.
   public override IEnumerator attackOrCharge() {
 
     if (dead) {
