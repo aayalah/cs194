@@ -19,44 +19,44 @@ public class RangerPiece : Piece {
     for (int i = 1; i <= movementRange; i++) {
       tile = board.getCellAt(x-i, z-i);
       other = board.getPieceAt(x-i, z-i);
-      if (tile) {
-        locations.Add(tile);
-      }
       if (other) {
         break;
+      }
+      if (tile) {
+        locations.Add(tile);
       }
     }
     // Right/Down
     for (int i = 1; i <= movementRange; i++) {
       tile = board.getCellAt(x+i, z-i);
       other = board.getPieceAt(x+i, z-i);
-      if (tile) {
-        locations.Add(tile);
-      }
       if (other) {
         break;
+      }
+      if (tile) {
+        locations.Add(tile);
       }
     }
     // Left/Up
     for (int i = 1; i <= movementRange; i++) {
       tile = board.getCellAt(x-i, z+i);
       other = board.getPieceAt(x-i, z+i);
-      if (tile) {
-        locations.Add(tile);
-      }
       if (other) {
         break;
+      }
+      if (tile) {
+        locations.Add(tile);
       }
     }
     // Right/Up
     for (int i = 1; i <= movementRange; i++) {
       tile = board.getCellAt(x+i, z+i);
       other = board.getPieceAt(x+i, z+i);
-      if (tile) {
-        locations.Add(tile);
-      }
       if (other) {
         break;
+      }
+      if (tile) {
+        locations.Add(tile);
       }
     }
     

@@ -180,7 +180,7 @@ public class Piece : MonoBehaviour {
 	}
 
 	public IEnumerator movePhysically(int oldX, int oldZ, int newX, int newZ) {
-		float halfPieceHeight = transform.localScale.y / 2; // This is no longer accurate with meshes
+		float halfPieceHeight = 1.5f;//transform.localScale.y / 2; // This is no longer accurate with meshes
 		float maxHeight = board.maxHeightOnPath(oldX, oldZ, newX, newZ) + halfPieceHeight;
 		GameObject currentCell = board.getCellAt(oldX, oldZ);
 		TileController t = currentCell.transform.GetComponent<TileController> ();
