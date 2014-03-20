@@ -33,14 +33,10 @@ RangerPiece.cs - Rangers (Hornets) are high range, low durability units. They ha
 
 HealthBar.cs - Simply keeps track of the amount of health a unit has and displays a red and green healthbar over the unit when the user hovers their mouse over it. 
 
-CameraMovement.cs -
+GridController.cs - Keeps track of all tiles on the board as well as the units occupying them. Responsible for initiating the board as well as the terrain (if there is any).
 
-Clock.cs -
+TileController.cs - Only knows what the tile knows about itself, which is basically just it's coordinates on the board.
 
-ClockKing.cs -
-
-GridController.cs - 
-
-TileController.cs -
+Jukebox.cs - Plays music.
 
 
