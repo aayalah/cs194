@@ -45,7 +45,7 @@ public class MainMenu : MonoBehaviour {
 			}
 		}
 		if(manager.teamsBuilt == 2){
-			if (GUI.Button (new Rect (Screen.width/2-150,150,300,75), "Begin Game", GUI.skin.GetStyle("button"))) {
+			if (GUI.Button (new Rect (Screen.width/2-150,150,300,75), "Beegin Game", GUI.skin.GetStyle("button"))) {
 				Application.LoadLevel(2);
 			}
 		}
