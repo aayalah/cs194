@@ -26,7 +26,6 @@ public class HealthBar : MonoBehaviour {
 			Vector2 targetPos = Camera.main.WorldToScreenPoint (myPiece.transform.position);
 			GUI.DrawTexture(new Rect(targetPos.x - 25, Screen.height - targetPos.y, 50*percentHealthy, 10), green);
 			GUI.DrawTexture(new Rect(targetPos.x - 25 + 50*percentHealthy, Screen.height - targetPos.y, 50-(50*percentHealthy), 10), red);
-			//Transform greenBar = (Transform) Instantiate(cube, myPiece.transform.position + Vector3.up, Quaternion.identity);
 		}
 	}
 	public IEnumerator changeHP(int newHP){

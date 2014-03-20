@@ -57,12 +57,8 @@ public class UnitManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		//DontDestroyOnLoad(this.gameObject);
+
 		totalUnits = 0;
-//		attacks = new int[armySize*numPlayers][];
-//		shields = new int[armySize*numPlayers][];
-//		specials = new int[armySize*numPlayers][];
-//		types = new int[armySize*numPlayers];
 	}
 
 
@@ -81,19 +77,21 @@ public class UnitManager : MonoBehaviour {
 	public bool isReady() {
 		return hasSetUp;
 	}
-	
+
+
+	/*Called by teamBuilder when a unit is created. Stores relevant data for that unit*/
 	public void addUnit(int type, int[] att, int[] sh, int[] spec){
 		types[totalUnits] = type;
 		attacks[totalUnits] = att;
 		shields[totalUnits] = sh;
 		specials[totalUnits] = spec;
 		totalUnits++;
-		//if(totalUnits % armySize == 0) teamsBuilt++;
 	}
-	
+
+	/*Called by Player. Instantiates a prefab of the correct unit type and initializes stats based on TeamBuilder phase. Returns the instantiated unit*/
 	public Piece getUnit(int id, int i){
 		int p = id*armySize;
-		if(types[i+p] == 1) {
+		if(types[i+p] == 1) {//unit is a bumblebee
 			Piece bumble;
 			if(id == 0){
 				bumble = (Piece)Instantiate(redBumblebee, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
@@ -108,14 +106,14 @@ public class UnitManager : MonoBehaviour {
 			bumble.attackHistogram = attacks[i+p];
 			bumble.defenseHistogram = shields[i+p];
 			bumble.specialHistogram = specials[i+p];
-			bumble.maxHP = 100;
+			bumble.maxHP = 60;
 			bumble.currentHP = bumble.maxHP;
 			bumble.movementRange = 4;
 			bumble.attackRange = 1;
 			return bumble;
 					
 		}
-		if(types[i+p] == 2){ 
+		if(types[i+p] == 2){ //unit is a worker
 			Piece worker;
 			if(id == 0){
 				worker = (Piece)Instantiate(redWorker, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);
@@ -130,13 +128,13 @@ public class UnitManager : MonoBehaviour {
 			worker.attackHistogram = attacks[i+p];
 			worker.defenseHistogram = shields[i+p];
 			worker.specialHistogram = specials[i+p];
-			worker.maxHP = 50;
+			worker.maxHP = 40;
 			worker.currentHP = worker.maxHP;
 			worker.movementRange = 5;
-			worker.attackRange = 3;
+			worker.attackRange = 4;
 			return worker;
 		}
-		if(types[i+p] == 3) {
+		if(types[i+p] == 3) {//unit is a hornet
 			Piece hornet;
 			if(id == 0){
 				hornet = (Piece)Instantiate(redHornet, new Vector3((19f-(float)armySize+1)*id+(float)i,1f,19f*id), Quaternion.identity);

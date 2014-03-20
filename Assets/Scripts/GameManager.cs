@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour {
 	public Player[] players;
 	public Piece[,] playersPieces;
 	public bool[] usingAI;
-
+	private bool paused = false;
 
 	/*
 	 * Variables: Private 
@@ -72,6 +72,15 @@ public class GameManager : MonoBehaviour {
 		
 		if (Input.GetKey ("f") && currentPlayersTurn != -1) {
 			showFixedOrderGui = true;
+		}
+		if(Input.GetKeyUp(KeyCode.Escape)){
+			paused = !paused;
+		}
+		if(paused){
+			Time.timeScale = 0;
+		}
+		if(!paused){
+			Time.timeScale = 1;
 		}
 		
 	}
@@ -136,7 +145,6 @@ public class GameManager : MonoBehaviour {
 		int round = 0;
 
 		while (allPlayersHavePieces()) {
-
 			setInstructionText(1);
 			/////Stage 1: Piece Selection
 			stage = 1;
@@ -359,7 +367,15 @@ public class GameManager : MonoBehaviour {
 		GUI.Label (new Rect (Screen.width / 2 + 400, Screen.height - 25, 300, 40), "Fix Piece Order: ", style2);
 		orderFixed[1] = GUI.Toggle(new Rect(Screen.width / 2 + 545, Screen.height - 25, 10, 40), orderFixed[1], "", GUI.skin.toggle);
 
-
+		if(paused){
+			if(GUI.Button(new Rect(Screen.width/2-100,Screen.height - 40, 200, 40), "Exit to Main Menu", GUI.skin.GetStyle("button"))) {
+				manager.teamsBuilt = 0;
+				manager.totalUnits = 0;
+				Application.LoadLevel(0);
+			}
+			GUI.skin.label.fontSize = 10;
+			GUI.Label (new Rect (Screen.width / 2 - 25, Screen.height/2 - 20, 75, 40), "Paused", style2);
+		}
 	}
 
 	void pieceOrderWindow(int windowID) {

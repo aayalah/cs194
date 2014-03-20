@@ -7,27 +7,34 @@ public class TeamBuilder : MonoBehaviour {
 	public Transform bar;
 	public Material mat;
 	public HealthBar health;
-	
+
+	//prefabs for each of the unit types (of each color)
 	public Transform redBumblebee;
 	public Transform redWorker;
 	public Transform redHornet;
 	public Transform blueBumblebee;
 	public Transform blueWorker;
 	public Transform blueHornet;
-	
+
+
+	//These will be redBumblebee, redWorker, and redHornet for player1's build phase; blue for player2
 	private Transform currentWorker;
 	private Transform currentHornet;
 	private Transform currentBumble;
 	
 	private Transform[] units;
-	
+
+	//integers corresponding to the index of the graph being displayed and the index of the color distribution being displayed
+	private int currentGraph;
+	private int currentColor;
+
+
+	//private variables for graphs and color distributions
 	private int[,] values;
 	private Transform[,] bars;
 	public int[,] colorIndex;
 	public Color[,] colorMix;
-	
-	private int currentGraph;
-	private int currentColor;
+
 	private int[] nextGraph;
 	private int[] nextColor;
 	private int[] prevGraph;
@@ -44,13 +51,12 @@ public class TeamBuilder : MonoBehaviour {
 	public bool usingAI = false;
 	public int personalityType = 0;
 	
-	// Use this for initialization
+	/*Randomizes all histograms and color distrobutions and stores them in 2D arrays*/
 	void Start () {
 		if(usingAI) personalityType = Random.Range(0, 2);
 		manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();
 		armySize = manager.armySize;
 		numGraphs = armySize+2;
-		//numColors = armySize+2;
 		colorMix = new Color[numGraphs,numColors];
 		resetColorMix();
 		bars = new Transform[numGraphs,numBars];
@@ -84,16 +90,16 @@ public class TeamBuilder : MonoBehaviour {
 		
 		setUpUnitSelect();
 		if(usingAI){
-			for(int i = 0; i < armySize; i++){//while(unitsCreated < armySize)
+			for(int i = 0; i < armySize; i++){
 				int rand = Random.Range(1, 4);
 				unitNum = rand;
-				Debug.Log("UnitNum = " + unitNum);
 				StartCoroutine(AIcreateNewUnit(rand));
 			}
 			
 		}
 		
 	}
+	/*Initialized the array of histograms to default values*/
 	void initializeGraphs(){
 		for(int g = 0; g < numGraphs; g++){
 			for(int i = 0; i < numBars; i++){
@@ -101,7 +107,8 @@ public class TeamBuilder : MonoBehaviour {
 			}
 		}
 	}
-	
+
+	/*Creates an array which keeps track of relative order of remaining graphs*/
 	void initGraphOrder(){
 		nextGraph = new int[numGraphs];
 		prevGraph = new int[numGraphs];
@@ -114,7 +121,8 @@ public class TeamBuilder : MonoBehaviour {
 				prevGraph[i] = numGraphs-1;
 		}
 	}
-	
+
+	/*Creates an array which keeps track of relative order of remaining colors*/
 	void initColorOrder(){
 		nextColor = new int[numGraphs];
 		prevColor = new int[numGraphs];
@@ -127,7 +135,9 @@ public class TeamBuilder : MonoBehaviour {
 				nextColor[i] = 0;
 		}
 	}
-	
+
+
+	/*Displays red flavored units if player 1's build phase, blue units if player 2's build phase*/
 	void setUpUnitSelect(){
 		if(manager.teamsBuilt == 0){
 		Transform redB = (Transform)Instantiate(redBumblebee, new Vector3(36f, 1f, 5f), Quaternion.identity);
@@ -408,13 +418,13 @@ public class TeamBuilder : MonoBehaviour {
 	void UnitLabels(){
 		if(currentBumble.GetComponentInChildren<Renderer>().enabled){
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Bumblebee");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 100");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 60");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 1");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 4");
 		}
 		if(currentWorker.GetComponentInChildren<Renderer>().enabled){
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-130, 200, 100), "Unit Type: Worker");
-			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 50");
+			GUI.Label(new Rect(Screen.width*7/10, Screen.height-115, 200, 100), "Hit Points: 40");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-100, 200, 100), "Attack Range: 3");
 			GUI.Label(new Rect(Screen.width*7/10, Screen.height-85, 200, 100), "Movement: 5");
 		}
@@ -433,9 +443,10 @@ public class TeamBuilder : MonoBehaviour {
 		nextColor[prevColor[currentColor]] = nextColor[currentColor];
 		prevColor[nextColor[currentColor]] = prevColor[currentColor];
 		if(numGraphs > 0){
-		currentGraph = nextGraph[currentGraph];
-		currentColor = nextColor[currentColor];
-		drawNewGraph();	
+			currentGraph = nextGraph[currentGraph];
+			currentColor = nextColor[currentColor];
+			eraseGraph();
+			drawNewGraph();	
 		}
 	}
 	
@@ -488,7 +499,7 @@ public class TeamBuilder : MonoBehaviour {
 			bar.gameObject.renderer.enabled = false;
 		}
 	}
-			
+	/*erases current graph and draws a new one with either new histogram or new color distro (or both)*/	
 	void drawNewGraph(){
 		for(int i = 0; i < numBars; i++){
 			Transform oldBar;

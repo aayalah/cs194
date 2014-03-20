@@ -33,6 +33,7 @@ public class JukeBox : MonoBehaviour {
 	
 	}
 
+	//Displays mute/unmute button and song skip button
 	void OnGUI(){
 		if(!muted){
 			if(GUI.Button(new Rect(Screen.width-50,10, 50, 50), speakerOn, style)){

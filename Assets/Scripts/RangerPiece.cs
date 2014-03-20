@@ -119,6 +119,11 @@ public class RangerPiece : Piece {
   protected void fireBulletAt(Piece piece) {
     Bullet bullet = (Bullet) Instantiate(bulletPrefab, transform.position + new Vector3(0,1,0), Quaternion.identity);
     bullet.creator = this;
+	if (attackHistogram.Length > 0) {
+		int index = Random.Range(0, attackHistogram.Length);
+		bullet.damage = attackHistogram[index];
+		attackFor = bullet.damage;
+	}
     bullet.velocity = bulletSpeed * (piece.transform.position - this.transform.position).normalized;
   }
 
@@ -129,7 +134,6 @@ public class RangerPiece : Piece {
       List<Piece> attackablePieces = getAttackablePieces();
       if (attackablePieces.Count == 0) {
         // If no attacks, just move on
-        Debug.Log("There are no pieces this RangerPiece can attack");
         yield return null;
       } else {
         setAttackHighlights(true);
