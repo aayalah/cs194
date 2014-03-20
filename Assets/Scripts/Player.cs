@@ -83,7 +83,7 @@ public class Player : MonoBehaviour {
 
 
 	/* 
-	 * Sets up data structures to manage the pieces for the AI players
+	 * Sets up data structures to manage the pieces for the human players
 	 * 
 	 * 
 	 */ 
@@ -119,7 +119,7 @@ public class Player : MonoBehaviour {
 
 	/*
  	 * Sets up the data structurs that help it communicate with other scripts
- 	 * If the King of the Hill mode is being played then the data structure for this mode if set up
+ 	 * If the King of the Hill mode is being played then the data structure for this mode is set up
      */
 	public void Initialize(int id, Camera camera, GameManager game, UnitManager man){
 		this.id = id;
@@ -151,7 +151,7 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator AIchoosePieces() {
 		int turnsAssigned = 0;
-		for(int j = 0; j < um.turnsPerRound; j++){
+		for(int j = selectedPieceArray.Count; j < um.turnsPerRound; j++){
 			int rand = Random.Range(0, pieceArray.Count-1);
 			int bestScore = 0;
 			Piece bestPiece = pieceArray[rand];
@@ -179,9 +179,9 @@ public class Player : MonoBehaviour {
      */
 	
 	public IEnumerator choosePieces() {
-		numPieces = 0;
+		numPieces = selectedPieceArray.Count;
 		Piece chosenPiece = null;
-		while (numPieces != um.turnsPerRound) {
+		while (numPieces < um.turnsPerRound) {
 			GameObject selected;
 			if (Input.GetMouseButtonDown (0)) {
 				Ray ray = camera.ScreenPointToRay (Input.mousePosition);
@@ -228,8 +228,8 @@ public class Player : MonoBehaviour {
 
 	}
 
-	//removes one of the players pieces from the data structures that were 
-	//tracking the players pieces
+	//removes one of the players pieces from the data structures that 
+	//track the players pieces
 	public void removePiece(Piece piece) {
 
 		pieceArray.Remove (piece);
@@ -245,7 +245,7 @@ public class Player : MonoBehaviour {
 	}
 
 	/*
-	 * If the King of the Hill game mode is being played, the method calls a method
+	 * If the King of the Hill game mode is being played, this method calls a method
 	 * on the clock object, that increments the number of turns that the player has had a piece
      * on the specified square
      */

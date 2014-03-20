@@ -16,7 +16,8 @@ public class MainMenu : MonoBehaviour {
 	void Update () {
 	
 	}
-	
+
+	//Creates buttons on the screen based on the state of game setup (whether either or both players have created their armies
 	void OnGUI(){
 		GUI.skin = skin;
 		GUI.Label(new Rect(Screen.width/2-400, 50, 800, 100), "Bees With Jetpacks!", GUI.skin.GetStyle("label"));

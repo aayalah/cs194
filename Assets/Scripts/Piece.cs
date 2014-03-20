@@ -40,6 +40,13 @@ public class Piece : MonoBehaviour {
 	public bool attacksHighlighted = false;
 	public int numMarkers = 0;
 	public int LERP_STEPS_PER_TILE = 12;
+	public int attackFor = -1;
+	public int shieldFor = -1;
+	public int chargeFor = -1;
+	public bool specialAttacking;
+	public float timeOfDisplay = 0;
+	public float timer = 0;
+	public int counter = 0;
 
 	/*
 	 * Variables: Private 
@@ -111,7 +118,7 @@ public class Piece : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		timer += Time.deltaTime;
 		if(flashing && flash == 0) {
 			//setColor(baseColor);
 			stopFlashing();
@@ -125,6 +132,18 @@ public class Piece : MonoBehaviour {
 			healthBar.showBar = false;
 		} else if (showGUI) {
 			guiT--;
+		}
+
+		if(attackFor != -1 || shieldFor != -1 || chargeFor != -1 || specialAttacking){
+			if(counter < 100){
+				counter++;
+			}else{
+				counter = 0;
+				attackFor = -1;
+				shieldFor = -1;
+				chargeFor = -1;
+				specialAttacking = false;
+			}
 		}
 		//if(notMoving){
 			idle();
@@ -383,20 +402,17 @@ public class Piece : MonoBehaviour {
 	public void takeDamage(int damage) {
 		int index = Random.Range(0, defenseHistogram.Length);
 		int shield = defenseHistogram[index];
-		Debug.Log("Shield for "+ shield/2);
-		//addMessage("Shield power: " + shield/2);
+
+		shieldFor = shield/2;
+		timeOfDisplay = Time.deltaTime;
 		if(shield/2 >= damage){
 			damage = 0;
-			Debug.Log("Blocked all damage");
-			//addMessage("Blocked all damage!");
-		} else {
-			//addMessage("Took " + damage + " damage!");
-		}
+		} 
+
 		Debug.Log("Remaining HP: " + (currentHP - damage));
 		currentHP = Mathf.Max (0, currentHP - damage);
 		healthBar.currentHP = currentHP;
 		healthBar.showBar = true;
-		//StartCoroutine(flashHealthBar());
 		if (currentHP <= 0) {
 			die();
 		}
@@ -408,7 +424,8 @@ public class Piece : MonoBehaviour {
 			int index = Random.Range(0, attackHistogram.Length);
 			damage = Mathf.Max(damage, attackHistogram[index]);
 		}
-		Debug.Log("Attack for " + damage + " damage");
+		attackFor = damage;
+		timeOfDisplay = Time.deltaTime;
 		other.takeDamage(damage);
 	}
 
@@ -418,12 +435,8 @@ public class Piece : MonoBehaviour {
 	public void incrementSpecial() {
 		int index = Random.Range(0, specialHistogram.Length);
 		int val = specialHistogram[index];
-
+		chargeFor = val;
 		currentSpecial = Mathf.Min(maxSpecial, currentSpecial + val);
-		//addMessage("Special +" + val);
-		if (canUseSpecial()) {
-			//addMessage("Special ready!");
-		}
 	}
 
 	public bool canUseSpecial() {
@@ -432,6 +445,8 @@ public class Piece : MonoBehaviour {
 
 	protected virtual IEnumerator specialDoDamage(TileController tile) {
 		GameObject exp = (GameObject) Instantiate(explosion, tile.transform.position, explosion.transform.rotation);
+		specialAttacking = true;
+
 		for (int i = -specialRange; i <= specialRange; i++) {
 			for (int j = -specialRange; j <= specialRange; j++) {
 				if (Mathf.Abs(i)+Mathf.Abs(j) <= specialRange) {
@@ -634,7 +649,7 @@ public class Piece : MonoBehaviour {
 			yield return null;
 		} else {
 			setAttackHighlights(true);
-			if (Random.value < 0.5) {
+			if (Random.value < 0.75) {
 				// attack
 				int lowestHP = 100;
 				Piece choice = attackablePieces[0];
@@ -662,7 +677,7 @@ public class Piece : MonoBehaviour {
 			}
 			setAttackHighlights(false);
 			if (!dead) {
-				yield return new WaitForSeconds(1f);
+				yield return new WaitForSeconds(1.5f);
 			}
 		}
 	}
@@ -703,6 +718,7 @@ public class Piece : MonoBehaviour {
 			}
 		}
 		setAttackHighlights(false);
+		yield return new WaitForSeconds(1);
 	}
 
 	public IEnumerator AIinitialPlacement(int id){
@@ -791,40 +807,39 @@ public class Piece : MonoBehaviour {
 		}
 		//Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
 		//GUI.Box(new Rect(targetPos.x-20, targetPos.y, 40, 10), "foo");
-		//updateMessages();
-	}
 
-	/*
-	private void updateMessages() {
-		Vector2 pieceLoc = Camera.main.WorldToScreenPoint(this.transform.position);
-		int messagesToDelete = 0;
-		// Place existing messages
-		for (int i = 0; i < messages.Count; i++) {
-			messages[i].framesAlive++;
-			if (messages[i].framesAlive > messageLifetime) {
-				messagesToDelete++;
-			} else {
-				float extraHeight = (messages.Count - i - 1) * messageHeight + 
-														messages[i].framesAlive * messageHeightPerFrame;
-				GUI.Label(new Rect(pieceLoc.x - messageWidth / 2, pieceLoc.y + messageHeight / 2 + extraHeight,
-													 messageWidth, messageHeight), 
-									messages[i].message);
-				Debug.Log("Trying to put " + messages[i].message + " at " + extraHeight);
-			}
+		if(attackFor != -1){
+			Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
+			GUIStyle style = new GUIStyle ();
+			style.fontSize = 20;
+			style.normal.textColor = Color.red;
+			GUI.Label(new Rect(targetPos.x - 50, Screen.height - targetPos.y - 100, 75, 10), "ATTACK FOR: " + attackFor, style);
 		}
 
-		if (messagesToDelete > 0) {
-			messages.RemoveRange(0, messagesToDelete);
+		if(shieldFor != -1){
+			Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
+			GUIStyle style = new GUIStyle ();
+			style.fontSize = 20;
+			style.normal.textColor = Color.blue;
+			GUI.Label(new Rect(targetPos.x - 50, Screen.height - targetPos.y - 100, 75, 10), "SHIELD FOR: " + shieldFor, style);
+		}
+
+		if(chargeFor != -1){
+			Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
+			GUIStyle style = new GUIStyle ();
+			style.fontSize = 20;
+			style.normal.textColor = Color.yellow;
+			GUI.Label(new Rect(targetPos.x - 50, Screen.height - targetPos.y - 100, 75, 10), "CHARGE FOR: " + chargeFor, style);
+		}
+
+		if(specialAttacking){
+			Vector2 targetPos = Camera.main.WorldToScreenPoint (transform.position);
+			GUIStyle style = new GUIStyle ();
+			style.fontSize = 20;
+			style.normal.textColor = Color.yellow;
+			GUI.Label(new Rect(targetPos.x - 50, Screen.height - targetPos.y - 100, 75, 10), "FIRING SPECIAL", style);
 		}
 	}
-
-	private void addMessage(string msg) {
-		MessageInfo info = new MessageInfo();
-		info.message = msg;
-		info.framesAlive = 0;
-		messages.Add(info);
-	}
-	*/
 
 	void DoMyWindow(int windowID) {
 		GUI.skin.label.alignment = TextAnchor.MiddleLeft;;
