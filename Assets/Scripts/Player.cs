@@ -3,14 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
+
+	/*
+	 * Variables: Public 
+	 */
+
+	//Allow communication between classes
 	public Piece piece;
-	private List<Piece> pieceArray;
-	private List<Piece> selectedPieceArray;
 	public Camera camera;
-	public int numPieces = 0;
 	public UnitManager um;	
 	public GameManager game;
 	public ClockKing clock;
+
+
+	/*
+	 * Variables: Private
+	 */
+
+	//data structures for storing pieces
+	private List<Piece> pieceArray;
+	private List<Piece> selectedPieceArray;
+
+	private int numPieces = 0;
 	private int numberOfPieces;
 	private int numSelectedPieces;
 	private int id;
@@ -219,8 +233,9 @@ public class Player : MonoBehaviour {
 	public void removePiece(Piece piece) {
 
 		pieceArray.Remove (piece);
-		selectedPieceArray.Remove (piece);
-
+		for(int i = 0; i < selectedPieceArray.Count; i++) {
+			selectedPieceArray.Remove (piece);
+		}
 	}
 
 	//returns the number of pieces the player has left

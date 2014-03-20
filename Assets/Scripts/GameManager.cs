@@ -7,24 +7,20 @@ public class GameManager : MonoBehaviour {
 	/*
 	 * Variables: Public 
 	 */
-	//Static Variables
 
-	//Non-Static Variables
 	public GUISkin skin;
 	public Texture up;
 	public Texture down;
-	private static string piecePlacementText = "Click on one of the colored squares to place each of your pieces.";
-	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
-	private static string pieceMovementText = "Click on a colored square to move your piece."; 
-	private static string pieceAttackText = "Click on an enemy within range to attack or press SPACE to charge special";
+
+	//Allow communication between classes
 
 	public Player player;
 	public Camera camera;
 	public UnitManager manager;
 	public GridController board;
 	public Clock clock;	
-	private bool hintsHidden;
 
+	//data structures for storing players and pieces
 	public Player[] players;
 	public Piece[,] playersPieces;
 	public bool[] usingAI;
@@ -33,6 +29,14 @@ public class GameManager : MonoBehaviour {
 	/*
 	 * Variables: Private 
 	 */
+
+	//static variables
+	private static string piecePlacementText = "Click on one of the colored squares to place each of your pieces.";
+	private static string pieceOrderSelectionText = "Click on your pieces in the order in which you want to move them. You can click on a piece more than once.";
+	private static string pieceMovementText = "Click on a colored square to move your piece."; 
+	private static string pieceAttackText = "Click on an enemy within range to attack or press SPACE to charge special";
+
+
 	//boolean variables
 	private bool gameIsOver = false;
 	private bool playerTurn= true;
@@ -41,7 +45,8 @@ public class GameManager : MonoBehaviour {
 	private bool[] orderFixed;
 	private bool showFixedOrderGui = false;
 	private bool showHelpWindow = false;
-
+	private bool hintsHidden;
+	
 	private Rect windowRect = new Rect(Screen.width/2 - 300, 70, 600, 120);
 	private int currentPlayersTurn = -1;
 	private int numPlayers = 2; 
@@ -176,7 +181,7 @@ public class GameManager : MonoBehaviour {
 
 			///Reset
 			for (int i = 0; i < numPlayers; i++) {
-				if(!orderFixed[i]) {
+				if(!orderFixed[i] || (players[i].getSelectedPieces().Count != manager.numTurns)) {
 					players[i].reset ();
 				}
 			}
@@ -263,6 +268,9 @@ public class GameManager : MonoBehaviour {
 			case 2:
 				instructionText = pieceMovementText;
 				showInstructionLabel = true;
+				break;
+			case 3:
+				instructionText = pieceAttackText;
 				break;
 		}
 	

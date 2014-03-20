@@ -3,11 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Piece : MonoBehaviour {
-	private Rect windowRect = new Rect(20, 100, 250, 300);
+
+	/*
+	 * Variables: Public 
+	 */
+
+	//Allow communication between classes
+	public GameManager game;
+	public Player player;
+	public GridController board;
+
 	public Texture orderMarker;
 	public string id;
 	public int teamNo;
-	public GameManager game;
 	public int maxHP = 10;
 	public int currentHP = 10;
 	public int[] attackHistogram = {5};
@@ -19,29 +27,36 @@ public class Piece : MonoBehaviour {
 	public int movementRange = 3;
 	public int attackRange = 1;
 	public int experience = 0;
+
 	public Color baseColor = Color.white;
 	public bool dead = false;
+	public int x = 0;
+	public int z = 0;
+	public bool movesHighlighted = false;
+	public bool attacksHighlighted = false;
+	public int numMarkers = 0;
+	public int LERP_STEPS_PER_TILE = 12;
+
+	/*
+	 * Variables: Private 
+	 */
+
+	//Allow communication between classes
+	private HealthBar healthBar;
+	
+	private Rect windowRect = new Rect(20, 100, 250, 300);
 	private bool flashing = false;
 	private int flashingTimer = 5;
 	private int flash;
-	public int x = 0;
-	public int z = 0;
-	public Player player;
-	public GridController board;
 	private bool showGUI = false;
-	public bool movesHighlighted = false;
-	public bool attacksHighlighted = false;
 	private int guiTimer = 10;
 	private int guiT;
 	private int specialTimer = 3;
 	private float lastMoveTime;
-	public int LERP_STEPS_PER_TILE = 12;
 	private float startingY;
 	private float direction = 0;
 	private bool showcaseRotate = false;
 	private Vector3 startingRotation;
-	public int numMarkers = 0;
-	private HealthBar healthBar;
 
 	public void Initialize(Player player, GameManager game) {
 		this.player = player;

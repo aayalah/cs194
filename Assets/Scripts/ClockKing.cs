@@ -3,9 +3,13 @@ using System.Collections;
 using System;
 public class ClockKing : MonoBehaviour {
 
+	/*
+	 * Variables: Private 
+	 */
 	private int maxTurns = 2;
 	private int numTurns = 0;
 	private bool isPaused = true;
+
 	// Use this for initialization
 	void Start () {
 		UnitManager manager = GameObject.Find("UnitManager").GetComponent<UnitManager>();

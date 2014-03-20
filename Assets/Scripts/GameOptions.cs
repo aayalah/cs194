@@ -3,29 +3,42 @@ using System.Collections;
 using System;
 public class GameOptions : MonoBehaviour {
 
+	/*
+	 * Variables: Public 
+	 */
+
+	public GUISkin skin;
+
+	/*
+	 * Variables: Private 
+	 */
+
+	private int defaultW = 20;
+	private int defaultH = 20;
+	private int defaultArmySize = 5;
+	private int player1Status = 0;
+	private int player2Status = 1;
+	private int w;
+	private int h;
+	private int np;
+	private int nt;
+
+	/*
+	 * Variables: Private
+	 */
+
+	//Allow communication between classes
+	private UnitManager man;
+
+
+	private bool display = false;
+	private string numTurns = "5";
 	private static bool created = false;
 	private string width = "20";
 	private string height = "20";
 	private string numberOfPieces = "5";
 	private bool showMessage = false;
-
 	private bool gameMode = false;
-
-	public GUISkin skin;
-	public int defaultW = 20;
-	public int defaultH = 20;
-	public int defaultArmySize = 5;
-
-	public int w;
-	public int h;
-	public int np;
-	public int nt;
-	private bool display = false;
-	private UnitManager man;
-	private string numTurns = "5";
-
-	public int player1Status = 0;
-	public int player2Status = 1;
 
 	void Awake() {
 		

@@ -2,17 +2,30 @@ using UnityEngine;
 using System.Collections;
 
 public class GridController : MonoBehaviour {
+
+	/*
+	 * Variables: Public 
+	 */
+
 	public Material grass;
 	public Material flowers;
-	
 	public GameObject cube1;
 	public GameObject cube2;
+
 	public int xDimension = 10;
 	public int zDimension = 10;
+
+	/*
+	 * Variables: Private 
+	 */
+
+	//Allow communication between classes
+	private UnitManager man;
+
 	private GameObject[,]grid;
 	private Piece[,] pieceGrid;
 
-	private UnitManager man;
+
 	// Use this for initialization
 	void Start () {
 		man = GameObject.Find("UnitManager").GetComponent<UnitManager>();
